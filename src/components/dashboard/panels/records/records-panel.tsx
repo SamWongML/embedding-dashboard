@@ -1,0 +1,317 @@
+'use client'
+
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image } from 'lucide-react'
+import { useRecordsList, useRecordDetail } from '@/lib/hooks/use-records'
+import { cn } from '@/lib/utils'
+import type { EmbeddingRecord, RecordsListParams } from '@/lib/schemas/records'
+
+interface RecordsPanelProps {
+  className?: string
+}
+
+export function RecordsPanel({ className }: RecordsPanelProps) {
+  const [params, setParams] = useState<RecordsListParams>({
+    page: 1,
+    pageSize: 20,
+    contentType: 'all',
+  })
+  const [searchInput, setSearchInput] = useState('')
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null)
+
+  const { data, isLoading } = useRecordsList(params)
+  const { data: selectedRecord } = useRecordDetail(selectedRecordId)
+
+  const handleSearch = () => {
+    setParams({ ...params, search: searchInput, page: 1 })
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setParams({ ...params, page: newPage })
+  }
+
+  const handleContentTypeChange = (value: string) => {
+    setParams({
+      ...params,
+      contentType: value as 'all' | 'text' | 'image',
+      page: 1,
+    })
+  }
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  }
+
+  return (
+    <div className={cn('space-y-4', className)}>
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 flex gap-2">
+              <Input
+                placeholder="Search records..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <Button onClick={handleSearch}>
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+            <Select
+              value={params.contentType || 'all'}
+              onValueChange={handleContentTypeChange}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="image">Image</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Table */}
+      <Card>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[500px]">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">Type</TableHead>
+                  <TableHead className="min-w-[300px]">Content</TableHead>
+                  <TableHead>Model</TableHead>
+                  <TableHead>Dimensions</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <div className="h-4 w-8 bg-muted rounded animate-pulse" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-full bg-muted rounded animate-pulse" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-12 bg-muted rounded animate-pulse" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                      </TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  data?.records.map((record) => (
+                    <TableRow key={record.id}>
+                      <TableCell>
+                        {record.contentType === 'text' ? (
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Image className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm truncate max-w-[400px]">
+                          {record.content}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {record.model}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {record.vectorDimensions}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {formatDate(record.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedRecordId(record.id)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+
+      {/* Pagination */}
+      {data && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {(data.page - 1) * data.pageSize + 1} to{' '}
+            {Math.min(data.page * data.pageSize, data.totalCount)} of{' '}
+            {data.totalCount} records
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={data.page <= 1}
+              onClick={() => handlePageChange(data.page - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm">
+              Page {data.page} of {data.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={data.page >= data.totalPages}
+              onClick={() => handlePageChange(data.page + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Sheet */}
+      <Sheet
+        open={!!selectedRecordId}
+        onOpenChange={(open) => !open && setSelectedRecordId(null)}
+      >
+        <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto p-0">
+          <SheetHeader className="px-6 py-5 border-b border-border">
+            <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
+          </SheetHeader>
+          {selectedRecord && (
+            <div className="px-6 py-6 space-y-8">
+              {/* Content Section */}
+              <section>
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                  Content
+                </h4>
+                <p className="text-sm leading-relaxed text-foreground">
+                  {selectedRecord.content}
+                </p>
+              </section>
+
+              {/* Properties Grid */}
+              <section>
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+                  Properties
+                </h4>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-3 border-b border-border/40">
+                    <span className="text-sm text-muted-foreground">Type</span>
+                    <span className="text-sm font-medium capitalize">{selectedRecord.contentType}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-3 border-b border-border/40">
+                    <span className="text-sm text-muted-foreground">Model</span>
+                    <Badge variant="secondary" className="text-xs font-mono">
+                      {selectedRecord.model}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between py-3 border-b border-border/40">
+                    <span className="text-sm text-muted-foreground">Dimensions</span>
+                    <span className="text-sm font-medium font-mono">{selectedRecord.vectorDimensions}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-3">
+                    <span className="text-sm text-muted-foreground">Source</span>
+                    <span className="text-sm font-medium">{selectedRecord.source || '—'}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Metadata Section */}
+              {selectedRecord.metadata && Object.keys(selectedRecord.metadata).length > 0 && (
+                <section>
+                  <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                    Metadata
+                  </h4>
+                  <div className="bg-muted/30 rounded-lg border border-border/40 p-4">
+                    <pre className="text-xs font-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+{JSON.stringify(selectedRecord.metadata, null, 2)}
+                    </pre>
+                  </div>
+                </section>
+              )}
+
+              {/* Vector Preview Section */}
+              {selectedRecord.vector && (
+                <section>
+                  <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                    Vector Preview
+                  </h4>
+                  <div className="bg-muted/30 rounded-lg border border-border/40 p-4 max-h-[180px] overflow-y-auto">
+                    <code className="text-xs font-mono text-foreground/80 break-all leading-relaxed">
+                      [{selectedRecord.vector.slice(0, 10).map(v => v.toFixed(6)).join(', ')}, ...]
+                    </code>
+                  </div>
+                </section>
+              )}
+
+              {/* Timestamps */}
+              <section className="pt-6 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Created</p>
+                    <p className="text-sm font-medium">{formatDate(selectedRecord.createdAt)}</p>
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <p className="text-xs text-muted-foreground">Updated</p>
+                    <p className="text-sm font-medium">{formatDate(selectedRecord.updatedAt)}</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}
