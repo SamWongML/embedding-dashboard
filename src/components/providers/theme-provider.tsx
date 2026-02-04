@@ -26,12 +26,33 @@ export function ThemeProvider({
   const [theme, setThemeState] = React.useState<Theme>(defaultTheme)
   const [resolvedTheme, setResolvedTheme] = React.useState<'light' | 'dark'>('light')
 
+  const setTheme = React.useCallback((newTheme: Theme) => {
+    localStorage.setItem(storageKey, newTheme)
+    setThemeState(newTheme)
+  }, [storageKey])
+
   React.useEffect(() => {
     const stored = localStorage.getItem(storageKey) as Theme | null
     if (stored) {
       setThemeState(stored)
     }
   }, [storageKey])
+
+  React.useEffect(() => {
+    let active = true
+
+    fetch('/api/preferences')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!active || !data?.theme) return
+        setTheme(data.theme)
+      })
+      .catch(() => undefined)
+
+    return () => {
+      active = false
+    }
+  }, [setTheme])
 
   React.useEffect(() => {
     const root = window.document.documentElement
@@ -63,11 +84,6 @@ export function ThemeProvider({
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [theme])
-
-  const setTheme = React.useCallback((newTheme: Theme) => {
-    localStorage.setItem(storageKey, newTheme)
-    setThemeState(newTheme)
-  }, [storageKey])
 
   const value = React.useMemo(
     () => ({ theme, setTheme, resolvedTheme }),

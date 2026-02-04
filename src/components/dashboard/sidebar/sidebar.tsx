@@ -25,6 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { AccountMenu } from '@/components/account'
 
 interface SidebarContextValue {
   collapsed: boolean
@@ -248,9 +249,10 @@ function SidebarFooter() {
   const { collapsed } = useSidebar()
 
   return (
-    <div className="border-t border-sidebar-border p-4">
+    <div className="border-t border-sidebar-border p-3">
+      <AccountMenu collapsed={collapsed} />
       {!collapsed && (
-        <p className="text-xs text-muted-foreground">
+        <p className="mt-3 text-xs text-muted-foreground">
           Embedding Dashboard v0.1.0
         </p>
       )}

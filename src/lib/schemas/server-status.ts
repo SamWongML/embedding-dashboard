@@ -2,11 +2,32 @@ import * as z from 'zod'
 
 export const serviceStatusSchema = z.enum(['healthy', 'degraded', 'unhealthy'])
 
+const parseNumber = (value: unknown) => {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return undefined
+    const numeric = Number(trimmed)
+    if (Number.isFinite(numeric)) return numeric
+    const match = trimmed.match(/-?\d+(\.\d+)?/)
+    if (match) {
+      const parsed = Number(match[0])
+      return Number.isFinite(parsed) ? parsed : undefined
+    }
+  }
+  return undefined
+}
+
+const parseTimestamp = (value: unknown) => {
+  if (typeof value === 'string' && value.trim()) return value
+  return undefined
+}
+
 export const healthCheckSchema = z.object({
-  status: serviceStatusSchema,
-  uptime: z.number(),
-  version: z.string(),
-  timestamp: z.string(),
+  status: serviceStatusSchema.catch('healthy'),
+  uptime: z.preprocess(parseNumber, z.number().nonnegative().default(0)),
+  version: z.string().catch('unknown'),
+  timestamp: z.preprocess(parseTimestamp, z.string().default(() => new Date().toISOString())),
 })
 
 export const latencyDataPointSchema = z.object({

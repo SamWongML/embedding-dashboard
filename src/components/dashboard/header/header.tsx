@@ -4,7 +4,6 @@ import * as React from 'react'
 import { Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SearchCommand } from './search-command'
-import { ThemeToggle } from './theme-toggle'
 import { useSidebar } from '@/components/dashboard/sidebar'
 import { cn } from '@/lib/utils'
 
@@ -33,7 +32,6 @@ export function Header({ title }: HeaderProps) {
           <Bell className="h-4 w-4" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <ThemeToggle />
       </div>
     </header>
   )
