@@ -13,13 +13,15 @@ export default defineConfig({
     include: ['tests/**/*.test.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.d.ts', 'src/components/ui/**'],
+      include: ['src/lib/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.d.ts', 'src/lib/hooks/**', 'src/lib/types/**'],
     },
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      'pg': resolve(__dirname, './tests/mocks/pg'),
+      '@auth/pg-adapter': resolve(__dirname, './tests/mocks/auth-pg-adapter'),
     },
   },
 })

@@ -1,0 +1,72 @@
+{
+  "family": "supabase-auth",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/supabaseTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "gotrue",
+      "image": "supabase/gotrue:v2.186.0",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 9999,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "GOTRUE_API_HOST", "value": "0.0.0.0" },
+        { "name": "GOTRUE_API_PORT", "value": "9999" },
+        { "name": "GOTRUE_DB_DRIVER", "value": "postgres" },
+        { "name": "GOTRUE_DISABLE_SIGNUP", "value": "true" },
+        { "name": "GOTRUE_EXTERNAL_EMAIL_ENABLED", "value": "true" },
+        { "name": "GOTRUE_MAILER_AUTOCONFIRM", "value": "false" },
+        { "name": "GOTRUE_JWT_EXP", "value": "3600" }
+      ],
+      "secrets": [
+        {
+          "name": "GOTRUE_DB_DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:supabase/rds-connection-string"
+        },
+        {
+          "name": "GOTRUE_JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:supabase/jwt-secret"
+        },
+        {
+          "name": "GOTRUE_SMTP_HOST",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:ses/smtp-host"
+        },
+        {
+          "name": "GOTRUE_SMTP_PORT",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:ses/smtp-port"
+        },
+        {
+          "name": "GOTRUE_SMTP_USER",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:ses/smtp-user"
+        },
+        {
+          "name": "GOTRUE_SMTP_PASS",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:ses/smtp-pass"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/supabase-auth",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "gotrue"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9999/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}

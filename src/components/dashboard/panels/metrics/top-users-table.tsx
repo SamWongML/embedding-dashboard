@@ -28,8 +28,8 @@ export function TopUsersTable({ users, className }: TopUsersTableProps) {
 
   return (
     <Card className={cn(className)}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">Top Users</CardTitle>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">Top Users</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <ScrollArea className="h-[250px]">
@@ -37,12 +37,12 @@ export function TopUsersTable({ users, className }: TopUsersTableProps) {
             {users.map((user, index) => (
               <div
                 key={user.id}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-(--list-item-gap) px-(--list-item-padding-x) py-(--list-item-padding-y) hover:bg-muted/50 transition-colors"
               >
                 <span className="text-sm font-medium text-muted-foreground w-4">
                   {index + 1}
                 </span>
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-7 w-7">
                   <AvatarFallback className="text-xs">
                     {getInitials(user.name)}
                   </AvatarFallback>

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-(--button-gap) whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-(--icon-sm) shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-(--ring-width) aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -21,14 +21,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
-        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        default: "h-(--button-height-md) px-(--button-padding-x-md) py-(--space-sm) has-[>svg]:px-(--button-padding-x-sm)",
+        xs: "h-(--button-height-xs) gap-(--button-gap-xs) rounded-md px-(--button-padding-x-xs) text-xs has-[>svg]:px-(--dropdown-item-padding-y) [&_svg:not([class*='size-'])]:size-(--icon-xs)",
+        sm: "h-(--button-height-sm) rounded-md gap-(--button-gap-sm) px-(--button-padding-x-sm) has-[>svg]:px-(--dropdown-item-padding-x)",
+        lg: "h-(--button-height-lg) rounded-md px-(--button-padding-x-lg) has-[>svg]:px-(--button-padding-x-md)",
+        icon: "size-(--button-height-md)",
+        "icon-xs": "size-(--button-height-xs) rounded-md [&_svg:not([class*='size-'])]:size-(--icon-xs)",
+        "icon-sm": "size-(--button-height-sm)",
+        "icon-lg": "size-(--button-height-lg)",
       },
     },
     defaultVariants: {

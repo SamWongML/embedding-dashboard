@@ -2,7 +2,7 @@ import type { AccountSnapshot } from '@/lib/types/account'
 import { mockAccountSnapshot } from './mock'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
-export type AuthMode = 'supabase' | 'authjs' | 'mock'
+export type AuthMode = 'supabase' | 'mock'
 
 export interface AuthProvider {
   mode: AuthMode
@@ -17,7 +17,7 @@ export function getAuthMode(): AuthMode {
     process.env.AUTH_MODE ||
     'mock'
 
-  if (mode === 'supabase' || mode === 'authjs' || mode === 'mock') {
+  if (mode === 'supabase' || mode === 'mock') {
     return mode
   }
 
@@ -29,10 +29,6 @@ export function getAuthProvider(): AuthProvider {
 
   if (mode === 'supabase') {
     return createSupabaseProvider()
-  }
-
-  if (mode === 'authjs') {
-    return createAuthJsProvider()
   }
 
   return createMockProvider()
@@ -47,9 +43,9 @@ function createMockProvider(): AuthProvider {
   }
 }
 
-function createSupabaseProvider(): AuthProvider {
+function createSnapshotProvider(mode: AuthMode, signOutHandler: () => Promise<void>): AuthProvider {
   return {
-    mode: 'supabase',
+    mode,
     getSnapshot: async () => {
       const response = await fetch('/api/account', {
         method: 'GET',
@@ -57,31 +53,34 @@ function createSupabaseProvider(): AuthProvider {
       })
 
       if (!response.ok) {
-        throw new Error('Unable to fetch account snapshot.')
+        const error = new Error('Unable to fetch account snapshot.')
+        ;(error as { status?: number }).status = response.status
+        throw error
       }
 
       return response.json()
     },
     setActiveWorkspace: async (workspaceId: string) => {
-      await fetch('/api/account', {
+      const response = await fetch('/api/account', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ activeWorkspaceId: workspaceId }),
       })
+
+      if (!response.ok) {
+        const error = new Error('Unable to update workspace.')
+        ;(error as { status?: number }).status = response.status
+        throw error
+      }
     },
-    signOut: async () => {
-      const supabase = getSupabaseBrowserClient()
-      await supabase.auth.signOut()
-      window.location.assign('/login')
-    },
+    signOut: signOutHandler,
   }
 }
 
-function createAuthJsProvider(): AuthProvider {
-  return {
-    mode: 'authjs',
-    getSnapshot: async () => mockAccountSnapshot,
-    setActiveWorkspace: async () => undefined,
-    signOut: async () => undefined,
-  }
+function createSupabaseProvider(): AuthProvider {
+  return createSnapshotProvider('supabase', async () => {
+    const supabase = getSupabaseBrowserClient()
+    await supabase.auth.signOut()
+    window.location.assign('/login')
+  })
 }

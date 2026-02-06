@@ -47,8 +47,8 @@ export function ErrorList({ errors, className }: ErrorListProps) {
 
   return (
     <Card className={cn(className)}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">Recent Logs</CardTitle>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">Recent Logs</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <ScrollArea className="h-[300px]">
@@ -61,9 +61,9 @@ export function ErrorList({ errors, className }: ErrorListProps) {
               {errors.map((error) => {
                 const config = levelConfig[error.level]
                 return (
-                  <div key={error.id} className="px-4 py-3 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-2">
+                  <div key={error.id} className="px-(--list-item-padding-x) py-(--list-item-padding-y) hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between gap-(--list-item-gap) mb-0.5">
+                      <div className="flex items-center gap-(--list-item-gap)">
                         <Badge variant={config.variant} className="text-xs">
                           {config.label}
                         </Badge>

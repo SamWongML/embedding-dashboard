@@ -2,7 +2,7 @@ export type WorkspaceRole = 'owner' | 'admin' | 'member' | 'viewer'
 
 export type AccountPlan = 'free' | 'pro' | 'enterprise'
 
-export type AuthProvider = 'supabase' | 'authjs' | 'mock'
+export type AuthProvider = 'supabase' | 'mock'
 
 export interface User {
   id: string

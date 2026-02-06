@@ -57,11 +57,11 @@ export function SearchCommand() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-64"
+        className="flex items-center gap-(--form-item-gap) rounded-md border border-input bg-background px-(--input-padding-x) py-(--space-sm) text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-(--search-width)"
       >
-        <Search className="h-4 w-4" />
+        <Search className="size-(--icon-sm)" />
         <span className="flex-1 text-left">Search...</span>
-        <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+        <kbd className="pointer-events-none hidden h-(--search-kbd-height) select-none items-center gap-(--dropdown-gap) rounded border bg-muted px-(--dropdown-item-padding-y) font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
@@ -76,7 +76,7 @@ export function SearchCommand() {
                 value={`${item.label} ${item.keywords.join(' ')}`}
                 onSelect={() => handleSelect(item.href)}
               >
-                <item.icon className="mr-2 h-4 w-4" />
+                <item.icon className="mr-(--form-item-gap) size-(--icon-sm)" />
                 {item.label}
               </CommandItem>
             ))}

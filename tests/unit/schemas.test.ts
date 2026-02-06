@@ -35,7 +35,22 @@ describe('Server Status Schemas', () => {
         status: 'healthy',
         // missing uptime, version, timestamp
       }
-      expect(() => healthCheckSchema.parse(invalidData)).toThrow()
+      const parsed = healthCheckSchema.parse(invalidData)
+      expect(parsed.uptime).toBe(0)
+      expect(parsed.version).toBe('unknown')
+      expect(parsed.timestamp).toBeTypeOf('string')
+    })
+
+    it('parses numeric uptime and timestamp strings', () => {
+      const parsed = healthCheckSchema.parse({
+        status: 'healthy',
+        uptime: ' 123 ',
+        version: '1.0.0',
+        timestamp: '2024-01-01T00:00:00Z',
+      })
+
+      expect(parsed.uptime).toBe(123)
+      expect(parsed.timestamp).toBe('2024-01-01T00:00:00Z')
     })
   })
 })

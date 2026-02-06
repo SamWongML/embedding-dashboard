@@ -17,6 +17,125 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
+  /* ===== TYPOGRAPHY PRIMITIVE TOKENS ===== */
+
+  /* Font Size Scale - Major Third (1.250) ratio */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-md: 1.125rem;     /* 18px */
+  --font-size-lg: 1.25rem;      /* 20px */
+  --font-size-xl: 1.5rem;       /* 24px */
+  --font-size-2xl: 1.875rem;    /* 30px */
+  --font-size-3xl: 2.25rem;     /* 36px */
+  --font-size-4xl: 3rem;        /* 48px */
+  --font-size-5xl: 3.75rem;     /* 60px */
+
+  /* Line Height Scale */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Letter Spacing Scale */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Font Weight Scale */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== SEMANTIC TYPOGRAPHY TOKENS ===== */
+
+  /* Display (Hero sections, landing pages) */
+  --text-display-2xl: var(--font-size-5xl);
+  --leading-display-2xl: var(--leading-none);
+  --tracking-display-2xl: var(--tracking-tighter);
+  --weight-display-2xl: var(--font-weight-bold);
+
+  --text-display-xl: var(--font-size-4xl);
+  --leading-display-xl: var(--leading-tight);
+  --tracking-display-xl: var(--tracking-tight);
+  --weight-display-xl: var(--font-weight-bold);
+
+  --text-display-lg: var(--font-size-3xl);
+  --leading-display-lg: var(--leading-tight);
+  --tracking-display-lg: var(--tracking-tight);
+  --weight-display-lg: var(--font-weight-bold);
+
+  /* Headings */
+  --text-heading-1: var(--font-size-2xl);
+  --leading-heading-1: var(--leading-tight);
+  --tracking-heading-1: var(--tracking-tight);
+  --weight-heading-1: var(--font-weight-semibold);
+
+  --text-heading-2: var(--font-size-xl);
+  --leading-heading-2: var(--leading-snug);
+  --tracking-heading-2: var(--tracking-normal);
+  --weight-heading-2: var(--font-weight-semibold);
+
+  --text-heading-3: var(--font-size-lg);
+  --leading-heading-3: var(--leading-snug);
+  --tracking-heading-3: var(--tracking-normal);
+  --weight-heading-3: var(--font-weight-semibold);
+
+  --text-heading-4: var(--font-size-md);
+  --leading-heading-4: var(--leading-normal);
+  --tracking-heading-4: var(--tracking-normal);
+  --weight-heading-4: var(--font-weight-medium);
+
+  /* Body Text */
+  --text-body-lg: var(--font-size-md);
+  --leading-body-lg: var(--leading-relaxed);
+  --weight-body-lg: var(--font-weight-normal);
+
+  --text-body-base: var(--font-size-base);
+  --leading-body-base: var(--leading-relaxed);
+  --weight-body-base: var(--font-weight-normal);
+
+  --text-body-sm: var(--font-size-sm);
+  --leading-body-sm: var(--leading-normal);
+  --weight-body-sm: var(--font-weight-normal);
+
+  /* Labels (Buttons, form labels, badges) */
+  --text-label-lg: var(--font-size-base);
+  --leading-label-lg: var(--leading-normal);
+  --weight-label-lg: var(--font-weight-medium);
+
+  --text-label-base: var(--font-size-sm);
+  --leading-label-base: var(--leading-normal);
+  --weight-label-base: var(--font-weight-medium);
+
+  --text-label-sm: var(--font-size-xs);
+  --leading-label-sm: var(--leading-tight);
+  --tracking-label-sm: var(--tracking-wide);
+  --weight-label-sm: var(--font-weight-medium);
+
+  /* Caption/Metadata */
+  --text-caption: var(--font-size-xs);
+  --leading-caption: var(--leading-normal);
+  --weight-caption: var(--font-weight-normal);
+
+  --text-overline: var(--font-size-xs);
+  --leading-overline: var(--leading-tight);
+  --tracking-overline: var(--tracking-widest);
+  --weight-overline: var(--font-weight-medium);
+
+  /* Code/Monospace */
+  --text-code-base: var(--font-size-sm);
+  --leading-code-base: var(--leading-normal);
+
+  --text-code-sm: var(--font-size-xs);
+  --leading-code-sm: var(--leading-tight);
+
   /* Semantic Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -72,6 +191,207 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* ===== Z-INDEX SCALE (Semantic Layering) ===== */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-toast: 80;
+  --z-max: 9999;
+
+  /* ===== DURATION SCALE (Motion Timing) ===== */
+  --duration-instant: 0ms;
+  --duration-fast: 75ms;
+  --duration-normal: 150ms;
+  --duration-moderate: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  /* ===== EASING FUNCTIONS ===== */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ===== OPACITY SCALE ===== */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.9;
+  --opacity-muted: 0.7;
+  --opacity-overlay: 0.5;
+  --opacity-subtle: 0.05;
+
+  /* ===== ICON SIZES ===== */
+  --icon-xs: 0.75rem;
+  --icon-sm: 1rem;
+  --icon-md: 1.25rem;
+  --icon-lg: 1.5rem;
+  --icon-xl: 2rem;
+
+  /* ===== PRIMITIVE SPACING SCALE (4px base) ===== */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0\.5: 0.125rem;  /* 2px */
+  --space-1: 0.25rem;     /* 4px */
+  --space-1\.5: 0.375rem;  /* 6px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-2\.5: 0.625rem;  /* 10px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-8: 2rem;        /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  --space-24: 6rem;       /* 96px */
+
+  /* ===== SEMANTIC SPACING (mapped to primitives) ===== */
+  --space-xs: var(--space-1);      /* 4px */
+  --space-sm: var(--space-2);      /* 8px */
+  --space-md: var(--space-3);      /* 12px */
+  --space-lg: var(--space-4);      /* 16px */
+  --space-xl: var(--space-6);      /* 24px */
+  --space-2xl: var(--space-8);     /* 32px */
+  --space-3xl: var(--space-12);    /* 48px */
+  --space-4xl: var(--space-16);    /* 64px */
+
+  /* Layout Spacing */
+  --space-section: var(--space-2xl);
+  --space-page: var(--space-xl);
+  --space-container: var(--space-lg);
+  --space-gutter: var(--space-md);
+
+  /* ===== BUTTON TOKENS (Enhanced) ===== */
+  --button-height-xs: 1.5rem;
+  --button-height-sm: 2rem;
+  --button-height-md: 2.25rem;
+  --button-height-lg: 2.5rem;
+  --button-padding-x-xs: var(--space-2);
+  --button-padding-x-sm: var(--space-3);
+  --button-padding-x-md: var(--space-4);
+  --button-padding-x-lg: var(--space-6);
+  --button-gap: var(--space-2);
+  --button-gap-sm: var(--space-1\.5);
+  --button-gap-xs: var(--space-1);
+  --button-font-size: var(--font-size-sm);
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--leading-normal);
+
+  /* ===== INPUT TOKENS (Enhanced) ===== */
+  --input-height: 2.25rem;
+  --input-height-sm: 2rem;
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-1);
+  --input-font-size: var(--font-size-sm);
+
+  /* ===== CARD TOKENS (Enhanced) ===== */
+  --card-padding: var(--space-4);
+  --card-padding-compact: var(--space-3);
+  --card-gap: var(--space-3);
+  --card-header-gap: var(--space-1);
+  --card-title-size: var(--font-size-sm);
+  --card-title-weight: var(--font-weight-medium);
+  --card-description-size: var(--font-size-xs);
+
+  /* ===== DIALOG TOKENS ===== */
+  --dialog-padding: 1.5rem;
+  --dialog-gap: 1rem;
+  --dialog-header-gap: 0.5rem;
+
+  /* ===== SIDEBAR TOKENS ===== */
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4rem;
+  --sidebar-item-padding-x: 0.75rem;
+  --sidebar-item-padding-y: 0.5rem;
+  --sidebar-item-gap: 0.75rem;
+
+  /* ===== HEADER TOKENS ===== */
+  --header-height: 3.5rem;
+  --header-padding-x: 1.5rem;
+
+  /* ===== AVATAR TOKENS ===== */
+  --avatar-size-xs: 1.5rem;
+  --avatar-size-sm: 2rem;
+  --avatar-size-md: 2.25rem;
+  --avatar-size-lg: 2.5rem;
+
+  /* ===== DROPDOWN/POPOVER TOKENS ===== */
+  --dropdown-item-padding-x: 0.5rem;
+  --dropdown-item-padding-y: 0.375rem;
+  --dropdown-gap: 0.25rem;
+  --popover-padding: 1rem;
+  --popover-width: 18rem;
+
+  /* ===== TOOLTIP TOKENS ===== */
+  --tooltip-padding-x: 0.75rem;
+  --tooltip-padding-y: 0.375rem;
+
+  /* ===== BADGE TOKENS ===== */
+  --badge-padding-x: 0.5rem;
+  --badge-padding-y: 0.125rem;
+  --badge-gap: 0.25rem;
+
+  /* ===== TABS TOKENS ===== */
+  --tabs-list-height: 2.25rem;
+  --tabs-trigger-padding-x: 0.5rem;
+  --tabs-trigger-padding-y: 0.25rem;
+  --tabs-gap: 0.5rem;
+
+  /* ===== TABLE TOKENS ===== */
+  --table-cell-padding-x: var(--space-4);
+  --table-cell-padding-y: var(--space-2\.5);
+  --table-header-height: 2.25rem;
+  --table-row-height: 2.75rem;
+
+  /* ===== LIST ITEM TOKENS (Logs, Lists) ===== */
+  --list-item-padding-x: var(--space-4);
+  --list-item-padding-y: var(--space-2\.5);
+  --list-item-gap: var(--space-2);
+
+  /* ===== FORM TOKENS ===== */
+  --form-item-gap: 0.5rem;
+
+  /* ===== FOCUS RING TOKENS ===== */
+  --ring-width: 3px;
+  --ring-offset: 2px;
+
+  /* ===== COMMAND TOKENS ===== */
+  --command-input-height: 2.75rem;
+  --command-item-padding-x: 0.5rem;
+  --command-item-padding-y: 0.375rem;
+
+  /* ===== SHEET TOKENS ===== */
+  --sheet-padding: 1rem;
+  --sheet-gap: 0.5rem;
+
+  /* ===== CHECKBOX/SWITCH TOKENS ===== */
+  --checkbox-size: 1rem;
+  --switch-height: 1.15rem;
+  --switch-height-sm: 0.875rem;
+  --switch-width: 2rem;
+  --switch-width-sm: 1.5rem;
+  --switch-thumb-size: 1rem;
+  --switch-thumb-size-sm: 0.75rem;
+
+  /* ===== SLIDER TOKENS ===== */
+  --slider-track-height: 0.375rem;
+  --slider-thumb-size: 1rem;
+
+  /* ===== RADIO TOKENS ===== */
+  --radio-size: 1rem;
+  --radio-indicator-size: 0.5rem;
+
+  /* ===== SEARCH COMMAND TOKENS ===== */
+  --search-width: 16rem;
+  --search-kbd-height: 1.25rem;
 }
 
 :root {
@@ -82,6 +402,17 @@
 
   /* Base Radius */
   --radius: 0.5rem;
+
+  /* Shadow/Elevation Scale (Theme-aware) */
+  --shadow-color: oklch(0% 0 0 / 0.08);
+  --shadow-color-strong: oklch(0% 0 0 / 0.15);
+  --shadow-2xs: 0 1px var(--shadow-color);
+  --shadow-xs: 0 1px 2px var(--shadow-color);
+  --shadow-sm: 0 1px 3px var(--shadow-color), 0 1px 2px -1px var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-color), 0 8px 10px -6px var(--shadow-color);
+  --shadow-2xl: 0 25px 50px -12px var(--shadow-color-strong);
 
   /* Light Theme OKLCH Colors */
   --background: oklch(99% 0.005 var(--base-hue));
@@ -148,6 +479,10 @@
   /* Dark Theme OKLCH Colors - Linear/Notion inspired dark mode */
   --background: oklch(14% 0.01 var(--base-hue));
   --foreground: oklch(96% 0.005 var(--base-hue));
+
+  /* Shadow/Elevation Scale (Dark mode) */
+  --shadow-color: oklch(0% 0 0 / 0.4);
+  --shadow-color-strong: oklch(0% 0 0 / 0.6);
 
   --card: oklch(18% 0.01 var(--base-hue));
   --card-foreground: oklch(96% 0.005 var(--base-hue));
@@ -266,6 +601,119 @@
 }
 
 @layer utilities {
+  /* ===== TYPOGRAPHY UTILITIES ===== */
+  .typography-display-2xl {
+    font-size: var(--text-display-2xl);
+    line-height: var(--leading-display-2xl);
+    letter-spacing: var(--tracking-display-2xl);
+    font-weight: var(--weight-display-2xl);
+  }
+
+  .typography-display-xl {
+    font-size: var(--text-display-xl);
+    line-height: var(--leading-display-xl);
+    letter-spacing: var(--tracking-display-xl);
+    font-weight: var(--weight-display-xl);
+  }
+
+  .typography-display-lg {
+    font-size: var(--text-display-lg);
+    line-height: var(--leading-display-lg);
+    letter-spacing: var(--tracking-display-lg);
+    font-weight: var(--weight-display-lg);
+  }
+
+  .typography-heading-1 {
+    font-size: var(--text-heading-1);
+    line-height: var(--leading-heading-1);
+    letter-spacing: var(--tracking-heading-1);
+    font-weight: var(--weight-heading-1);
+  }
+
+  .typography-heading-2 {
+    font-size: var(--text-heading-2);
+    line-height: var(--leading-heading-2);
+    letter-spacing: var(--tracking-heading-2);
+    font-weight: var(--weight-heading-2);
+  }
+
+  .typography-heading-3 {
+    font-size: var(--text-heading-3);
+    line-height: var(--leading-heading-3);
+    letter-spacing: var(--tracking-heading-3);
+    font-weight: var(--weight-heading-3);
+  }
+
+  .typography-heading-4 {
+    font-size: var(--text-heading-4);
+    line-height: var(--leading-heading-4);
+    letter-spacing: var(--tracking-heading-4);
+    font-weight: var(--weight-heading-4);
+  }
+
+  .typography-body-lg {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+    font-weight: var(--weight-body-lg);
+  }
+
+  .typography-body-base {
+    font-size: var(--text-body-base);
+    line-height: var(--leading-body-base);
+    font-weight: var(--weight-body-base);
+  }
+
+  .typography-body-sm {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    font-weight: var(--weight-body-sm);
+  }
+
+  .typography-label-lg {
+    font-size: var(--text-label-lg);
+    line-height: var(--leading-label-lg);
+    font-weight: var(--weight-label-lg);
+  }
+
+  .typography-label-base {
+    font-size: var(--text-label-base);
+    line-height: var(--leading-label-base);
+    font-weight: var(--weight-label-base);
+  }
+
+  .typography-label-sm {
+    font-size: var(--text-label-sm);
+    line-height: var(--leading-label-sm);
+    letter-spacing: var(--tracking-label-sm);
+    font-weight: var(--weight-label-sm);
+  }
+
+  .typography-caption {
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    font-weight: var(--weight-caption);
+  }
+
+  .typography-overline {
+    font-size: var(--text-overline);
+    line-height: var(--leading-overline);
+    letter-spacing: var(--tracking-overline);
+    font-weight: var(--weight-overline);
+    text-transform: uppercase;
+  }
+
+  .typography-code-base {
+    font-family: var(--font-mono);
+    font-size: var(--text-code-base);
+    line-height: var(--leading-code-base);
+  }
+
+  .typography-code-sm {
+    font-family: var(--font-mono);
+    font-size: var(--text-code-sm);
+    line-height: var(--leading-code-sm);
+  }
+
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;

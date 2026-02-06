@@ -1,0 +1,52 @@
+{
+  "family": "supabase-rest",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/supabaseTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "postgrest",
+      "image": "postgrest/postgrest:v12.2.3",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "PGRST_DB_SCHEMA", "value": "public" },
+        { "name": "PGRST_DB_ANON_ROLE", "value": "anon" },
+        { "name": "PGRST_SERVER_PORT", "value": "3000" }
+      ],
+      "secrets": [
+        {
+          "name": "PGRST_DB_URI",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:supabase/rds-authenticator-uri"
+        },
+        {
+          "name": "PGRST_JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:supabase/jwt-secret"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/supabase-rest",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "postgrest"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 30
+      }
+    }
+  ]
+}

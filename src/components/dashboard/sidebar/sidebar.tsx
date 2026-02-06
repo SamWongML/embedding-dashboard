@@ -116,8 +116,8 @@ function SidebarFrame({ children }: SidebarFrameProps) {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
-        collapsed ? 'w-16' : 'w-64'
+        'fixed left-0 top-0 z-(--z-modal-backdrop) h-screen bg-sidebar border-r border-sidebar-border transition-all duration-(--duration-slow) ease-in-out',
+        collapsed ? 'w-(--sidebar-width-collapsed)' : 'w-(--sidebar-width)'
       )}
     >
       <div className="flex h-full flex-col">
@@ -131,9 +131,9 @@ function SidebarHeader() {
   const { collapsed, setCollapsed } = useSidebar()
 
   return (
-    <div className="flex h-14 items-center justify-between px-4 border-b border-sidebar-border">
-      <div className={cn('flex items-center gap-2 overflow-hidden transition-opacity duration-300', collapsed && 'opacity-0')}>
-        <Layers className="h-6 w-6 text-sidebar-primary shrink-0" />
+    <div className="flex h-(--header-height) items-center justify-between px-(--space-lg) border-b border-sidebar-border">
+      <div className={cn('flex items-center gap-(--form-item-gap) overflow-hidden transition-opacity duration-(--duration-slow)', collapsed && 'opacity-0')}>
+        <Layers className="size-(--icon-lg) text-sidebar-primary shrink-0" />
         <span className="font-semibold text-sidebar-foreground whitespace-nowrap">
           Embeddings
         </span>
@@ -141,13 +141,13 @@ function SidebarHeader() {
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 shrink-0"
+        className="size-(--button-height-sm) shrink-0"
         onClick={() => setCollapsed(!collapsed)}
       >
         {collapsed ? (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="size-(--icon-sm)" />
         ) : (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="size-(--icon-sm)" />
         )}
         <span className="sr-only">Toggle sidebar</span>
       </Button>
@@ -163,14 +163,14 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/', icon: <Activity className="h-4 w-4" />, label: 'Server Status', section: 'Monitoring' },
-  { href: '/metrics', icon: <BarChart3 className="h-4 w-4" />, label: 'Metrics' },
-  { href: '/text-embedding', icon: <FileText className="h-4 w-4" />, label: 'Text Embedding', section: 'Services' },
-  { href: '/image-embedding', icon: <Image className="h-4 w-4" />, label: 'Image Embedding' },
-  { href: '/search', icon: <Search className="h-4 w-4" />, label: 'Hybrid Search' },
-  { href: '/records', icon: <Database className="h-4 w-4" />, label: 'Records', section: 'Data' },
-  { href: '/graph', icon: <GitBranch className="h-4 w-4" />, label: 'Graph' },
-  { href: '/users', icon: <Users className="h-4 w-4" />, label: 'Users', section: 'Admin' },
+  { href: '/', icon: <Activity className="size-(--icon-sm)" />, label: 'Server Status', section: 'Monitoring' },
+  { href: '/metrics', icon: <BarChart3 className="size-(--icon-sm)" />, label: 'Metrics' },
+  { href: '/text-embedding', icon: <FileText className="size-(--icon-sm)" />, label: 'Text Embedding', section: 'Services' },
+  { href: '/image-embedding', icon: <Image className="size-(--icon-sm)" />, label: 'Image Embedding' },
+  { href: '/search', icon: <Search className="size-(--icon-sm)" />, label: 'Hybrid Search' },
+  { href: '/records', icon: <Database className="size-(--icon-sm)" />, label: 'Records', section: 'Data' },
+  { href: '/graph', icon: <GitBranch className="size-(--icon-sm)" />, label: 'Graph' },
+  { href: '/users', icon: <Users className="size-(--icon-sm)" />, label: 'Users', section: 'Admin' },
 ]
 
 function SidebarNav() {
@@ -194,27 +194,27 @@ function SidebarNav() {
   }, [])
 
   return (
-    <ScrollArea className="flex-1 px-2 py-4">
-      <nav className="space-y-4">
+    <ScrollArea className="flex-1 px-(--space-sm) py-(--space-lg)">
+      <nav className="space-y-(--space-lg)">
         {groupedItems.map((group) => (
           <div key={group.section}>
             {!collapsed && (
-              <h4 className="mb-2 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <h4 className="mb-(--form-item-gap) px-(--space-sm) text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 {group.section}
               </h4>
             )}
-            <div className="space-y-1">
+            <div className="space-y-(--dropdown-gap)">
               {group.items.map((item) => {
                 const isActive = pathname === item.href
                 const linkContent = (
                   <Link
                     href={item.href}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                      'flex items-center gap-(--sidebar-item-gap) rounded-md px-(--sidebar-item-padding-x) py-(--sidebar-item-padding-y) text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-sidebar-accent text-sidebar-accent-foreground'
                         : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
-                      collapsed && 'justify-center px-2'
+                      collapsed && 'justify-center px-(--space-sm)'
                     )}
                   >
                     <span className="shrink-0">{item.icon}</span>
@@ -249,23 +249,17 @@ function SidebarFooter() {
   const { collapsed } = useSidebar()
 
   return (
-    <div className="border-t border-sidebar-border p-3">
+    <div className="border-t border-sidebar-border p-(--space-md)">
       <AccountMenu collapsed={collapsed} />
-      {!collapsed && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Embedding Dashboard v0.1.0
-        </p>
-      )}
     </div>
   )
 }
 
-export const Sidebar = {
-  Provider: SidebarProvider,
-  Frame: SidebarFrame,
-  Header: SidebarHeader,
-  Nav: SidebarNav,
-  Footer: SidebarFooter,
+export {
+  SidebarProvider,
+  SidebarFrame,
+  SidebarHeader,
+  SidebarNav,
+  SidebarFooter,
+  useSidebar,
 }
-
-export { useSidebar }

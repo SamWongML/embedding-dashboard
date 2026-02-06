@@ -6,13 +6,11 @@ import {
   Bell,
   BookOpen,
   ChevronsUpDown,
-  CircleUser,
   HelpCircle,
   Keyboard,
   LogOut,
   Plus,
   Settings,
-  Shield,
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAccount } from '@/lib/hooks/use-account'
+import { DOCS_URL, SHORTCUTS_URL, SUPPORT_URL } from '@/lib/config/links'
 import { cn } from '@/lib/utils'
 
 interface AccountMenuProps {
@@ -51,6 +50,8 @@ interface AccountMenuContentProps {
   onSignOut: () => Promise<void>
   userName: string
   userEmail: string
+  userAvatarUrl?: string
+  workspaceName: string
   planLabel: string
   roleLabel: string
   className?: string
@@ -79,12 +80,17 @@ function AccountMenuTrigger({
       <Button
         variant="ghost"
         className={cn(
-          'w-full items-center justify-start gap-3 px-2 py-2 text-left hover:bg-sidebar-accent',
+          'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
           collapsed && 'justify-center px-0',
           className
         )}
       >
-        <Avatar className={cn('h-8 w-8', collapsed && 'h-9 w-9')}>
+        <Avatar
+          className={cn(
+            'size-(--avatar-size-sm) border border-sidebar-border/70',
+            collapsed && 'size-(--avatar-size-md)'
+          )}
+        >
           {avatarUrl ? (
             <AvatarImage src={avatarUrl} alt={name} />
           ) : null}
@@ -92,16 +98,16 @@ function AccountMenuTrigger({
         </Avatar>
         {!collapsed && (
           <div className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-sm font-semibold text-sidebar-foreground">
+            <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
               {name}
             </span>
-            <span className="truncate text-xs text-muted-foreground">
+            <span className="truncate text-xs leading-tight text-muted-foreground">
               {workspace}
             </span>
           </div>
         )}
         {!collapsed && (
-          <ChevronsUpDown className="ml-auto h-4 w-4 text-muted-foreground" />
+          <ChevronsUpDown className="ml-auto size-(--icon-sm) text-muted-foreground/70" />
         )}
         <span className="sr-only">Open account menu</span>
       </Button>
@@ -129,10 +135,14 @@ function AccountMenuContent({
   onSignOut,
   userName,
   userEmail,
+  userAvatarUrl,
+  workspaceName,
   planLabel,
   roleLabel,
   className,
 }: AccountMenuContentProps) {
+  const workspaceOptions = workspaces.slice(0, 3)
+
   return (
     <DropdownMenuContent
       align="start"
@@ -140,17 +150,21 @@ function AccountMenuContent({
       sideOffset={12}
       className={cn('w-72', className)}
     >
-      <div className="px-2 py-2">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9">
+      <div className="px-(--space-sm) py-(--space-sm)">
+        <div className="flex items-center gap-(--sidebar-item-gap)">
+          <Avatar className="size-(--avatar-size-md)">
+            {userAvatarUrl ? (
+              <AvatarImage src={userAvatarUrl} alt={userName} />
+            ) : null}
             <AvatarFallback>{getInitials(userName)}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold">{userName}</div>
             <div className="truncate text-xs text-muted-foreground">{userEmail}</div>
+            <div className="truncate text-xs text-muted-foreground">{workspaceName}</div>
           </div>
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <div className="mt-(--space-md) flex flex-wrap items-center gap-(--form-item-gap) text-xs">
           <Badge variant="secondary">{planLabel}</Badge>
           <Badge variant="outline">{roleLabel}</Badge>
         </div>
@@ -159,15 +173,15 @@ function AccountMenuContent({
       <DropdownMenuLabel className="text-xs text-muted-foreground">
         Workspaces
       </DropdownMenuLabel>
-      {workspaces.map((workspace) => (
+      {workspaceOptions.map((workspace) => (
         <DropdownMenuItem
           key={workspace.id}
           onSelect={() => onWorkspaceChange(workspace.id)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-(--form-item-gap)"
         >
           <span
             className={cn(
-              'h-2.5 w-2.5 rounded-full border',
+              'size-2.5 rounded-full border',
               workspace.id === activeWorkspaceId
                 ? 'border-primary bg-primary'
                 : 'border-border bg-transparent'
@@ -179,49 +193,55 @@ function AccountMenuContent({
           </span>
         </DropdownMenuItem>
       ))}
-      <DropdownMenuItem>
-        <Plus className="h-4 w-4" />
-        Create workspace
+      <DropdownMenuItem asChild>
+        <Link href="/settings?tab=workspace">
+          <Plus className="size-(--icon-sm)" />
+          Create workspace
+        </Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>
         <Link href="/settings">
-          <Settings className="h-4 w-4" />
+          <Settings className="size-(--icon-sm)" />
           Settings
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <Link href="/settings?tab=notifications">
-          <Bell className="h-4 w-4" />
+          <Bell className="size-(--icon-sm)" />
           Notifications
         </Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        <HelpCircle className="h-4 w-4" />
-        Support
-      </DropdownMenuItem>
-      <DropdownMenuItem>
-        <BookOpen className="h-4 w-4" />
-        Docs
-      </DropdownMenuItem>
-      <DropdownMenuItem>
-        <Keyboard className="h-4 w-4" />
-        Keyboard shortcuts
-        <DropdownMenuShortcut>?</DropdownMenuShortcut>
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>
-        <Shield className="h-4 w-4" />
-        Privacy & security
-      </DropdownMenuItem>
-      <DropdownMenuItem>
-        <CircleUser className="h-4 w-4" />
-        View profile
-      </DropdownMenuItem>
+      {SUPPORT_URL ? (
+        <DropdownMenuItem asChild>
+          <a href={SUPPORT_URL} target="_blank" rel="noreferrer">
+            <HelpCircle className="size-(--icon-sm)" />
+            Support
+          </a>
+        </DropdownMenuItem>
+      ) : null}
+      {DOCS_URL ? (
+        <DropdownMenuItem asChild>
+          <a href={DOCS_URL} target="_blank" rel="noreferrer">
+            <BookOpen className="size-(--icon-sm)" />
+            Docs
+          </a>
+        </DropdownMenuItem>
+      ) : null}
+      {SHORTCUTS_URL ? (
+        <DropdownMenuItem asChild>
+          <a href={SHORTCUTS_URL} target="_blank" rel="noreferrer">
+            <Keyboard className="size-(--icon-sm)" />
+            Keyboard shortcuts
+            <DropdownMenuShortcut>?</DropdownMenuShortcut>
+          </a>
+        </DropdownMenuItem>
+      ) : null}
+      {(SUPPORT_URL || DOCS_URL || SHORTCUTS_URL) ? <DropdownMenuSeparator /> : null}
       <DropdownMenuSeparator />
       <DropdownMenuItem variant="destructive" onSelect={() => void onSignOut()}>
-        <LogOut className="h-4 w-4" />
+        <LogOut className="size-(--icon-sm)" />
         Sign out
       </DropdownMenuItem>
     </DropdownMenuContent>
@@ -260,6 +280,8 @@ const AccountMenu = (({ collapsed, className }: AccountMenuProps) => {
         onSignOut={signOut}
         userName={user.name}
         userEmail={user.email}
+        userAvatarUrl={user.avatarUrl}
+        workspaceName={activeWorkspace.name}
         planLabel={activeWorkspace.plan.toUpperCase()}
         roleLabel={`${formatRole(activeWorkspace.role)} role`}
       />

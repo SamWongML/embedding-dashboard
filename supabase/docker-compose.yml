@@ -1,0 +1,179 @@
+# Supabase Local Development Stack
+# Usage: docker compose up -d
+# Ports:
+#   - 54321: Supabase API Gateway (auth/v1, rest/v1)
+#   - 54322: PostgreSQL
+#   - 54323: Supabase Studio
+#   - 54324: Inbucket Web UI (email testing)
+
+services:
+  db:
+    image: supabase/postgres:17.6.1.079
+    container_name: supabase-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "54322:5432"
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supabase_admin -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db-bootstrap:
+    image: postgres:17
+    container_name: supabase-bootstrap
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./init/03-roles.sql:/scripts/00-roles.sql:ro
+      - ./init/00-auth-schema.sql:/scripts/01-auth-schema.sql:ro
+      - ../db/schema.sql:/scripts/02-schema.sql:ro
+      - ./init/02-grants.sql:/scripts/03-grants.sql:ro
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        set -euo pipefail
+        echo "Running roles..."
+        psql -v ON_ERROR_STOP=1 -h db -U supabase_admin -d postgres -f /scripts/00-roles.sql
+        echo "Running auth schema..."
+        psql -v ON_ERROR_STOP=1 -h db -U supabase_admin -d postgres -f /scripts/01-auth-schema.sql
+        echo "Running app schema..."
+        psql -v ON_ERROR_STOP=1 -h db -U supabase_admin -d postgres -f /scripts/02-schema.sql
+        echo "Running grants..."
+        psql -v ON_ERROR_STOP=1 -h db -U supabase_admin -d postgres -f /scripts/03-grants.sql
+        echo "Bootstrap complete!"
+    restart: "no"
+
+  auth:
+    image: supabase/gotrue:v2.186.0
+    container_name: supabase-auth
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+      inbucket:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_admin:postgres@db:5432/postgres?search_path=auth
+      GOTRUE_JWT_SECRET: 41d18d903fe4b4bf3df718cec0283a81f24e46f1549da56bd67d36cc7f550655
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_URI_ALLOW_LIST: http://localhost:3000
+      API_EXTERNAL_URL: http://localhost:54321/auth/v1
+      GOTRUE_API_EXTERNAL_URL: http://localhost:54321/auth/v1
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_SMTP_HOST: inbucket
+      GOTRUE_SMTP_PORT: 2500
+      GOTRUE_SMTP_USER: supabase
+      GOTRUE_SMTP_PASS: supabase
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@local.test
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  rest:
+    image: postgrest/postgrest:v12.2.3
+    container_name: supabase-rest
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://authenticator:postgres@db:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: 41d18d903fe4b4bf3df718cec0283a81f24e46f1549da56bd67d36cc7f550655
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  meta:
+    image: supabase/postgres-meta:v0.95.2
+    container_name: supabase-meta
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    environment:
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: postgres
+      PG_META_DB_SSL: "false"
+      PG_META_PORT: 8080
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  studio:
+    image: supabase/studio:latest
+    container_name: supabase-studio
+    depends_on:
+      - gateway
+      - meta
+    restart: unless-stopped
+    environment:
+      STUDIO_PG_META_URL: http://meta:8080
+      SUPABASE_URL: http://gateway:80
+      SUPABASE_PUBLIC_URL: http://localhost:54321
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzcwMjE3MjkxLCJleHAiOjIwODU1NzcyOTF9.B5qF832-Nu4tCx_8xuk7n3u9_kS_h6jL-SNfJ9viWl4
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3NzAyMTcyOTEsImV4cCI6MjA4NTU3NzI5MX0.1V_CGxhp_cHe8scBv9U31o6YzmjYTXi6nD42QCmyyAA
+      DEFAULT_ORGANIZATION: Local
+      DEFAULT_PROJECT: Embedding Dashboard
+    ports:
+      - "54323:3000"
+
+  gateway:
+    image: nginx:alpine
+    container_name: supabase-gateway
+    depends_on:
+      - auth
+      - rest
+    restart: unless-stopped
+    ports:
+      - "54321:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  inbucket:
+    image: inbucket/inbucket:stable
+    container_name: supabase-inbucket
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - "54324:9000"
+      - "54325:2500"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  supabase-db-data:
