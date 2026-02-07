@@ -3,19 +3,54 @@
 import {
   Area,
   AreaChart,
+  CartesianGrid,
+  Legend,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
 } from 'recharts'
 import { cn } from '@/lib/utils'
 import type { EmbeddingTrend } from '@/lib/schemas/metrics'
+import { ChartTooltipContent } from './chart-tooltip-content'
+import {
+  chartAxisDefaults,
+  chartGridStroke,
+  chartTooltipCursor,
+  colorByChartTone,
+} from './chart-theme'
 
 interface TrendsChartProps {
   data: EmbeddingTrend[]
   className?: string
 }
+
+const trendSeries = [
+  {
+    dataKey: 'Text Embeddings',
+    label: 'Text Embeddings (solid)',
+    tone: 'accent',
+    gradientId: 'trendTextGradient',
+    strokeDasharray: undefined,
+    fillOpacity: 0.22,
+  },
+  {
+    dataKey: 'Image Embeddings',
+    label: 'Image Embeddings (dashed)',
+    tone: 'accentSoft',
+    gradientId: 'trendImageGradient',
+    strokeDasharray: '6 4',
+    fillOpacity: 0.14,
+  },
+  {
+    dataKey: 'Searches',
+    label: 'Searches (dotted)',
+    tone: 'accentDim',
+    gradientId: 'trendSearchGradient',
+    strokeDasharray: '2 4',
+    fillOpacity: 0.1,
+  },
+] as const
 
 export function TrendsChart({ data, className }: TrendsChartProps) {
   const chartData = data.map((point) => ({
@@ -32,49 +67,52 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
     <div className={cn('w-full h-[300px]', className)}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
+          accessibilityLayer
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="textGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="oklch(60% 0.18 260)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="oklch(60% 0.18 260)" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="imageGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="oklch(65% 0.15 185)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="oklch(65% 0.15 185)" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="searchGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="oklch(70% 0.16 80)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="oklch(70% 0.16 80)" stopOpacity={0} />
-            </linearGradient>
+            {trendSeries.map((series) => {
+              const color = colorByChartTone(series.tone)
+
+              return (
+                <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={color} stopOpacity={series.fillOpacity} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0} />
+                </linearGradient>
+              )
+            })}
           </defs>
+          <CartesianGrid stroke={chartGridStroke} vertical={false} />
           <XAxis
             dataKey="date"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: 'oklch(50% 0.01 240)' }}
+            {...chartAxisDefaults}
             interval="preserveStartEnd"
           />
           <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: 'oklch(50% 0.01 240)' }}
+            {...chartAxisDefaults}
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
             width={40}
           />
           <Tooltip
+            cursor={chartTooltipCursor}
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
+                const rows = payload.map((entry) => {
+                  const series = trendSeries.find((item) => item.dataKey === entry.dataKey)
+
+                  return {
+                    label: String(entry.name),
+                    value: (entry.value as number).toLocaleString(),
+                    tone: series?.tone ?? 'accent',
+                  }
+                })
+
                 return (
-                  <div className="bg-popover border border-border rounded-md px-3 py-2 shadow-lg">
-                    <p className="text-xs font-medium mb-1">{label}</p>
-                    {payload.map((entry, index) => (
-                      <p key={index} className="text-xs text-muted-foreground">
-                        {entry.name}: {(entry.value as number).toLocaleString()}
-                      </p>
-                    ))}
-                  </div>
+                  <ChartTooltipContent
+                    label={String(label)}
+                    rows={rows}
+                  />
                 )
               }
               return null
@@ -89,27 +127,18 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
               <span className="text-xs text-muted-foreground">{value}</span>
             )}
           />
-          <Area
-            type="monotone"
-            dataKey="Text Embeddings"
-            stroke="oklch(60% 0.18 260)"
-            strokeWidth={2}
-            fill="url(#textGradient)"
-          />
-          <Area
-            type="monotone"
-            dataKey="Image Embeddings"
-            stroke="oklch(65% 0.15 185)"
-            strokeWidth={2}
-            fill="url(#imageGradient)"
-          />
-          <Area
-            type="monotone"
-            dataKey="Searches"
-            stroke="oklch(70% 0.16 80)"
-            strokeWidth={2}
-            fill="url(#searchGradient)"
-          />
+          {trendSeries.map((series) => (
+            <Area
+              key={series.dataKey}
+              type="monotone"
+              dataKey={series.dataKey}
+              name={series.label}
+              stroke={colorByChartTone(series.tone)}
+              strokeWidth={2}
+              strokeDasharray={series.strokeDasharray}
+              fill={`url(#${series.gradientId})`}
+            />
+          ))}
         </AreaChart>
       </ResponsiveContainer>
     </div>

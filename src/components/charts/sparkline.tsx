@@ -1,15 +1,19 @@
 'use client'
 
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
+import { colorByChartTone } from './chart-theme'
+import type { ChartTone } from './chart-theme'
 
 interface SparklineProps {
   data: number[]
   color?: string
+  tone?: ChartTone
   className?: string
 }
 
-export function Sparkline({ data, color = 'oklch(60% 0.18 260)', className }: SparklineProps) {
+export function Sparkline({ data, color, tone = 'accent', className }: SparklineProps) {
   const chartData = data.map((value, index) => ({ value, index }))
+  const strokeColor = color ?? colorByChartTone(tone)
 
   return (
     <div className={className}>
@@ -18,7 +22,7 @@ export function Sparkline({ data, color = 'oklch(60% 0.18 260)', className }: Sp
           <Line
             type="monotone"
             dataKey="value"
-            stroke={color}
+            stroke={strokeColor}
             strokeWidth={1.5}
             dot={false}
           />

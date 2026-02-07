@@ -1,7 +1,13 @@
 'use client'
 
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from '@/lib/utils'
+import { ChartTooltipContent } from './chart-tooltip-content'
+import {
+  chartAxisDefaults,
+  chartGridStroke,
+  chartTooltipCursor,
+} from './chart-theme'
 
 interface LatencyChartProps {
   data: Array<{ timestamp: string; value: number }>
@@ -21,37 +27,44 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
     <div className={cn('w-full h-[200px]', className)}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
+          accessibilityLayer
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
           <defs>
             <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="oklch(60% 0.18 260)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="oklch(60% 0.18 260)" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--chart-accent)" stopOpacity={0.28} />
+              <stop offset="95%" stopColor="var(--chart-accent)" stopOpacity={0} />
             </linearGradient>
           </defs>
+          <CartesianGrid stroke={chartGridStroke} vertical={false} />
           <XAxis
             dataKey="time"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: 'oklch(50% 0.01 240)' }}
+            {...chartAxisDefaults}
             interval="preserveStartEnd"
           />
           <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 10, fill: 'oklch(50% 0.01 240)' }}
+            {...chartAxisDefaults}
             tickFormatter={(value) => `${value}ms`}
             width={45}
           />
           <Tooltip
+            cursor={chartTooltipCursor}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
+                const datum = payload[0]?.payload as { time: string } | undefined
+                if (!datum) return null
+
                 return (
-                  <div className="bg-popover border border-border rounded-md px-3 py-2 shadow-lg">
-                    <p className="text-xs text-muted-foreground">{payload[0].payload.time}</p>
-                    <p className="text-sm font-medium">{payload[0].value}ms</p>
-                  </div>
+                  <ChartTooltipContent
+                    label={datum.time}
+                    rows={[
+                      {
+                        label: 'Latency',
+                        value: `${payload[0].value}ms`,
+                      },
+                    ]}
+                  />
                 )
               }
               return null
@@ -60,13 +73,13 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
           <Area
             type="monotone"
             dataKey="latency"
-            stroke="oklch(60% 0.18 260)"
+            stroke="var(--chart-accent)"
             strokeWidth={2}
             fill="url(#latencyGradient)"
             activeDot={{
               r: 6,
-              fill: 'oklch(60% 0.18 260)',
-              stroke: 'white',
+              fill: 'var(--chart-accent)',
+              stroke: 'var(--card)',
               strokeWidth: 2,
             }}
           />

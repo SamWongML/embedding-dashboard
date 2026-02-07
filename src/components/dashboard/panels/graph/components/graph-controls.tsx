@@ -6,19 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import type { GraphData, GraphFilters } from "@/lib/schemas/graph"
+import { graphNodeColorByType } from "@/components/charts/chart-theme"
 
 interface GraphControlsProps {
   filters: GraphFilters
   onFiltersChange: (filters: GraphFilters) => void
   onZoom: (direction: "in" | "out" | "reset") => void
   graphData: GraphData | undefined
-}
-
-const nodeColors: Record<string, string> = {
-  document: "oklch(60% 0.18 260)",
-  topic: "oklch(65% 0.15 185)",
-  "user-group": "oklch(70% 0.16 80)",
-  default: "oklch(50% 0.1 240)",
 }
 
 export function GraphControls({
@@ -72,7 +66,7 @@ export function GraphControls({
         <div className="border-t pt-4">
           <h4 className="mb-2 text-sm font-medium">Legend</h4>
           <div className="space-y-2">
-            {Object.entries(nodeColors)
+            {Object.entries(graphNodeColorByType)
               .filter(([key]) => key !== "default")
               .map(([type, color]) => (
                 <div key={type} className="flex items-center gap-2">

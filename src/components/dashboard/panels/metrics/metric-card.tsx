@@ -46,10 +46,12 @@ export function MetricCard({ metric, className }: MetricCardProps) {
             <Sparkline
               data={metric.sparkline}
               className="h-10 w-20"
-              color={
-                metric.changeType === 'increase' ? 'oklch(60% 0.18 145)' :
-                  metric.changeType === 'decrease' ? 'oklch(55% 0.22 25)' :
-                    'oklch(50% 0.01 240)'
+              tone={
+                metric.changeType === 'increase'
+                  ? 'success'
+                  : metric.changeType === 'decrease'
+                    ? 'error'
+                    : 'muted'
               }
             />
           )}

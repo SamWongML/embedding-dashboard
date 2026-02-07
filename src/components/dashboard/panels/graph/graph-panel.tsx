@@ -19,16 +19,15 @@ import { GraphCanvas } from './components/graph-canvas'
 import { GraphControls } from './components/graph-controls'
 import { NodeDetailsSheet } from './components/node-details-sheet'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
+import {
+  colorByGraphNodeType,
+  graphLabelColor,
+  graphLinkColor,
+  graphNodeStrokeColor,
+} from '@/components/charts/chart-theme'
 
 interface GraphPanelProps {
   className?: string
-}
-
-const nodeColors: Record<string, string> = {
-  document: 'oklch(60% 0.18 260)',
-  topic: 'oklch(65% 0.15 185)',
-  'user-group': 'oklch(70% 0.16 80)',
-  default: 'oklch(50% 0.1 240)',
 }
 
 function resolveGraphPoint(value: unknown): { x?: number; y?: number } | null {
@@ -97,7 +96,8 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .force('collision', forceCollide().radius(40))
 
     const link = container.append('g')
-      .attr('stroke', 'oklch(50% 0.01 240 / 30%)')
+      .attr('stroke', graphLinkColor)
+      .attr('stroke-opacity', 0.8)
       .attr('stroke-width', 1.5)
       .selectAll('line')
       .data(graphEdges)
@@ -146,8 +146,8 @@ export function GraphPanel({ className }: GraphPanelProps) {
 
     node.append('circle')
       .attr('r', 20)
-      .attr('fill', (data) => nodeColors[data.type] ?? nodeColors.default ?? 'oklch(50% 0.1 240)')
-      .attr('stroke', 'oklch(100% 0 0)')
+      .attr('fill', (data) => colorByGraphNodeType(data.type))
+      .attr('stroke', graphNodeStrokeColor)
       .attr('stroke-width', 2)
 
     node.append('text')
@@ -155,7 +155,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .attr('text-anchor', 'middle')
       .attr('dy', 35)
       .attr('font-size', 10)
-      .attr('fill', 'oklch(50% 0.01 240)')
+      .attr('fill', graphLabelColor)
 
     simulation.on('tick', () => {
       link
