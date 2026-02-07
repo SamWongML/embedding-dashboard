@@ -27,6 +27,9 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
+    env: {
+      NEXT_PUBLIC_DATA_MODE: 'demo',
+    },
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },

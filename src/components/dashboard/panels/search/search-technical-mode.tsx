@@ -20,6 +20,8 @@ import {
   FormLabel,
 } from '@/components/ui/form'
 import { Loader2, Search, X, Plus } from 'lucide-react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage } from '@/lib/api'
 import {
   Select,
   SelectContent,
@@ -47,6 +49,7 @@ interface SearchTechnicalModeProps {
 
 export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
   const [result, setResult] = useState<SearchResponse | null>(null)
+  const [actionWarning, setActionWarning] = useState<string | null>(null)
   const [filters, setFilters] = useState<SearchFilter[]>([])
   const searchMutation = useSearchMutation()
 
@@ -62,6 +65,8 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
   })
 
   const onSubmit = async (values: TechnicalSearchValues) => {
+    setActionWarning(null)
+
     try {
       const response = await searchMutation.mutateAsync({
         query: values.query,
@@ -73,7 +78,9 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
       })
       setResult(response)
     } catch (error) {
-      console.error('Search failed:', error)
+      setActionWarning(
+        toActionErrorMessage(error, 'Unable to run search query.')
+      )
     }
   }
 
@@ -288,6 +295,15 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
                   </>
                 )}
               </Button>
+              {actionWarning ? (
+                <ActionWarningState
+                  title="Search request failed"
+                  description={actionWarning}
+                  onRetry={() => {
+                    void form.handleSubmit(onSubmit)()
+                  }}
+                />
+              ) : null}
             </form>
           </Form>
         </CardContent>

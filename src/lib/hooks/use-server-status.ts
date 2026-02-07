@@ -2,55 +2,45 @@
 
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import type { ApiState } from '@/lib/api'
-import { getWebSocketManager, queryKeys, resolveApiState } from '@/lib/api'
+import { getWebSocketManager, queryKeys } from '@/lib/api'
 import type {
   ErrorLog,
   HealthCheck,
   LatencyResponse,
   ServiceUsage,
 } from '@/lib/schemas/server-status'
-import {
-  fetchServerErrors,
-  fetchServerHealth,
-  fetchServerLatency,
-  fetchServiceUsage,
-} from '@/lib/repositories/server-status/api'
-import {
-  getMockErrors,
-  getMockHealthCheck,
-  getMockLatencyResponse,
-  mockServices,
-} from '@/lib/repositories/server-status/mock'
+import { getServerStatusRepository } from '@/lib/repositories/server-status'
+
+const serverStatusRepository = getServerStatusRepository()
 
 export function useServerHealth() {
-  return useQuery<ApiState<HealthCheck>>({
+  return useQuery<HealthCheck>({
     queryKey: queryKeys.serverStatus.health(),
-    queryFn: () => resolveApiState(fetchServerHealth, getMockHealthCheck),
+    queryFn: () => serverStatusRepository.getHealth(),
     refetchInterval: 5000,
   })
 }
 
 export function useServerLatency() {
-  return useQuery<ApiState<LatencyResponse>>({
+  return useQuery<LatencyResponse>({
     queryKey: queryKeys.serverStatus.latency(),
-    queryFn: () => resolveApiState(fetchServerLatency, getMockLatencyResponse),
+    queryFn: () => serverStatusRepository.getLatency(),
     refetchInterval: 5000,
   })
 }
 
 export function useServiceUsage() {
-  return useQuery<ApiState<ServiceUsage[]>>({
+  return useQuery<ServiceUsage[]>({
     queryKey: queryKeys.serverStatus.services(),
-    queryFn: () => resolveApiState(fetchServiceUsage, () => mockServices),
+    queryFn: () => serverStatusRepository.getServiceUsage(),
     refetchInterval: 30000,
   })
 }
 
 export function useServerErrors() {
-  return useQuery<ApiState<ErrorLog[]>>({
+  return useQuery<ErrorLog[]>({
     queryKey: queryKeys.serverStatus.errors(),
-    queryFn: () => resolveApiState(fetchServerErrors, getMockErrors),
+    queryFn: () => serverStatusRepository.getErrorLogs(),
     refetchInterval: 10000,
   })
 }

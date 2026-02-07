@@ -8,6 +8,7 @@ import { TopUsersTable } from './top-users-table'
 import { TrendsChart } from '@/components/charts/trends-chart'
 import { TopHitsChart } from '@/components/charts/top-hits-chart'
 import { useMetricsOverview } from '@/lib/hooks/use-metrics'
+import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 import { cn } from '@/lib/utils'
 
 interface MetricsPanelProps {
@@ -18,8 +19,39 @@ type Period = '24h' | '7d' | '30d'
 
 export function MetricsPanel({ className }: MetricsPanelProps) {
   const [period, setPeriod] = useState<Period>('24h')
-  const { data: metricsState, isLoading } = useMetricsOverview(period)
-  const data = metricsState?.data
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useMetricsOverview(period)
+
+  if (isError) {
+    const errorMessage = error instanceof Error ? error.message : 'Unable to fetch metrics from API.'
+    return (
+      <QueryErrorState
+        title="Metrics unavailable"
+        description={errorMessage}
+        onRetry={() => {
+          void refetch()
+        }}
+      />
+    )
+  }
+
+  if (!isLoading && !data) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-medium">Metrics</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          No metrics data is available yet.
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className={cn('space-y-6', className)}>

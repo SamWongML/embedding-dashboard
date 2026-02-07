@@ -26,6 +26,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Loader2, Send, Copy, Check, Upload, Image as ImageIcon, X } from 'lucide-react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage } from '@/lib/api'
 import {
   useImageEmbeddingModels,
   useCreateImageEmbedding,
@@ -48,6 +50,7 @@ interface ImageEmbeddingPanelProps {
 export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
   const [mode, setMode] = useState<'simple' | 'technical'>('simple')
   const [result, setResult] = useState<ImageEmbeddingResponse | null>(null)
+  const [actionWarning, setActionWarning] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -84,6 +87,8 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
   }, [previewUrl])
 
   const onSubmit = async (values: ImageFormValues) => {
+    setActionWarning(null)
+
     try {
       const response = await createEmbedding.mutateAsync({
         url: values.url || undefined,
@@ -93,7 +98,9 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
       })
       setResult(response)
     } catch (error) {
-      console.error('Failed to create embedding:', error)
+      setActionWarning(
+        toActionErrorMessage(error, 'Unable to create image embedding.')
+      )
     }
   }
 
@@ -274,6 +281,15 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                       </>
                     )}
                   </Button>
+                  {actionWarning ? (
+                    <ActionWarningState
+                      title="Image embedding request failed"
+                      description={actionWarning}
+                      onRetry={() => {
+                        void form.handleSubmit(onSubmit)()
+                      }}
+                    />
+                  ) : null}
                 </form>
               </Form>
             </CardContent>

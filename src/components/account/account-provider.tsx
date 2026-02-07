@@ -82,13 +82,35 @@ export function AccountProvider({
 
   const setActiveWorkspace = React.useCallback(
     (workspaceId: string) => {
+      if (workspaceId === snapshot.activeWorkspaceId) {
+        return
+      }
+
+      const previousWorkspaceId = snapshot.activeWorkspaceId
+
       setSnapshot((prev) => ({
         ...prev,
         activeWorkspaceId: workspaceId,
       }))
-      void provider.setActiveWorkspace(workspaceId)
+
+      if (provider.mode !== 'supabase' || status !== 'authenticated') {
+        return
+      }
+
+      void provider.setActiveWorkspace(workspaceId).catch(() => {
+        setSnapshot((prev) => {
+          if (prev.activeWorkspaceId !== workspaceId) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            activeWorkspaceId: previousWorkspaceId,
+          }
+        })
+      })
     },
-    [provider]
+    [provider, snapshot.activeWorkspaceId, status]
   )
 
   const signOut = React.useCallback(async () => {

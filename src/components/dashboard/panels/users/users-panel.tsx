@@ -10,6 +10,7 @@ import {
   useInviteUser,
   useUpdateUser,
 } from '@/lib/hooks/use-users'
+import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 import { cn } from '@/lib/utils'
 import type { UserRole } from '@/lib/schemas/users'
 import { GroupsPanel } from './components/groups-panel'
@@ -27,15 +28,42 @@ interface UsersPanelProps {
 export function UsersPanel({ className }: UsersPanelProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
 
-  const { data: usersState, isLoading: usersLoading } = useUsersList()
-  const { data: groupsState, isLoading: groupsLoading } = useUserGroups()
-  const { data: permissionsState, isLoading: permissionsLoading } = usePermissionMatrix()
+  const usersQuery = useUsersList()
+  const groupsQuery = useUserGroups()
+  const permissionsQuery = usePermissionMatrix()
   const inviteUser = useInviteUser()
   const updateUser = useUpdateUser()
 
-  const users = usersState?.data ?? []
-  const groups = groupsState?.data ?? []
-  const permissions = permissionsState?.data ?? undefined
+  const users = usersQuery.data ?? []
+  const groups = groupsQuery.data ?? []
+  const permissions = permissionsQuery.data ?? undefined
+  const usersLoading = usersQuery.isLoading
+  const groupsLoading = groupsQuery.isLoading
+  const permissionsLoading = permissionsQuery.isLoading
+
+  const hasQueryError =
+    usersQuery.isError ||
+    groupsQuery.isError ||
+    permissionsQuery.isError
+
+  if (hasQueryError && (!usersQuery.data || !groupsQuery.data || !permissionsQuery.data)) {
+    const error = usersQuery.error || groupsQuery.error || permissionsQuery.error
+    const errorMessage = error instanceof Error ? error.message : 'Unable to load user management data.'
+
+    return (
+      <QueryErrorState
+        title="User data unavailable"
+        description={errorMessage}
+        onRetry={() => {
+          void Promise.all([
+            usersQuery.refetch(),
+            groupsQuery.refetch(),
+            permissionsQuery.refetch(),
+          ])
+        }}
+      />
+    )
+  }
 
   const handleInvite = async (values: InviteFormValues) => {
     try {

@@ -26,6 +26,30 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## API Mode with Local Simulation
+
+Run strict API mode (no mocks):
+
+```bash
+pnpm dev:api
+```
+
+Run API mode with opt-in simulation:
+
+```bash
+NEXT_PUBLIC_DEV_API_SCENARIO=success pnpm dev:api:scenario
+```
+
+Supported scenarios are `off`, `success`, `error`, and `slow`.
+
+You can also override per page using the URL query param:
+
+```text
+?scenario=success
+?scenario=error
+?scenario=slow
+```
+
 ## Quality Checks
 
 ```bash
@@ -45,7 +69,8 @@ pnpm test:e2e
 
 - `NEXT_PUBLIC_AUTH_MODE` (`mock` or `supabase`)
 - `NEXT_PUBLIC_AUTH_REQUIRED` (`true` or `false`)
-- `NEXT_PUBLIC_USE_MOCK_DATA` (`true` enables mock fallback when API calls fail)
+- `NEXT_PUBLIC_DATA_MODE` (`api` default, or `demo` for explicit mock dataset mode)
+- `NEXT_PUBLIC_DEV_API_SCENARIO` (`off`, `success`, `error`, or `slow`; only used in development)
 - `NEXT_PUBLIC_SUPABASE_URL` (used for Supabase client and image remote host allow-list)
 
 ## Local Supabase (Optional)
@@ -65,3 +90,15 @@ Notes:
 - `db/schema.sql` is loaded on first boot.
 - Magic-link emails are available in Inbucket at `http://localhost:54324`.
 - Compose setup is intentionally minimal (Auth + REST + gateway).
+
+## Removing Demo Mocks
+
+Mock/demo data is centralized under `src/mocks` and wired through repository factories.
+
+To fully remove demo mode once the real API is complete:
+
+1. Delete `src/mocks`.
+2. Remove `src/lib/runtime/data-mode.ts`.
+3. Remove repository demo branches in `src/lib/repositories/*/index.ts`.
+4. Remove `check:mocks` and any demo env config (for example `NEXT_PUBLIC_DATA_MODE`).
+5. Run `pnpm lint`, `pnpm type-check`, and `pnpm test`.

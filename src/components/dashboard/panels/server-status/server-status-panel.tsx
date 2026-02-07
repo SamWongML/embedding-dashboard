@@ -14,6 +14,7 @@ import {
   useServerErrors,
   useRealtimeLatency,
 } from '@/lib/hooks/use-server-status'
+import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 import { Activity, Clock, Zap, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -22,15 +23,45 @@ interface ServerStatusPanelProps {
 }
 
 export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
-  const { data: healthState, isLoading: healthLoading } = useServerHealth()
-  const { data: latencyState, isLoading: latencyLoading } = useServerLatency()
-  const { data: servicesState, isLoading: servicesLoading } = useServiceUsage()
-  const { data: errorsState, isLoading: errorsLoading } = useServerErrors()
+  const healthQuery = useServerHealth()
+  const latencyQuery = useServerLatency()
+  const servicesQuery = useServiceUsage()
+  const errorsQuery = useServerErrors()
   const { latency: realtimeLatency, isConnected } = useRealtimeLatency()
-  const health = healthState?.data
-  const latency = latencyState?.data
-  const services = servicesState?.data
-  const errors = errorsState?.data
+  const health = healthQuery.data
+  const latency = latencyQuery.data
+  const services = servicesQuery.data
+  const errors = errorsQuery.data
+  const healthLoading = healthQuery.isLoading
+  const latencyLoading = latencyQuery.isLoading
+  const servicesLoading = servicesQuery.isLoading
+  const errorsLoading = errorsQuery.isLoading
+
+  const hasQueryError =
+    healthQuery.isError ||
+    latencyQuery.isError ||
+    servicesQuery.isError ||
+    errorsQuery.isError
+
+  if (hasQueryError && (!health || !latency || !services || !errors)) {
+    const error = healthQuery.error || latencyQuery.error || servicesQuery.error || errorsQuery.error
+    const errorMessage = error instanceof Error ? error.message : 'Unable to load server status data.'
+
+    return (
+      <QueryErrorState
+        title="Server status unavailable"
+        description={errorMessage}
+        onRetry={() => {
+          void Promise.all([
+            healthQuery.refetch(),
+            latencyQuery.refetch(),
+            servicesQuery.refetch(),
+            errorsQuery.refetch(),
+          ])
+        }}
+      />
+    )
+  }
 
   const formatUptime = (seconds: number) => {
     const days = Math.floor(seconds / 86400)

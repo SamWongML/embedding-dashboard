@@ -4,15 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:api": "NEXT_PUBLIC_DATA_MODE=api NEXT_PUBLIC_DEV_API_SCENARIO=off pnpm dev",
+    "dev:api:scenario": "NEXT_PUBLIC_DATA_MODE=api NEXT_PUBLIC_DEV_API_SCENARIO=${NEXT_PUBLIC_DEV_API_SCENARIO:-success} pnpm dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && pnpm check:mocks",
+    "check:mocks": "node scripts/check-mocks.mjs",
     "type-check": "tsc --noEmit",
     "type-check:strict": "tsc -p tsconfig.strict.json --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:api": "playwright test -c playwright.api.config.ts",
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {

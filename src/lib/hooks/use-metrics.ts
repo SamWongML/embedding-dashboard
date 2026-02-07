@@ -1,8 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import type { ApiState } from '@/lib/api'
-import { queryKeys, resolveApiState } from '@/lib/api'
+import { queryKeys } from '@/lib/api'
 import type {
   EmbeddingTrend,
   MetricsOverview,
@@ -10,72 +9,46 @@ import type {
   TopHit,
   TopUser,
 } from '@/lib/schemas/metrics'
-import {
-  fetchEmbeddingTrends,
-  fetchMetricsOverview,
-  fetchSearchAnalytics,
-  fetchTopHits,
-  fetchTopUsers,
-} from '@/lib/repositories/metrics/api'
-import {
-  getMockEmbeddingTrends,
-  getMockMetricsOverview,
-  getMockSearchAnalytics,
-  getMockTopHits,
-  getMockTopUsers,
-} from '@/lib/repositories/metrics/mock'
+import { getMetricsRepository } from '@/lib/repositories/metrics'
+
+const metricsRepository = getMetricsRepository()
 
 export function useMetricsOverview(period: string = '24h') {
-  return useQuery<ApiState<MetricsOverview>>({
+  return useQuery<MetricsOverview>({
     queryKey: queryKeys.metrics.overview(period),
-    queryFn: () => resolveApiState(
-      () => fetchMetricsOverview(period),
-      getMockMetricsOverview
-    ),
+    queryFn: () => metricsRepository.getOverview(period),
     refetchInterval: 30000,
   })
 }
 
 export function useTopHits(period: string = '24h') {
-  return useQuery<ApiState<TopHit[]>>({
+  return useQuery<TopHit[]>({
     queryKey: queryKeys.metrics.topHits(period),
-    queryFn: () => resolveApiState(
-      () => fetchTopHits(period),
-      getMockTopHits
-    ),
+    queryFn: () => metricsRepository.getTopHits(period),
     refetchInterval: 30000,
   })
 }
 
 export function useTopUsers(period: string = '24h') {
-  return useQuery<ApiState<TopUser[]>>({
+  return useQuery<TopUser[]>({
     queryKey: queryKeys.metrics.topUsers(period),
-    queryFn: () => resolveApiState(
-      () => fetchTopUsers(period),
-      getMockTopUsers
-    ),
+    queryFn: () => metricsRepository.getTopUsers(period),
     refetchInterval: 30000,
   })
 }
 
 export function useEmbeddingTrends(period: string = '30d') {
-  return useQuery<ApiState<EmbeddingTrend[]>>({
+  return useQuery<EmbeddingTrend[]>({
     queryKey: queryKeys.metrics.trends(period),
-    queryFn: () => resolveApiState(
-      () => fetchEmbeddingTrends(period),
-      getMockEmbeddingTrends
-    ),
+    queryFn: () => metricsRepository.getEmbeddingTrends(period),
     refetchInterval: 60000,
   })
 }
 
 export function useSearchAnalytics(period: string = '7d') {
-  return useQuery<ApiState<SearchAnalytics[]>>({
+  return useQuery<SearchAnalytics[]>({
     queryKey: queryKeys.metrics.searchAnalytics(period),
-    queryFn: () => resolveApiState(
-      () => fetchSearchAnalytics(period),
-      getMockSearchAnalytics
-    ),
+    queryFn: () => metricsRepository.getSearchAnalytics(period),
     refetchInterval: 60000,
   })
 }

@@ -1,4 +1,5 @@
 import { ApiError } from "@/lib/api/client"
+import { getDataMode } from '@/lib/runtime/data-mode'
 
 export interface AppError {
   message: string
@@ -9,13 +10,15 @@ export interface AppError {
 export interface ApiState<T> {
   data: T | null
   error: AppError | null
-  source: "api" | "mock"
+  source: 'api' | 'demo'
 }
 
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true"
+export function isDemoDataEnabled() {
+  return getDataMode() === 'demo'
+}
 
 export function isMockDataEnabled() {
-  return USE_MOCK_DATA
+  return isDemoDataEnabled()
 }
 
 export function toAppError(error: unknown): AppError {
@@ -44,7 +47,7 @@ export function toAppError(error: unknown): AppError {
 
 export async function resolveApiState<T>(
   getFromApi: () => Promise<T>,
-  getFromMock: () => Promise<T> | T
+  getFromDemo: () => Promise<T> | T
 ): Promise<ApiState<T>> {
   try {
     const data = await getFromApi()
@@ -55,16 +58,16 @@ export async function resolveApiState<T>(
       source: "api",
     }
   } catch (error) {
-    if (!isMockDataEnabled()) {
+    if (!isDemoDataEnabled()) {
       throw error
     }
 
-    const mockData = await getFromMock()
+    const demoData = await getFromDemo()
 
     return {
-      data: mockData,
+      data: demoData,
       error: toAppError(error),
-      source: "mock",
+      source: 'demo',
     }
   }
 }

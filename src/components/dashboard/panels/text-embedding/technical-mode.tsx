@@ -26,6 +26,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Loader2, Send, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage } from '@/lib/api'
 import {
   useTextEmbeddingModels,
   useCreateTextEmbedding,
@@ -50,6 +52,7 @@ interface TechnicalModeProps {
 
 export function TechnicalMode({ className }: TechnicalModeProps) {
   const [result, setResult] = useState<TextEmbeddingResponse | null>(null)
+  const [actionWarning, setActionWarning] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const { data: models } = useTextEmbeddingModels()
@@ -68,6 +71,8 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
   })
 
   const onSubmit = async (values: TechnicalFormValues) => {
+    setActionWarning(null)
+
     try {
       let metadata: Record<string, unknown> | undefined
       if (values.metadata) {
@@ -89,7 +94,9 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
       })
       setResult(response)
     } catch (error) {
-      console.error('Failed to create embedding:', error)
+      setActionWarning(
+        toActionErrorMessage(error, 'Unable to create text embedding.')
+      )
     }
   }
 
@@ -279,6 +286,15 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
                   </>
                 )}
               </Button>
+              {actionWarning ? (
+                <ActionWarningState
+                  title="Text embedding request failed"
+                  description={actionWarning}
+                  onRetry={() => {
+                    void form.handleSubmit(onSubmit)()
+                  }}
+                />
+              ) : null}
             </form>
           </Form>
         </CardContent>

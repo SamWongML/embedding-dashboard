@@ -1,5 +1,7 @@
 'use client'
 
+import * as React from 'react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import {
   Card,
   CardContent,
@@ -12,10 +14,25 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
+import { toNoOpActionMessage } from '@/lib/api'
 
 export default function SecurityTab() {
+  const [actionWarning, setActionWarning] = React.useState<string | null>(null)
+
+  const handleNoOpAction = React.useCallback((actionLabel: string) => {
+    setActionWarning(toNoOpActionMessage(actionLabel))
+  }, [])
+
   return (
     <div className="space-y-6">
+      {actionWarning ? (
+        <ActionWarningState
+          title="Security action not available"
+          variant="warning"
+          description={actionWarning}
+        />
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Sessions</CardTitle>
@@ -40,13 +57,22 @@ export default function SecurityTab() {
                 Last active 2 hours ago
               </p>
             </div>
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNoOpAction('Sign out selected device')}
+            >
               Sign out
             </Button>
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t">
-          <Button variant="outline">Sign out all devices</Button>
+          <Button
+            variant="outline"
+            onClick={() => handleNoOpAction('Sign out all devices')}
+          >
+            Sign out all devices
+          </Button>
         </CardFooter>
       </Card>
 
@@ -65,7 +91,11 @@ export default function SecurityTab() {
                 Require a second factor when signing in.
               </p>
             </div>
-            <Switch />
+            <Switch
+              onCheckedChange={() =>
+                handleNoOpAction('Update two-factor authentication setting')
+              }
+            />
           </div>
           <Separator />
           <div className="flex items-center justify-between gap-4">
@@ -75,7 +105,11 @@ export default function SecurityTab() {
                 Skip prompts on devices you approve.
               </p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleNoOpAction('Manage trusted devices')}
+            >
               Manage devices
             </Button>
           </div>

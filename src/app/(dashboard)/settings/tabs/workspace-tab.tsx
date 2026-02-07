@@ -1,5 +1,7 @@
 'use client'
 
+import * as React from 'react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import {
   Card,
   CardContent,
@@ -11,13 +13,27 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { toNoOpActionMessage } from '@/lib/api'
 import { useAccount } from '@/lib/hooks/use-account'
 
 export default function WorkspaceTab() {
   const { activeWorkspace } = useAccount()
+  const [actionWarning, setActionWarning] = React.useState<string | null>(null)
+
+  const handleNoOpAction = React.useCallback((actionLabel: string) => {
+    setActionWarning(toNoOpActionMessage(actionLabel))
+  }, [])
 
   return (
     <div className="space-y-6">
+      {actionWarning ? (
+        <ActionWarningState
+          title="Workspace action not available"
+          variant="warning"
+          description={actionWarning}
+        />
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Members</CardTitle>
@@ -51,7 +67,9 @@ export default function WorkspaceTab() {
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t">
-          <Button>Add member</Button>
+          <Button onClick={() => handleNoOpAction('Add member')}>
+            Add member
+          </Button>
         </CardFooter>
       </Card>
 
@@ -70,7 +88,11 @@ export default function WorkspaceTab() {
                 {activeWorkspace.plan.toUpperCase()} plan
               </p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleNoOpAction('Manage billing')}
+            >
               Manage billing
             </Button>
           </div>
@@ -79,7 +101,11 @@ export default function WorkspaceTab() {
               <div className="text-sm font-medium">Payment method</div>
               <p className="text-xs text-muted-foreground">Visa ending in 4242</p>
             </div>
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNoOpAction('Update payment method')}
+            >
               Update
             </Button>
           </div>

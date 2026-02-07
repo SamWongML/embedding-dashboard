@@ -24,8 +24,17 @@ describe('preferences', () => {
     )
   })
 
-  it('swallows errors', async () => {
+  it('throws on network failures', async () => {
     fetchMock.mockRejectedValue(new Error('network'))
-    await expect(saveThemePreference('light')).resolves.toBeUndefined()
+    await expect(saveThemePreference('light')).rejects.toThrow('network')
+  })
+
+  it('throws when API responds with an error payload', async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: 'Unauthorized' }),
+    })
+
+    await expect(saveThemePreference('light')).rejects.toThrow('Unauthorized')
   })
 })

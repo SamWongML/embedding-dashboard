@@ -16,6 +16,8 @@ import {
   FormItem,
 } from '@/components/ui/form'
 import { Loader2, Search } from 'lucide-react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage } from '@/lib/api'
 import { useSearchMutation } from '@/lib/hooks/use-search'
 import { cn } from '@/lib/utils'
 import type { SearchResponse, SearchResult } from '@/lib/schemas/search'
@@ -32,6 +34,7 @@ interface SearchSimpleModeProps {
 
 export function SearchSimpleMode({ className }: SearchSimpleModeProps) {
   const [result, setResult] = useState<SearchResponse | null>(null)
+  const [actionWarning, setActionWarning] = useState<string | null>(null)
   const searchMutation = useSearchMutation()
 
   const form = useForm<SimpleSearchValues>({
@@ -42,13 +45,17 @@ export function SearchSimpleMode({ className }: SearchSimpleModeProps) {
   })
 
   const onSubmit = async (values: SimpleSearchValues) => {
+    setActionWarning(null)
+
     try {
       const response = await searchMutation.mutateAsync({
         query: values.query,
       })
       setResult(response)
     } catch (error) {
-      console.error('Search failed:', error)
+      setActionWarning(
+        toActionErrorMessage(error, 'Unable to run search query.')
+      )
     }
   }
 
@@ -83,6 +90,15 @@ export function SearchSimpleMode({ className }: SearchSimpleModeProps) {
           </Form>
         </CardContent>
       </Card>
+      {actionWarning ? (
+        <ActionWarningState
+          title="Search request failed"
+          description={actionWarning}
+          onRetry={() => {
+            void form.handleSubmit(onSubmit)()
+          }}
+        />
+      ) : null}
 
       {result && (
         <Card>

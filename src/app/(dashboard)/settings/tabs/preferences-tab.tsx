@@ -17,22 +17,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage, toNoOpActionMessage } from '@/lib/api'
 import { useTheme } from '@/components/providers/theme-provider'
 import { saveThemePreference } from '@/lib/preferences/preferences'
 
 export default function PreferencesTab() {
   const { theme, setTheme } = useTheme()
+  const [timezone, setTimezone] = React.useState('america-los-angeles')
+  const [language, setLanguage] = React.useState('en')
+  const [actionWarning, setActionWarning] = React.useState<string | null>(null)
 
   const handleThemeChange = React.useCallback(
-    (value: 'light' | 'dark' | 'system') => {
+    async (value: 'light' | 'dark' | 'system') => {
+      setActionWarning(null)
       setTheme(value)
-      void saveThemePreference(value)
+
+      try {
+        await saveThemePreference(value)
+      } catch (error) {
+        setActionWarning(
+          toActionErrorMessage(error, 'Unable to persist theme preference.')
+        )
+      }
     },
     [setTheme]
   )
 
   return (
     <div className="space-y-6">
+      {actionWarning ? (
+        <ActionWarningState
+          title="Preferences update failed"
+          variant="warning"
+          description={actionWarning}
+        />
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Theme</CardTitle>
@@ -44,7 +65,7 @@ export default function PreferencesTab() {
           <RadioGroup
             value={theme}
             onValueChange={(value) =>
-              handleThemeChange(value as 'light' | 'dark' | 'system')
+              void handleThemeChange(value as 'light' | 'dark' | 'system')
             }
             className="grid gap-3"
           >
@@ -89,7 +110,15 @@ export default function PreferencesTab() {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>Timezone</Label>
-            <Select defaultValue="america-los-angeles">
+            <Select
+              value={timezone}
+              onValueChange={(value) => {
+                setTimezone(value)
+                setActionWarning(
+                  toNoOpActionMessage('Update timezone preference')
+                )
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select timezone" />
               </SelectTrigger>
@@ -108,7 +137,15 @@ export default function PreferencesTab() {
           </div>
           <div className="space-y-2">
             <Label>Language</Label>
-            <Select defaultValue="en">
+            <Select
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value)
+                setActionWarning(
+                  toNoOpActionMessage('Update language preference')
+                )
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>

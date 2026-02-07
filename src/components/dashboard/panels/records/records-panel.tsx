@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,9 +30,10 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image } from 'lucide-react'
+import { toActionErrorMessage } from '@/lib/api'
 import { useRecordsList, useRecordDetail } from '@/lib/hooks/use-records'
 import { cn } from '@/lib/utils'
-import type { EmbeddingRecord, RecordsListParams } from '@/lib/schemas/records'
+import type { RecordsListParams } from '@/lib/schemas/records'
 
 interface RecordsPanelProps {
   className?: string
@@ -45,8 +48,52 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
   const [searchInput, setSearchInput] = useState('')
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null)
 
-  const { data, isLoading } = useRecordsList(params)
-  const { data: selectedRecord } = useRecordDetail(selectedRecordId)
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useRecordsList(params)
+  const detailQuery = useRecordDetail(selectedRecordId)
+  const selectedRecord = detailQuery.data
+
+  const recordsActionWarning = useMemo(() => {
+    if (isError && data) {
+      return toActionErrorMessage(
+        error,
+        'Unable to refresh records from API.'
+      )
+    }
+    return null
+  }, [data, error, isError])
+
+  const detailActionWarning = useMemo(() => {
+    if (detailQuery.isError) {
+      return toActionErrorMessage(
+        detailQuery.error,
+        'Unable to load record details from API.'
+      )
+    }
+    return null
+  }, [detailQuery.error, detailQuery.isError])
+
+  if (isError && !data) {
+    const errorMessage = toActionErrorMessage(
+      error,
+      'Unable to load records from API.'
+    )
+
+    return (
+      <QueryErrorState
+        title="Records unavailable"
+        description={errorMessage}
+        onRetry={() => {
+          void refetch()
+        }}
+      />
+    )
+  }
 
   const handleSearch = () => {
     setParams({ ...params, search: searchInput, page: 1 })
@@ -74,6 +121,16 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
 
   return (
     <div className={cn('space-y-4', className)}>
+      {recordsActionWarning ? (
+        <ActionWarningState
+          title="Records request failed"
+          description={recordsActionWarning}
+          onRetry={() => {
+            void refetch()
+          }}
+        />
+      ) : null}
+
       {/* Filters */}
       <Card>
         <CardContent className="pt-4">
@@ -228,7 +285,18 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
           <SheetHeader className="px-6 py-5 border-b border-border">
             <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
           </SheetHeader>
-          {selectedRecord && (
+          {detailActionWarning ? (
+            <div className="p-6">
+              <ActionWarningState
+                title="Record detail request failed"
+                description={detailActionWarning}
+                onRetry={() => {
+                  void detailQuery.refetch()
+                }}
+              />
+            </div>
+          ) : null}
+          {selectedRecord && !detailActionWarning && (
             <div className="px-6 py-6 space-y-8">
               {/* Content Section */}
               <section>

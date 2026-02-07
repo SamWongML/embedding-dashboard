@@ -1,15 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-const originalMockFlag = process.env.NEXT_PUBLIC_USE_MOCK_DATA
+const originalDataMode = process.env.NEXT_PUBLIC_DATA_MODE
 
 afterEach(() => {
-  process.env.NEXT_PUBLIC_USE_MOCK_DATA = originalMockFlag
+  process.env.NEXT_PUBLIC_DATA_MODE = originalDataMode
   vi.resetModules()
 })
 
 describe('resolveApiState', () => {
   it('returns api source on success', async () => {
-    process.env.NEXT_PUBLIC_USE_MOCK_DATA = 'false'
+    process.env.NEXT_PUBLIC_DATA_MODE = 'api'
     vi.resetModules()
     const { resolveApiState } = await import('@/lib/api/state')
 
@@ -26,7 +26,7 @@ describe('resolveApiState', () => {
   })
 
   it('throws when api fails and mock mode is disabled', async () => {
-    process.env.NEXT_PUBLIC_USE_MOCK_DATA = 'false'
+    process.env.NEXT_PUBLIC_DATA_MODE = 'api'
     vi.resetModules()
     const { resolveApiState } = await import('@/lib/api/state')
 
@@ -41,7 +41,7 @@ describe('resolveApiState', () => {
   })
 
   it('returns mock source when api fails and mock mode is enabled', async () => {
-    process.env.NEXT_PUBLIC_USE_MOCK_DATA = 'true'
+    process.env.NEXT_PUBLIC_DATA_MODE = 'demo'
     vi.resetModules()
     const { resolveApiState } = await import('@/lib/api/state')
 
@@ -52,7 +52,7 @@ describe('resolveApiState', () => {
       async () => ({ ok: false })
     )
 
-    expect(result.source).toBe('mock')
+    expect(result.source).toBe('demo')
     expect(result.data).toEqual({ ok: false })
     expect(result.error?.message).toBe('api down')
   })

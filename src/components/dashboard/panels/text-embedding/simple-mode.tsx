@@ -16,6 +16,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Loader2, Send, Copy, Check } from 'lucide-react'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toActionErrorMessage } from '@/lib/api'
 import { useCreateTextEmbedding } from '@/lib/hooks/use-text-embedding'
 import { cn } from '@/lib/utils'
 import type { TextEmbeddingResponse } from '@/lib/schemas/text-embedding'
@@ -32,6 +34,7 @@ interface SimpleModeProps {
 
 export function SimpleMode({ className }: SimpleModeProps) {
   const [result, setResult] = useState<TextEmbeddingResponse | null>(null)
+  const [actionWarning, setActionWarning] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const createEmbedding = useCreateTextEmbedding()
 
@@ -43,11 +46,15 @@ export function SimpleMode({ className }: SimpleModeProps) {
   })
 
   const onSubmit = async (values: SimpleFormValues) => {
+    setActionWarning(null)
+
     try {
       const response = await createEmbedding.mutateAsync(values)
       setResult(response)
     } catch (error) {
-      console.error('Failed to create embedding:', error)
+      setActionWarning(
+        toActionErrorMessage(error, 'Unable to create text embedding.')
+      )
     }
   }
 
@@ -104,6 +111,15 @@ export function SimpleMode({ className }: SimpleModeProps) {
                   </>
                 )}
               </Button>
+              {actionWarning ? (
+                <ActionWarningState
+                  title="Text embedding request failed"
+                  description={actionWarning}
+                  onRetry={() => {
+                    void form.handleSubmit(onSubmit)()
+                  }}
+                />
+              ) : null}
             </form>
           </Form>
         </CardContent>

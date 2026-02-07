@@ -21,6 +21,8 @@ import {
 } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
+import { toNoOpActionMessage } from '@/lib/api'
 import { useAccount } from '@/lib/hooks/use-account'
 
 function getInitials(name: string) {
@@ -31,9 +33,22 @@ function getInitials(name: string) {
 
 export default function AccountTab() {
   const { user, activeWorkspace } = useAccount()
+  const [actionWarning, setActionWarning] = React.useState<string | null>(null)
+
+  const handleNoOpAction = React.useCallback((actionLabel: string) => {
+    setActionWarning(toNoOpActionMessage(actionLabel))
+  }, [])
 
   return (
     <div className="space-y-6">
+      {actionWarning ? (
+        <ActionWarningState
+          title="Account action not available"
+          variant="warning"
+          description={actionWarning}
+        />
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
@@ -56,7 +71,11 @@ export default function AccountTab() {
                 {activeWorkspace.name}
               </Badge>
             </div>
-            <Button variant="outline" className="md:ml-auto">
+            <Button
+              variant="outline"
+              className="md:ml-auto"
+              onClick={() => handleNoOpAction('Upload new photo')}
+            >
               Upload new photo
             </Button>
           </div>
@@ -72,7 +91,9 @@ export default function AccountTab() {
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t">
-          <Button>Save changes</Button>
+          <Button onClick={() => handleNoOpAction('Save changes')}>
+            Save changes
+          </Button>
         </CardFooter>
       </Card>
 
@@ -84,7 +105,10 @@ export default function AccountTab() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Select defaultValue={activeWorkspace.id}>
+          <Select
+            defaultValue={activeWorkspace.id}
+            onValueChange={() => handleNoOpAction('Update default workspace')}
+          >
             <SelectTrigger className="w-full md:w-72">
               <SelectValue placeholder="Select workspace" />
             </SelectTrigger>

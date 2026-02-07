@@ -18,6 +18,7 @@ import type { GraphFilters, GraphNode } from '@/lib/schemas/graph'
 import { GraphCanvas } from './components/graph-canvas'
 import { GraphControls } from './components/graph-controls'
 import { NodeDetailsSheet } from './components/node-details-sheet'
+import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 
 interface GraphPanelProps {
   className?: string
@@ -43,10 +44,14 @@ export function GraphPanel({ className }: GraphPanelProps) {
   const [filters, setFilters] = useState<GraphFilters>({ depth: 2, limit: 100 })
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
 
-  const { data: graphState, isLoading } = useGraphData(filters)
-  const { data: nodeDetailState } = useNodeDetail(selectedNodeId)
-  const graphData = graphState?.data ?? undefined
-  const nodeDetail = nodeDetailState?.data ?? null
+  const {
+    data: graphData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGraphData(filters)
+  const { data: nodeDetail } = useNodeDetail(selectedNodeId)
 
   const handleZoom = useCallback((direction: 'in' | 'out' | 'reset') => {
     if (!svgRef.current) return
@@ -69,6 +74,10 @@ export function GraphPanel({ className }: GraphPanelProps) {
     const svg = select(svgRef.current)
     const width = svgRef.current.clientWidth
     const height = svgRef.current.clientHeight
+    const nodeIds = new Set(graphData.nodes.map((node) => node.id))
+    const graphEdges = graphData.edges.filter(
+      (edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target)
+    )
 
     svg.selectAll('*').remove()
 
@@ -82,7 +91,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
     svg.call(zoomBehavior)
 
     const simulation = forceSimulation(graphData.nodes)
-      .force('link', forceLink(graphData.edges).id((d) => (d as GraphNode).id).distance(100))
+      .force('link', forceLink(graphEdges).id((d) => (d as GraphNode).id).distance(100))
       .force('charge', forceManyBody().strength(-300))
       .force('center', forceCenter(width / 2, height / 2))
       .force('collision', forceCollide().radius(40))
@@ -91,7 +100,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .attr('stroke', 'oklch(50% 0.01 240 / 30%)')
       .attr('stroke-width', 1.5)
       .selectAll('line')
-      .data(graphData.edges)
+      .data(graphEdges)
       .join('line')
 
     const node = container.append('g')
@@ -162,6 +171,28 @@ export function GraphPanel({ className }: GraphPanelProps) {
       simulation.stop()
     }
   }, [graphData, isLoading])
+
+  if (isError) {
+    const errorMessage = error instanceof Error ? error.message : 'Unable to load graph data.'
+    return (
+      <QueryErrorState
+        title="Graph unavailable"
+        description={errorMessage}
+        onRetry={() => {
+          void refetch()
+        }}
+      />
+    )
+  }
+
+  if (!isLoading && !graphData) {
+    return (
+      <QueryErrorState
+        title="Graph unavailable"
+        description="No graph data is available yet."
+      />
+    )
+  }
 
   return (
     <div className={cn('grid gap-4 lg:grid-cols-4', className)}>

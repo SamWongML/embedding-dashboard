@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { CommandPalette } from "@/components/dashboard/command-palette"
+import { DevSimulationIndicator } from "@/components/dashboard/layout/dev-simulation-indicator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
@@ -28,6 +29,7 @@ export function DashboardPageShell({
           <h1 className="truncate text-lg font-semibold">{title}</h1>
         </div>
         <div className="flex items-center gap-(--form-item-gap)">
+          <DevSimulationIndicator />
           {showCommandPalette ? <CommandPalette /> : null}
           {actions}
         </div>
