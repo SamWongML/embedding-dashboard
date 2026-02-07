@@ -4,6 +4,8 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { cn } from '@/lib/utils'
 import { ChartTooltipContent } from './chart-tooltip-content'
 import {
+  chartAnimationDurationMs,
+  chartAnimationEasing,
   chartAxisDefaults,
   chartGridStroke,
   chartTooltipCursor,
@@ -76,6 +78,8 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
             stroke="var(--chart-accent)"
             strokeWidth={2}
             fill="url(#latencyGradient)"
+            animationDuration={chartAnimationDurationMs}
+            animationEasing={chartAnimationEasing}
             activeDot={{
               r: 6,
               fill: 'var(--chart-accent)',

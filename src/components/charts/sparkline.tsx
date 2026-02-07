@@ -1,7 +1,11 @@
 'use client'
 
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
-import { colorByChartTone } from './chart-theme'
+import {
+  chartAnimationDurationMs,
+  chartAnimationEasing,
+  colorByChartTone,
+} from './chart-theme'
 import type { ChartTone } from './chart-theme'
 
 interface SparklineProps {
@@ -25,6 +29,8 @@ export function Sparkline({ data, color, tone = 'accent', className }: Sparkline
             stroke={strokeColor}
             strokeWidth={1.5}
             dot={false}
+            animationDuration={chartAnimationDurationMs}
+            animationEasing={chartAnimationEasing}
           />
         </LineChart>
       </ResponsiveContainer>

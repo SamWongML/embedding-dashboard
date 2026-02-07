@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildAccentTonalSeries,
+  chartBarFill,
   chartToneToColorVar,
   colorByGraphNodeType,
   graphNodeColorByType,
@@ -19,15 +19,8 @@ describe('chart-theme', () => {
     })
   })
 
-  it('builds a tonal accent series from the constrained palette', () => {
-    expect(buildAccentTonalSeries(0)).toEqual([])
-    expect(buildAccentTonalSeries(5)).toEqual([
-      'var(--chart-accent)',
-      'var(--chart-accent-soft)',
-      'var(--chart-accent-dim)',
-      'var(--chart-accent-soft)',
-      'var(--chart-accent-dim)',
-    ])
+  it('uses a single accent token for ranking bar fills', () => {
+    expect(chartBarFill).toBe('var(--chart-accent)')
   })
 
   it('maps graph node types to allowed chart tokens only', () => {

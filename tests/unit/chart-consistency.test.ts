@@ -31,4 +31,26 @@ describe('chart consistency', () => {
       expect(source).not.toContain(legacyTooltipClass)
     })
   })
+
+  it('uses single-accent ranking bars without active overlays', () => {
+    const rankingCharts = ['top-hits-chart.tsx', 'service-usage-chart.tsx'] as const
+
+    rankingCharts.forEach((fileName) => {
+      const source = loadChartFile(fileName)
+
+      expect(source).toContain('fill={chartBarFill}')
+      expect(source).toContain('activeBar={false}')
+      expect(source).not.toContain('<Cell')
+      expect(source).not.toContain('buildAccentTonalSeries')
+    })
+  })
+
+  it('normalizes trend points before rendering and uses deterministic animation props', () => {
+    const trendsSource = loadChartFile('trends-chart.tsx')
+
+    expect(trendsSource).toContain('normalizeEmbeddingTrends')
+    expect(trendsSource).toContain('type="monotoneX"')
+    expect(trendsSource).toContain('isAnimationActive={shouldAnimate}')
+    expect(trendsSource).toContain('activeDot={{')
+  })
 })

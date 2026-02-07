@@ -23,22 +23,6 @@ export function colorByChartTone(tone: ChartTone): string {
   return chartToneToColorVar[tone]
 }
 
-const accentToneSeries: readonly ChartTone[] = [
-  'accent',
-  'accentSoft',
-  'accentDim',
-  'accentSoft',
-  'accentDim',
-]
-
-export function buildAccentTonalSeries(length: number): string[] {
-  if (length <= 0) return []
-
-  return Array.from({ length }, (_, index) =>
-    colorByChartTone(accentToneSeries[index % accentToneSeries.length] ?? 'accent')
-  )
-}
-
 export const chartAxisTick = {
   fontSize: 10,
   fill: 'var(--chart-axis)',
@@ -54,13 +38,12 @@ export const chartGridStroke = 'var(--chart-grid)'
 
 export const chartBarRadius: [number, number, number, number] = [0, 6, 6, 0]
 
-export const chartActiveBarStyle = {
-  stroke: 'var(--chart-accent-soft)',
-  strokeWidth: 1,
-  fillOpacity: 0.95,
-}
+export const chartBarFill = 'var(--chart-accent)'
 
 export const chartTooltipCursor = false
+
+export const chartAnimationDurationMs = 1500
+export const chartAnimationEasing = 'ease'
 
 export interface ChartTooltipRow {
   label: string

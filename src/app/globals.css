@@ -434,9 +434,9 @@
   --ring: oklch(25% 0.02 var(--accent-hue));
 
   /* Chart colors - neutral-first with a single accent family */
-  --chart-accent: oklch(58% 0.16 280);
-  --chart-accent-soft: oklch(66% 0.12 280);
-  --chart-accent-dim: oklch(50% 0.1 280);
+  --chart-accent: oklch(60% 0.14 268);
+  --chart-accent-soft: oklch(68% 0.10 266);
+  --chart-accent-dim: oklch(52% 0.08 266);
   --chart-axis: oklch(50% 0.01 var(--base-hue));
   --chart-grid: oklch(84% 0.005 var(--base-hue) / 75%);
   --chart-track: oklch(92% 0.005 var(--base-hue));
@@ -506,9 +506,9 @@
   --ring: oklch(70% 0.12 var(--accent-hue));
 
   /* Chart colors - neutral-first with Linear-like accent family */
-  --chart-accent: #5e6ad2;
-  --chart-accent-soft: #7784e4;
-  --chart-accent-dim: oklch(56% 0.09 280);
+  --chart-accent: oklch(64% 0.13 268);
+  --chart-accent-soft: oklch(72% 0.10 266);
+  --chart-accent-dim: oklch(56% 0.08 266);
   --chart-axis: oklch(66% 0.01 var(--base-hue));
   --chart-grid: oklch(34% 0.01 var(--base-hue) / 80%);
   --chart-track: oklch(24% 0.01 var(--base-hue));

@@ -4,7 +4,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,9 +12,10 @@ import {
 import { cn } from '@/lib/utils'
 import { ChartTooltipContent } from './chart-tooltip-content'
 import {
-  buildAccentTonalSeries,
-  chartActiveBarStyle,
+  chartAnimationDurationMs,
+  chartAnimationEasing,
   chartAxisDefaults,
+  chartBarFill,
   chartBarRadius,
   chartGridStroke,
   chartTooltipCursor,
@@ -39,7 +39,6 @@ export function ServiceUsageChart({ data, className }: ServiceUsageChartProps) {
     count: item.count,
     latency: item.avgLatency,
   }))
-  const tonalSeries = buildAccentTonalSeries(chartData.length)
 
   return (
     <div className={cn('w-full h-[200px]', className)}>
@@ -94,13 +93,12 @@ export function ServiceUsageChart({ data, className }: ServiceUsageChartProps) {
           <Bar
             dataKey="count"
             radius={chartBarRadius}
-            activeBar={chartActiveBarStyle}
+            fill={chartBarFill}
+            activeBar={false}
             background={{ fill: 'var(--chart-track)', radius: 6 }}
-          >
-            {chartData.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={tonalSeries[index] ?? tonalSeries[0]} />
-            ))}
-          </Bar>
+            animationDuration={chartAnimationDurationMs}
+            animationEasing={chartAnimationEasing}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
