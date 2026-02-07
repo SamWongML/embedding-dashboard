@@ -1,7 +1,10 @@
+import { DashboardPageShell } from '@/components/dashboard/layout/dashboard-page-shell'
 import SettingsClient from './settings-client'
 
-export const dynamic = 'force-dynamic'
-
 export default function SettingsPage() {
-  return <SettingsClient />
+  return (
+    <DashboardPageShell title="Settings">
+      <SettingsClient />
+    </DashboardPageShell>
+  )
 }

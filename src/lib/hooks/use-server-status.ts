@@ -1,121 +1,56 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { api, queryKeys, getWebSocketManager } from '@/lib/api'
-import {
-  type HealthCheck,
-  type LatencyResponse,
-  type ServiceUsage,
-  type ErrorLog,
-  healthCheckSchema,
-  latencyResponseSchema,
+import { useQuery } from '@tanstack/react-query'
+import type { ApiState } from '@/lib/api'
+import { getWebSocketManager, queryKeys, resolveApiState } from '@/lib/api'
+import type {
+  ErrorLog,
+  HealthCheck,
+  LatencyResponse,
+  ServiceUsage,
 } from '@/lib/schemas/server-status'
-
-// Mock data for development
-const mockHealthCheck: HealthCheck = {
-  status: 'healthy',
-  uptime: 864000,
-  version: '1.0.0',
-  timestamp: new Date().toISOString(),
-}
-
-const mockLatencyResponse: LatencyResponse = {
-  current: 45,
-  average: 52,
-  p95: 89,
-  p99: 120,
-  history: Array.from({ length: 60 }, (_, i) => ({
-    timestamp: new Date(Date.now() - (60 - i) * 60000).toISOString(), // 1 minute intervals
-    value: Math.floor(Math.random() * 50) + 30,
-  })),
-}
-
-const mockServices: ServiceUsage[] = [
-  { endpoint: '/api/embed/text', method: 'POST', count: 15420, avgLatency: 45 },
-  { endpoint: '/api/embed/image', method: 'POST', count: 8320, avgLatency: 120 },
-  { endpoint: '/api/search', method: 'POST', count: 25600, avgLatency: 32 },
-  { endpoint: '/api/records', method: 'GET', count: 12400, avgLatency: 18 },
-  { endpoint: '/api/graph/nodes', method: 'GET', count: 3200, avgLatency: 85 },
-]
-
-const mockErrors: ErrorLog[] = [
-  {
-    id: '1',
-    timestamp: new Date(Date.now() - 300000).toISOString(),
-    level: 'error',
-    message: 'Connection timeout to embedding service',
-    source: 'embedding-service',
-  },
-  {
-    id: '2',
-    timestamp: new Date(Date.now() - 600000).toISOString(),
-    level: 'warning',
-    message: 'High memory usage detected (85%)',
-    source: 'system-monitor',
-  },
-  {
-    id: '3',
-    timestamp: new Date(Date.now() - 900000).toISOString(),
-    level: 'info',
-    message: 'Rate limit threshold reached for user xyz',
-    source: 'rate-limiter',
-  },
-]
+import {
+  fetchServerErrors,
+  fetchServerHealth,
+  fetchServerLatency,
+  fetchServiceUsage,
+} from '@/lib/repositories/server-status/api'
+import {
+  getMockErrors,
+  getMockHealthCheck,
+  getMockLatencyResponse,
+  mockServices,
+} from '@/lib/repositories/server-status/mock'
 
 export function useServerHealth() {
-  return useQuery({
+  return useQuery<ApiState<HealthCheck>>({
     queryKey: queryKeys.serverStatus.health(),
-    queryFn: async () => {
-      try {
-        return await api.get('/health', healthCheckSchema)
-      } catch {
-        // Return mock data if API is unavailable
-        return mockHealthCheck
-      }
-    },
+    queryFn: () => resolveApiState(fetchServerHealth, getMockHealthCheck),
     refetchInterval: 5000,
   })
 }
 
 export function useServerLatency() {
-  return useQuery({
+  return useQuery<ApiState<LatencyResponse>>({
     queryKey: queryKeys.serverStatus.latency(),
-    queryFn: async () => {
-      try {
-        return await api.get('/metrics/latency', latencyResponseSchema)
-      } catch {
-        return mockLatencyResponse
-      }
-    },
+    queryFn: () => resolveApiState(fetchServerLatency, getMockLatencyResponse),
     refetchInterval: 5000,
   })
 }
 
 export function useServiceUsage() {
-  return useQuery({
+  return useQuery<ApiState<ServiceUsage[]>>({
     queryKey: queryKeys.serverStatus.services(),
-    queryFn: async () => {
-      try {
-        return await api.get<ServiceUsage[]>('/metrics/services')
-      } catch {
-        return mockServices
-      }
-    },
+    queryFn: () => resolveApiState(fetchServiceUsage, () => mockServices),
     refetchInterval: 30000,
   })
 }
 
 export function useServerErrors() {
-  return useQuery({
+  return useQuery<ApiState<ErrorLog[]>>({
     queryKey: queryKeys.serverStatus.errors(),
-    queryFn: async () => {
-      try {
-        return await api.get<ErrorLog[]>('/logs/errors')
-      } catch {
-        return mockErrors
-      }
-    },
+    queryFn: () => resolveApiState(fetchServerErrors, getMockErrors),
     refetchInterval: 10000,
   })
 }

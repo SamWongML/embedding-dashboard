@@ -1,8 +1,1 @@
-export {
-  SidebarProvider,
-  SidebarFrame,
-  SidebarHeader,
-  SidebarNav,
-  SidebarFooter,
-  useSidebar,
-} from './sidebar'
+export { AppSidebar } from "./app-sidebar"

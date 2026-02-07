@@ -18,7 +18,8 @@ type Period = '24h' | '7d' | '30d'
 
 export function MetricsPanel({ className }: MetricsPanelProps) {
   const [period, setPeriod] = useState<Period>('24h')
-  const { data, isLoading } = useMetricsOverview(period)
+  const { data: metricsState, isLoading } = useMetricsOverview(period)
+  const data = metricsState?.data
 
   return (
     <div className={cn('space-y-6', className)}>

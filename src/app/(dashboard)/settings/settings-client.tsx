@@ -71,51 +71,44 @@ export default function SettingsClient() {
   )
 
   return (
-    <div className="flex flex-col">
-      <header className="sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
-        <h1 className="text-lg font-semibold">Settings</h1>
-      </header>
-      <div className="flex-1 p-6">
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          orientation="vertical"
-          className="flex flex-col gap-8 md:flex-row"
-        >
-          <TabsList
-            variant="line"
-            className="w-full flex-col items-start gap-1 md:w-56"
+    <Tabs
+      value={activeTab}
+      onValueChange={handleTabChange}
+      orientation="vertical"
+      className="flex flex-col gap-8 md:flex-row"
+    >
+      <TabsList
+        variant="line"
+        className="w-full flex-col items-start gap-1 md:w-56"
+      >
+        {tabs.map((tab) => (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className="w-full justify-start"
           >
-            {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="w-full justify-start"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
 
-          <div className="min-w-0 flex-1 space-y-6">
-            <TabsContent value="account">
-              <AccountTab />
-            </TabsContent>
-            <TabsContent value="preferences">
-              <PreferencesTab />
-            </TabsContent>
-            <TabsContent value="notifications">
-              <NotificationsTab />
-            </TabsContent>
-            <TabsContent value="security">
-              <SecurityTab />
-            </TabsContent>
-            <TabsContent value="workspace">
-              <WorkspaceTab />
-            </TabsContent>
-          </div>
-        </Tabs>
+      <div className="min-w-0 flex-1 space-y-6">
+        <TabsContent value="account">
+          <AccountTab />
+        </TabsContent>
+        <TabsContent value="preferences">
+          <PreferencesTab />
+        </TabsContent>
+        <TabsContent value="notifications">
+          <NotificationsTab />
+        </TabsContent>
+        <TabsContent value="security">
+          <SecurityTab />
+        </TabsContent>
+        <TabsContent value="workspace">
+          <WorkspaceTab />
+        </TabsContent>
       </div>
-    </div>
+    </Tabs>
   )
 }

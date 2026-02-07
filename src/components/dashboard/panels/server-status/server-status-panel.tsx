@@ -22,11 +22,15 @@ interface ServerStatusPanelProps {
 }
 
 export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
-  const { data: health, isLoading: healthLoading } = useServerHealth()
-  const { data: latency, isLoading: latencyLoading } = useServerLatency()
-  const { data: services, isLoading: servicesLoading } = useServiceUsage()
-  const { data: errors, isLoading: errorsLoading } = useServerErrors()
+  const { data: healthState, isLoading: healthLoading } = useServerHealth()
+  const { data: latencyState, isLoading: latencyLoading } = useServerLatency()
+  const { data: servicesState, isLoading: servicesLoading } = useServiceUsage()
+  const { data: errorsState, isLoading: errorsLoading } = useServerErrors()
   const { latency: realtimeLatency, isConnected } = useRealtimeLatency()
+  const health = healthState?.data
+  const latency = latencyState?.data
+  const services = servicesState?.data
+  const errors = errorsState?.data
 
   const formatUptime = (seconds: number) => {
     const days = Math.floor(seconds / 86400)

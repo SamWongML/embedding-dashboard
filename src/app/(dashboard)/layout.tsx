@@ -1,16 +1,10 @@
 import type { ReactNode } from 'react'
 import type { AccountSnapshot } from '@/lib/types/account'
-import { AccountProvider } from '@/components/account'
-import {
-  SidebarProvider,
-  SidebarFrame,
-  SidebarHeader,
-  SidebarNav,
-  SidebarFooter,
-} from '@/components/dashboard/sidebar'
+import { AccountProvider } from '@/components/account/account-provider'
+import { AppSidebar } from '@/components/dashboard/sidebar/app-sidebar'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { getAccountSnapshotSupabase } from '@/lib/account/supabase'
-import { DashboardMainClient } from './dashboard-main-client'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 function getAuthMode() {
   const mode = process.env.AUTH_MODE || process.env.NEXT_PUBLIC_AUTH_MODE || 'mock'
@@ -51,16 +45,10 @@ export default async function DashboardLayout({
   return (
     <AccountProvider initialSnapshot={initialSnapshot}>
       <SidebarProvider>
-        <div className="min-h-screen bg-background">
-          <SidebarFrame>
-            <SidebarHeader />
-            <SidebarNav />
-            <SidebarFooter />
-          </SidebarFrame>
-          <DashboardMainClient>
-            {children}
-          </DashboardMainClient>
-        </div>
+        <AppSidebar />
+        <SidebarInset className="min-h-svh">
+          {children}
+        </SidebarInset>
       </SidebarProvider>
     </AccountProvider>
   )

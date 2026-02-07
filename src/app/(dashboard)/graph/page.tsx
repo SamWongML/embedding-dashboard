@@ -1,12 +1,15 @@
 import { Metadata } from 'next'
+import { DashboardPageShell } from '@/components/dashboard/layout/dashboard-page-shell'
 import GraphPageClient from './graph-page-client'
 
 export const metadata: Metadata = {
   title: 'Graph',
 }
 
-export const dynamic = 'force-dynamic'
-
 export default function GraphPage() {
-  return <GraphPageClient />
+  return (
+    <DashboardPageShell title="Knowledge Graph">
+      <GraphPageClient />
+    </DashboardPageShell>
+  )
 }

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { Search } from 'lucide-react'
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,42 +11,22 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import {
-  Activity,
-  BarChart3,
-  FileText,
-  Image,
-  Search,
-  Database,
-  GitBranch,
-  Users,
-} from 'lucide-react'
+import { navigationItems } from '@/components/dashboard/navigation.config'
 
-const navigationItems = [
-  { icon: Activity, label: 'Server Status', href: '/', keywords: ['health', 'monitoring', 'status'] },
-  { icon: BarChart3, label: 'Metrics', href: '/metrics', keywords: ['analytics', 'charts', 'data'] },
-  { icon: FileText, label: 'Text Embedding', href: '/text-embedding', keywords: ['text', 'embed', 'vector'] },
-  { icon: Image, label: 'Image Embedding', href: '/image-embedding', keywords: ['image', 'vision', 'picture'] },
-  { icon: Search, label: 'Hybrid Search', href: '/search', keywords: ['search', 'query', 'find'] },
-  { icon: Database, label: 'Records', href: '/records', keywords: ['data', 'table', 'list'] },
-  { icon: GitBranch, label: 'Graph', href: '/graph', keywords: ['neo4j', 'nodes', 'relationships'] },
-  { icon: Users, label: 'Users', href: '/users', keywords: ['admin', 'permissions', 'access'] },
-]
-
-export function SearchCommand() {
+export function CommandPalette() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
 
   React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        setOpen((previous) => !previous)
       }
     }
 
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
   }, [])
 
   const handleSelect = React.useCallback((href: string) => {
@@ -56,8 +37,9 @@ export function SearchCommand() {
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-(--form-item-gap) rounded-md border border-input bg-background px-(--input-padding-x) py-(--space-sm) text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors w-(--search-width)"
+        className="flex w-(--search-width) items-center gap-(--form-item-gap) rounded-md border border-input bg-background px-(--input-padding-x) py-(--space-sm) text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
       >
         <Search className="size-(--icon-sm)" />
         <span className="flex-1 text-left">Search...</span>

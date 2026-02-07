@@ -66,7 +66,17 @@ export function ThemeProvider({
     }
 
     root.classList.add(resolved)
+    root.classList.add('theme-transition')
     setResolvedTheme(resolved)
+
+    const timeoutId = window.setTimeout(() => {
+      root.classList.remove('theme-transition')
+    }, 200)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+      root.classList.remove('theme-transition')
+    }
   }, [theme])
 
   React.useEffect(() => {
@@ -78,7 +88,12 @@ export function ThemeProvider({
       root.classList.remove('light', 'dark')
       const resolved = e.matches ? 'dark' : 'light'
       root.classList.add(resolved)
+      root.classList.add('theme-transition')
       setResolvedTheme(resolved)
+
+      window.setTimeout(() => {
+        root.classList.remove('theme-transition')
+      }, 200)
     }
 
     mediaQuery.addEventListener('change', handleChange)
