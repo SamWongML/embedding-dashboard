@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { cookies } from 'next/headers'
 import { Providers } from '@/components/providers'
+import { isTheme, THEME_COOKIE_NAME, THEME_STORAGE_KEY, type Theme } from '@/lib/preferences/theme'
 import './globals.css'
 
 const inter = Inter({
@@ -27,11 +29,15 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const cookieStore = await cookies()
+  const cookieTheme = cookieStore.get(THEME_COOKIE_NAME)?.value
+  const initialTheme: Theme = isTheme(cookieTheme) ? cookieTheme : 'system'
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -39,7 +45,19 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('embedding-dashboard-theme') || 'system';
+                const storageKey = ${JSON.stringify(THEME_STORAGE_KEY)};
+                const cookieName = ${JSON.stringify(THEME_COOKIE_NAME)};
+                const cookieTheme = document.cookie
+                  .split('; ')
+                  .find((entry) => entry.startsWith(cookieName + '='))
+                  ?.split('=')[1];
+                const storedTheme =
+                  localStorage.getItem(storageKey) ||
+                  (cookieTheme ? decodeURIComponent(cookieTheme) : null) ||
+                  'system';
+                const theme = ['light', 'dark', 'system'].includes(storedTheme)
+                  ? storedTheme
+                  : 'system';
                 const resolved = theme === 'system'
                   ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                   : theme;
@@ -50,7 +68,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} min-h-screen antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers initialTheme={initialTheme}>{children}</Providers>
       </body>
     </html>
   )

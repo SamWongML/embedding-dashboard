@@ -1,8 +1,35 @@
 'use client'
 
 import * as React from 'react'
+import { isTheme, THEME_COOKIE_NAME, THEME_STORAGE_KEY, type Theme } from '@/lib/preferences/theme'
 
-type Theme = 'light' | 'dark' | 'system'
+function readThemeCookie(): Theme | null {
+  const cookieEntry = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${THEME_COOKIE_NAME}=`))
+
+  if (!cookieEntry) {
+    return null
+  }
+
+  const [, rawValue = ''] = cookieEntry.split('=')
+  const decodedValue = decodeURIComponent(rawValue)
+  return isTheme(decodedValue) ? decodedValue : null
+}
+
+function persistTheme(theme: Theme, storageKey: string) {
+  localStorage.setItem(storageKey, theme)
+  document.cookie = `${THEME_COOKIE_NAME}=${encodeURIComponent(theme)}; Path=/; Max-Age=31536000; SameSite=Lax`
+}
+
+function readStoredTheme(storageKey: string): Theme | null {
+  const value = localStorage.getItem(storageKey)
+  if (isTheme(value)) {
+    return value
+  }
+
+  return readThemeCookie()
+}
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -21,21 +48,34 @@ const ThemeProviderContext = React.createContext<ThemeProviderState | undefined>
 export function ThemeProvider({
   children,
   defaultTheme = 'system',
-  storageKey = 'embedding-dashboard-theme',
+  storageKey = THEME_STORAGE_KEY,
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = React.useState<Theme>(defaultTheme)
+  const [theme, setThemeState] = React.useState<Theme>(() => {
+    if (typeof window === 'undefined') {
+      return defaultTheme
+    }
+
+    return readStoredTheme(storageKey) ?? defaultTheme
+  })
   const [resolvedTheme, setResolvedTheme] = React.useState<'light' | 'dark'>('light')
 
   const setTheme = React.useCallback((newTheme: Theme) => {
-    localStorage.setItem(storageKey, newTheme)
+    persistTheme(newTheme, storageKey)
     setThemeState(newTheme)
   }, [storageKey])
 
   React.useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as Theme | null
-    if (stored) {
-      setThemeState(stored)
+    const localTheme = localStorage.getItem(storageKey)
+    if (!isTheme(localTheme)) {
+      return
     }
+
+    const cookieTheme = readThemeCookie()
+    if (cookieTheme === localTheme) {
+      return
+    }
+
+    persistTheme(localTheme, storageKey)
   }, [storageKey])
 
   React.useEffect(() => {
@@ -44,15 +84,21 @@ export function ThemeProvider({
     fetch('/api/preferences')
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
-        if (!active || !data?.theme) return
-        setTheme(data.theme)
+        if (!active || !isTheme(data?.theme)) return
+
+        // Keep explicit client preference stable across refreshes.
+        const hasStoredPreference = readStoredTheme(storageKey) !== null
+        if (hasStoredPreference) return
+
+        persistTheme(data.theme, storageKey)
+        setThemeState(data.theme)
       })
       .catch(() => undefined)
 
     return () => {
       active = false
     }
-  }, [setTheme])
+  }, [storageKey])
 
   React.useEffect(() => {
     const root = window.document.documentElement

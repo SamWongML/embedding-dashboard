@@ -14,8 +14,13 @@ import {
 import { navigationItems } from '@/components/dashboard/navigation.config'
 
 export function CommandPalette() {
+  const [hasMounted, setHasMounted] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
+
+  React.useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -47,24 +52,26 @@ export function CommandPalette() {
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Navigation">
-            {navigationItems.map((item) => (
-              <CommandItem
-                key={item.href}
-                value={`${item.label} ${item.keywords.join(' ')}`}
-                onSelect={() => handleSelect(item.href)}
-              >
-                <item.icon className="mr-(--form-item-gap) size-(--icon-sm)" />
-                {item.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
+      {hasMounted ? (
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Navigation">
+              {navigationItems.map((item) => (
+                <CommandItem
+                  key={item.href}
+                  value={`${item.label} ${item.keywords.join(' ')}`}
+                  onSelect={() => handleSelect(item.href)}
+                >
+                  <item.icon className="mr-(--form-item-gap) size-(--icon-sm)" />
+                  {item.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
+      ) : null}
     </>
   )
 }

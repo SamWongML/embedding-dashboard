@@ -22,11 +22,28 @@ import { toActionErrorMessage, toNoOpActionMessage } from '@/lib/api'
 import { useTheme } from '@/components/providers/theme-provider'
 import { saveThemePreference } from '@/lib/preferences/preferences'
 
+const timezoneOptions = [
+  { value: 'america-los-angeles', label: 'America/Los_Angeles (UTC-8)' },
+  { value: 'america-new-york', label: 'America/New_York (UTC-5)' },
+  { value: 'europe-london', label: 'Europe/London (UTC+0)' },
+] as const
+
+const languageOptions = [
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+  { value: 'fr', label: 'French' },
+] as const
+
 export default function PreferencesTab() {
   const { theme, setTheme } = useTheme()
+  const [hasMounted, setHasMounted] = React.useState(false)
   const [timezone, setTimezone] = React.useState('america-los-angeles')
   const [language, setLanguage] = React.useState('en')
   const [actionWarning, setActionWarning] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   const handleThemeChange = React.useCallback(
     async (value: 'light' | 'dark' | 'system') => {
@@ -64,6 +81,7 @@ export default function PreferencesTab() {
         <CardContent>
           <RadioGroup
             value={theme}
+            disabled={!hasMounted}
             onValueChange={(value) =>
               void handleThemeChange(value as 'light' | 'dark' | 'system')
             }
@@ -110,51 +128,61 @@ export default function PreferencesTab() {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>Timezone</Label>
-            <Select
-              value={timezone}
-              onValueChange={(value) => {
-                setTimezone(value)
-                setActionWarning(
-                  toNoOpActionMessage('Update timezone preference')
-                )
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="america-los-angeles">
-                  America/Los_Angeles (UTC-8)
-                </SelectItem>
-                <SelectItem value="america-new-york">
-                  America/New_York (UTC-5)
-                </SelectItem>
-                <SelectItem value="europe-london">
-                  Europe/London (UTC+0)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {hasMounted ? (
+              <Select
+                value={timezone}
+                onValueChange={(value) => {
+                  setTimezone(value)
+                  setActionWarning(
+                    toNoOpActionMessage('Update timezone preference')
+                  )
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timezoneOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="border-input text-muted-foreground flex h-(--input-height) w-full items-center rounded-md border bg-transparent px-(--input-padding-x) text-sm">
+                {timezoneOptions.find((option) => option.value === timezone)?.label}
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Language</Label>
-            <Select
-              value={language}
-              onValueChange={(value) => {
-                setLanguage(value)
-                setActionWarning(
-                  toNoOpActionMessage('Update language preference')
-                )
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-              </SelectContent>
-            </Select>
+            {hasMounted ? (
+              <Select
+                value={language}
+                onValueChange={(value) => {
+                  setLanguage(value)
+                  setActionWarning(
+                    toNoOpActionMessage('Update language preference')
+                  )
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languageOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="border-input text-muted-foreground flex h-(--input-height) w-full items-center rounded-md border bg-transparent px-(--input-padding-x) text-sm">
+                {languageOptions.find((option) => option.value === language)?.label}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

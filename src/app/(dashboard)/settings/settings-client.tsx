@@ -1,9 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import dynamicImport from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import AccountTab from './tabs/account-tab'
+import NotificationsTab from './tabs/notifications-tab'
+import PreferencesTab from './tabs/preferences-tab'
+import SecurityTab from './tabs/security-tab'
+import WorkspaceTab from './tabs/workspace-tab'
 
 const tabs = [
   { value: 'account', label: 'Account' },
@@ -11,64 +15,84 @@ const tabs = [
   { value: 'notifications', label: 'Notifications' },
   { value: 'security', label: 'Security & Access' },
   { value: 'workspace', label: 'Workspace' },
-]
+] as const
 
-const TabFallback = () => (
-  <div className="rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">
-    Loading settings...
-  </div>
-)
+type SettingsTabValue = (typeof tabs)[number]['value']
 
-const AccountTab = dynamicImport(
-  () => import('./tabs/account-tab').then((mod) => mod.default),
-  {
-    loading: TabFallback,
+function isSettingsTabValue(value: string): value is SettingsTabValue {
+  return tabs.some((tab) => tab.value === value)
+}
+
+function parseSettingsTab(value: string | null): SettingsTabValue {
+  if (value && isSettingsTabValue(value)) {
+    return value
   }
-)
-const PreferencesTab = dynamicImport(
-  () => import('./tabs/preferences-tab').then((mod) => mod.default),
-  {
-    loading: TabFallback,
-  }
-)
-const NotificationsTab = dynamicImport(
-  () => import('./tabs/notifications-tab').then((mod) => mod.default),
-  {
-    loading: TabFallback,
-  }
-)
-const SecurityTab = dynamicImport(
-  () => import('./tabs/security-tab').then((mod) => mod.default),
-  {
-    loading: TabFallback,
-  }
-)
-const WorkspaceTab = dynamicImport(
-  () => import('./tabs/workspace-tab').then((mod) => mod.default),
-  {
-    loading: TabFallback,
-  }
-)
+
+  return 'account'
+}
+
+function renderSettingsTabContent(value: SettingsTabValue) {
+  if (value === 'account') return <AccountTab />
+  if (value === 'preferences') return <PreferencesTab />
+  if (value === 'notifications') return <NotificationsTab />
+  if (value === 'security') return <SecurityTab />
+  return <WorkspaceTab />
+}
 
 export default function SettingsClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const initialTab = searchParams.get('tab') || 'account'
-  const [activeTab, setActiveTab] = React.useState(initialTab)
+  const [hasMounted, setHasMounted] = React.useState(false)
+  const [activeTab, setActiveTab] = React.useState<SettingsTabValue>(() =>
+    parseSettingsTab(searchParams.get('tab'))
+  )
 
   React.useEffect(() => {
-    if (searchParams.get('tab') && searchParams.get('tab') !== activeTab) {
-      setActiveTab(searchParams.get('tab') || 'account')
+    setHasMounted(true)
+  }, [])
+
+  React.useEffect(() => {
+    const tabFromSearchParams = parseSettingsTab(searchParams.get('tab'))
+    if (tabFromSearchParams !== activeTab) {
+      setActiveTab(tabFromSearchParams)
     }
   }, [searchParams, activeTab])
 
   const handleTabChange = React.useCallback(
     (value: string) => {
+      if (!isSettingsTabValue(value)) {
+        return
+      }
+
       setActiveTab(value)
       router.replace(`/settings?tab=${value}`)
     },
     [router]
   )
+
+  if (!hasMounted) {
+    return (
+      <div className="flex flex-col gap-8 md:flex-row">
+        <div className="w-full md:w-56">
+          <div className="text-muted-foreground flex flex-col gap-1">
+            {tabs.map((tab) => (
+              <div
+                key={tab.value}
+                className={`rounded-md px-3 py-2 text-sm font-medium ${
+                  activeTab === tab.value ? 'bg-muted text-foreground' : ''
+                }`}
+              >
+                {tab.label}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="min-w-0 flex-1 space-y-6">
+          {renderSettingsTabContent(activeTab)}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <Tabs
@@ -93,20 +117,16 @@ export default function SettingsClient() {
       </TabsList>
 
       <div className="min-w-0 flex-1 space-y-6">
-        <TabsContent value="account">
-          <AccountTab />
-        </TabsContent>
+        <TabsContent value="account">{renderSettingsTabContent('account')}</TabsContent>
         <TabsContent value="preferences">
-          <PreferencesTab />
+          {renderSettingsTabContent('preferences')}
         </TabsContent>
         <TabsContent value="notifications">
-          <NotificationsTab />
+          {renderSettingsTabContent('notifications')}
         </TabsContent>
-        <TabsContent value="security">
-          <SecurityTab />
-        </TabsContent>
+        <TabsContent value="security">{renderSettingsTabContent('security')}</TabsContent>
         <TabsContent value="workspace">
-          <WorkspaceTab />
+          {renderSettingsTabContent('workspace')}
         </TabsContent>
       </div>
     </Tabs>

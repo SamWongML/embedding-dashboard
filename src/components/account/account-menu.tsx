@@ -44,6 +44,7 @@ interface AccountMenuTriggerProps {
   workspace: string
   avatarUrl?: string
   className?: string
+  interactive?: boolean
 }
 
 interface AccountMenuContentProps {
@@ -78,48 +79,52 @@ function AccountMenuTrigger({
   workspace,
   avatarUrl,
   className,
+  interactive = true,
 }: AccountMenuTriggerProps) {
-  const trigger = (
-    <DropdownMenuTrigger asChild>
-      <Button
-        variant="ghost"
+  const button = (
+    <Button
+      variant="ghost"
+      className={cn(
+        'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
+        collapsed && 'justify-center px-0',
+        compact && 'mx-auto size-(--button-height-sm) justify-center rounded-md p-0',
+        className
+      )}
+    >
+      <Avatar
         className={cn(
-          'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
-          collapsed && 'justify-center px-0',
-          compact &&
-            'mx-auto size-(--button-height-sm) justify-center rounded-md p-0',
-          className
+          'size-(--avatar-size-sm) border border-sidebar-border/70',
+          collapsed && 'size-(--avatar-size-md)',
+          compact && 'size-(--avatar-size-xs)'
         )}
       >
-        <Avatar
-          className={cn(
-            'size-(--avatar-size-sm) border border-sidebar-border/70',
-            collapsed && 'size-(--avatar-size-md)',
-            compact && 'size-(--avatar-size-xs)'
-          )}
-        >
-          {avatarUrl ? (
-            <AvatarImage src={avatarUrl} alt={name} />
-          ) : null}
-          <AvatarFallback>{getInitials(name)}</AvatarFallback>
-        </Avatar>
-        {!collapsed && (
-          <div className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
-              {name}
-            </span>
-            <span className="truncate text-xs leading-tight text-muted-foreground">
-              {workspace}
-            </span>
-          </div>
-        )}
-        {!collapsed && (
-          <ChevronsUpDown className="ml-auto size-(--icon-sm) text-muted-foreground/70" />
-        )}
-        <span className="sr-only">Open account menu</span>
-      </Button>
-    </DropdownMenuTrigger>
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl} alt={name} />
+        ) : null}
+        <AvatarFallback>{getInitials(name)}</AvatarFallback>
+      </Avatar>
+      {!collapsed && (
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
+            {name}
+          </span>
+          <span className="truncate text-xs leading-tight text-muted-foreground">
+            {workspace}
+          </span>
+        </div>
+      )}
+      {!collapsed && (
+        <ChevronsUpDown className="ml-auto size-(--icon-sm) text-muted-foreground/70" />
+      )}
+      <span className="sr-only">Open account menu</span>
+    </Button>
   )
+
+  if (!interactive) {
+    return button
+  }
+
+  const trigger = <DropdownMenuTrigger asChild>{button}</DropdownMenuTrigger>
 
   if (!collapsed) {
     return trigger
@@ -269,7 +274,27 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
     setActiveWorkspace,
     signOut,
   } = useAccount()
+  const [hasMounted, setHasMounted] = React.useState(false)
   const compactTrigger = collapsed && viewportMode === 'medium'
+
+  React.useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
+  if (!hasMounted) {
+    return (
+      <AccountMenuTrigger
+        collapsed={collapsed}
+        compact={compactTrigger}
+        name={user.name}
+        email={user.email}
+        workspace={activeWorkspace.name}
+        avatarUrl={user.avatarUrl}
+        className={className}
+        interactive={false}
+      />
+    )
+  }
 
   return (
     <DropdownMenu>
