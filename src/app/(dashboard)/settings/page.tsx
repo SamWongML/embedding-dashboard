@@ -12,7 +12,7 @@ function SettingsClientFallback() {
 
 export default function SettingsPage() {
   return (
-    <DashboardPageShell title="Settings">
+    <DashboardPageShell title="Settings" className="settings-typography">
       <Suspense fallback={<SettingsClientFallback />}>
         <SettingsClient />
       </Suspense>

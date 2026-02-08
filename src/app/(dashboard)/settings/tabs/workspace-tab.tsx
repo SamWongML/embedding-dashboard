@@ -44,26 +44,26 @@ export default function WorkspaceTab() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium">Avery Chen</div>
-              <p className="text-xs text-muted-foreground">Owner</p>
+              <div className="typography-copy-14 font-medium">Avery Chen</div>
+              <p className="typography-copy-13 text-muted-foreground">Owner</p>
             </div>
-            <Badge variant="secondary">Owner</Badge>
+            <Badge variant="secondary" className="typography-copy-13">Owner</Badge>
           </div>
           <Separator />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium">Jordan Lee</div>
-              <p className="text-xs text-muted-foreground">Admin</p>
+              <div className="typography-copy-14 font-medium">Jordan Lee</div>
+              <p className="typography-copy-13 text-muted-foreground">Admin</p>
             </div>
-            <Badge variant="outline">Admin</Badge>
+            <Badge variant="outline" className="typography-copy-13">Admin</Badge>
           </div>
           <Separator />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium">Sam Rivera</div>
-              <p className="text-xs text-muted-foreground">Member</p>
+              <div className="typography-copy-14 font-medium">Sam Rivera</div>
+              <p className="typography-copy-13 text-muted-foreground">Member</p>
             </div>
-            <Badge variant="outline">Member</Badge>
+            <Badge variant="outline" className="typography-copy-13">Member</Badge>
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t">
@@ -83,8 +83,8 @@ export default function WorkspaceTab() {
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium">Current plan</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="typography-copy-14 font-medium">Current plan</div>
+              <p className="typography-copy-13 text-muted-foreground">
                 {activeWorkspace.plan.toUpperCase()} plan
               </p>
             </div>
@@ -98,8 +98,8 @@ export default function WorkspaceTab() {
           </div>
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium">Payment method</div>
-              <p className="text-xs text-muted-foreground">Visa ending in 4242</p>
+              <div className="typography-copy-14 font-medium">Payment method</div>
+              <p className="typography-copy-13 text-muted-foreground">Visa ending in 4242</p>
             </div>
             <Button
               variant="ghost"

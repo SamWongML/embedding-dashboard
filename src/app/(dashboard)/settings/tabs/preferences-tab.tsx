@@ -84,8 +84,8 @@ export default function PreferencesTab() {
             <label className="flex items-center gap-3 rounded-md border border-border p-3">
               <RadioGroupItem value="light" />
               <div>
-                <div className="text-sm font-medium">Light</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="typography-copy-14 font-medium">Light</div>
+                <p className="typography-copy-13 text-muted-foreground">
                   Bright surfaces and crisp contrast.
                 </p>
               </div>
@@ -93,8 +93,8 @@ export default function PreferencesTab() {
             <label className="flex items-center gap-3 rounded-md border border-border p-3">
               <RadioGroupItem value="dark" />
               <div>
-                <div className="text-sm font-medium">Dark</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="typography-copy-14 font-medium">Dark</div>
+                <p className="typography-copy-13 text-muted-foreground">
                   Optimized for low-light work.
                 </p>
               </div>
@@ -102,8 +102,8 @@ export default function PreferencesTab() {
             <label className="flex items-center gap-3 rounded-md border border-border p-3">
               <RadioGroupItem value="system" />
               <div>
-                <div className="text-sm font-medium">System</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="typography-copy-14 font-medium">System</div>
+                <p className="typography-copy-13 text-muted-foreground">
                   Match your device appearance automatically.
                 </p>
               </div>

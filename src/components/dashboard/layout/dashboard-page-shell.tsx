@@ -29,7 +29,9 @@ export function DashboardPageShell({
             orientation="vertical"
             className="mr-[calc(var(--form-item-gap)-1px)] md:hidden xl:block data-[orientation=vertical]:h-4"
           />
-          <h1 className="truncate text-lg font-semibold">{title}</h1>
+          <h1 className="truncate [font-size:var(--page-title-size)] [line-height:var(--page-title-line-height)] [font-weight:var(--page-title-weight)]">
+            {title}
+          </h1>
         </div>
         <div className="flex items-center gap-(--form-item-gap)">
           <DevSimulationIndicator />

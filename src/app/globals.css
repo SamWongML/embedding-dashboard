@@ -96,6 +96,14 @@
   --leading-body-sm: var(--leading-normal);
   --weight-body-sm: var(--font-weight-normal);
 
+  /* Product Copy (dense surfaces, Vercel/Linear style) */
+  --text-copy-16: var(--font-size-base); /* 16px */
+  --leading-copy-16: 1.5rem; /* 24px */
+  --text-copy-14: var(--font-size-sm); /* 14px */
+  --leading-copy-14: 1.25rem; /* 20px */
+  --text-copy-13: 0.8125rem; /* 13px */
+  --leading-copy-13: 1.125rem; /* 18px */
+
   /* Labels (Buttons, form labels, badges) */
   --text-label-lg: var(--font-size-base);
   --leading-label-lg: var(--leading-normal);
@@ -272,16 +280,18 @@
   --button-gap: var(--space-2);
   --button-gap-sm: var(--space-1\.5);
   --button-gap-xs: var(--space-1);
-  --button-font-size: var(--font-size-sm);
+  --button-font-size: var(--text-copy-14);
   --button-font-weight: var(--font-weight-medium);
-  --button-line-height: var(--leading-normal);
+  --button-line-height: var(--leading-copy-14);
 
   /* ===== INPUT TOKENS (Enhanced) ===== */
   --input-height: 2.25rem;
   --input-height-sm: 2rem;
   --input-padding-x: var(--space-3);
   --input-padding-y: var(--space-1);
-  --input-font-size: var(--font-size-sm);
+  --input-font-size: var(--text-copy-14);
+  --input-line-height: var(--leading-copy-14);
+  --input-font-weight: var(--font-weight-normal);
 
   /* ===== CARD TOKENS (Enhanced) ===== */
   --card-padding: var(--space-4);
@@ -307,6 +317,9 @@
   /* ===== HEADER TOKENS ===== */
   --header-height: 3.5rem;
   --header-padding-x: 1.5rem;
+  --page-title-size: var(--font-size-md);
+  --page-title-line-height: 1.75rem;
+  --page-title-weight: var(--font-weight-semibold);
 
   /* ===== AVATAR TOKENS ===== */
   --avatar-size-xs: 1.5rem;
@@ -334,6 +347,9 @@
   --tabs-list-height: 2.25rem;
   --tabs-trigger-padding-x: 0.5rem;
   --tabs-trigger-padding-y: 0.25rem;
+  --tabs-trigger-font-size: var(--text-copy-14);
+  --tabs-trigger-line-height: var(--leading-copy-14);
+  --tabs-trigger-font-weight: var(--font-weight-medium);
   --tabs-gap: 0.5rem;
 
   /* ===== TABLE TOKENS ===== */
@@ -349,6 +365,9 @@
 
   /* ===== FORM TOKENS ===== */
   --form-item-gap: 0.5rem;
+  --label-font-size: var(--text-copy-14);
+  --label-line-height: var(--leading-copy-14);
+  --label-font-weight: var(--font-weight-medium);
 
   /* ===== FOCUS RING TOKENS ===== */
   --ring-width: 3px;
@@ -390,6 +409,29 @@
   --base-hue: 240;
   --accent-hue: 260;
   --contrast: 1.0;
+
+  /* Runtime typography tokens (used by component custom-properties) */
+  --text-copy-16: 1rem;
+  --leading-copy-16: 1.5rem;
+  --text-copy-14: 0.875rem;
+  --leading-copy-14: 1.25rem;
+  --text-copy-13: 0.8125rem;
+  --leading-copy-13: 1.125rem;
+
+  --page-title-size: 1.125rem;
+  --page-title-line-height: 1.75rem;
+  --page-title-weight: 600;
+
+  --tabs-trigger-font-size: 0.875rem;
+  --tabs-trigger-line-height: 1.25rem;
+  --tabs-trigger-font-weight: 500;
+
+  --label-font-size: 0.875rem;
+  --label-line-height: 1;
+  --label-font-weight: 500;
+
+  --input-line-height: 1.25rem;
+  --input-font-weight: 400;
 
   /* Base Radius */
   --radius: 0.5rem;
@@ -605,7 +647,48 @@
     transition-duration: 150ms;
   }
 
+  /* Settings-only compact typography scope */
+  .settings-typography {
+    --page-title-size: var(--text-copy-16);
+    --page-title-line-height: var(--leading-copy-16);
+    --page-title-weight: var(--font-weight-semibold);
+
+    --tabs-trigger-font-size: var(--text-copy-14);
+    --tabs-trigger-line-height: var(--leading-copy-14);
+    --tabs-trigger-font-weight: var(--font-weight-medium);
+
+    --card-title-size: 0.9375rem; /* 15px */
+    --card-description-size: var(--text-copy-14);
+
+    --label-font-size: var(--text-copy-13);
+    --label-line-height: var(--leading-copy-13);
+    --label-font-weight: var(--font-weight-medium);
+
+    --input-font-size: var(--text-copy-14);
+    --input-line-height: var(--leading-copy-14);
+    --input-font-weight: var(--font-weight-normal);
+
+    --button-font-size: var(--text-copy-14);
+    --button-line-height: var(--leading-copy-14);
+    --button-font-weight: var(--font-weight-medium);
+  }
+
   /* ===== TYPOGRAPHY UTILITIES ===== */
+  .typography-copy-16 {
+    font-size: var(--text-copy-16);
+    line-height: var(--leading-copy-16);
+  }
+
+  .typography-copy-14 {
+    font-size: var(--text-copy-14);
+    line-height: var(--leading-copy-14);
+  }
+
+  .typography-copy-13 {
+    font-size: var(--text-copy-13);
+    line-height: var(--leading-copy-13);
+  }
+
   .typography-display-2xl {
     font-size: var(--text-display-2xl);
     line-height: var(--leading-display-2xl);

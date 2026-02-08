@@ -65,9 +65,9 @@ export default function AccountTab() {
               <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-              <div className="text-sm font-semibold">{user.name}</div>
-              <div className="text-xs text-muted-foreground">{user.email}</div>
-              <Badge variant="secondary" className="mt-2">
+              <div className="typography-copy-14 font-semibold">{user.name}</div>
+              <div className="typography-copy-13 text-muted-foreground">{user.email}</div>
+              <Badge variant="secondary" className="mt-2 typography-copy-13">
                 {activeWorkspace.name}
               </Badge>
             </div>
