@@ -14,7 +14,7 @@ function renderWithSidebarProvider(ui: ReactNode) {
 
 describe('DashboardPageShell', () => {
   it('renders title, actions, and children', () => {
-    renderWithSidebarProvider(
+    const { container } = renderWithSidebarProvider(
       <DashboardPageShell
         title="Metrics"
         actions={<button type="button">Action</button>}
@@ -27,5 +27,15 @@ describe('DashboardPageShell', () => {
     expect(screen.getByText('Metrics')).toBeInTheDocument()
     expect(screen.getByText('Action')).toBeInTheDocument()
     expect(screen.getByText('Panel content')).toBeInTheDocument()
+
+    const trigger = screen.getByRole('button', { name: 'Toggle Sidebar' })
+    expect(trigger).toHaveClass('md:hidden')
+    expect(trigger).toHaveClass('xl:inline-flex')
+
+    const verticalSeparator = container.querySelector(
+      '[data-slot="separator"][data-orientation="vertical"]'
+    )
+    expect(verticalSeparator).toHaveClass('md:hidden')
+    expect(verticalSeparator).toHaveClass('xl:block')
   })
 })

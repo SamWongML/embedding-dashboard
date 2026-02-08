@@ -24,8 +24,11 @@ export function DashboardPageShell({
     <div className={cn("flex min-h-0 flex-1 flex-col", className)}>
       <header className="sticky top-0 z-(--z-fixed) flex h-(--header-height) items-center justify-between border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex min-w-0 items-center gap-(--form-item-gap)">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-(--form-item-gap) data-[orientation=vertical]:h-4" />
+          <SidebarTrigger className="-ml-1 md:hidden xl:inline-flex" />
+          <Separator
+            orientation="vertical"
+            className="mr-(--form-item-gap) md:hidden xl:block data-[orientation=vertical]:h-4"
+          />
           <h1 className="truncate text-lg font-semibold">{title}</h1>
         </div>
         <div className="flex items-center gap-(--form-item-gap)">

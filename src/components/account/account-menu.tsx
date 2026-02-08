@@ -27,15 +27,18 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAccount } from '@/lib/hooks/use-account'
 import { DOCS_URL, SHORTCUTS_URL, SUPPORT_URL } from '@/lib/config/links'
+import type { SidebarViewportMode } from '@/lib/layout/sidebar-mode'
 import { cn } from '@/lib/utils'
 
 interface AccountMenuProps {
   collapsed: boolean
+  viewportMode: SidebarViewportMode
   className?: string
 }
 
 interface AccountMenuTriggerProps {
   collapsed: boolean
+  compact: boolean
   name: string
   email: string
   workspace: string
@@ -69,6 +72,7 @@ function formatRole(role: string) {
 
 function AccountMenuTrigger({
   collapsed,
+  compact,
   name,
   email,
   workspace,
@@ -82,13 +86,16 @@ function AccountMenuTrigger({
         className={cn(
           'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
           collapsed && 'justify-center px-0',
+          compact &&
+            'mx-auto size-(--button-height-sm) justify-center rounded-md p-0',
           className
         )}
       >
         <Avatar
           className={cn(
             'size-(--avatar-size-sm) border border-sidebar-border/70',
-            collapsed && 'size-(--avatar-size-md)'
+            collapsed && 'size-(--avatar-size-md)',
+            compact && 'size-(--avatar-size-xs)'
           )}
         >
           {avatarUrl ? (
@@ -253,7 +260,7 @@ type AccountMenuComponent = React.FC<AccountMenuProps> & {
   Content: typeof AccountMenuContent
 }
 
-const AccountMenu = (({ collapsed, className }: AccountMenuProps) => {
+const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) => {
   const {
     user,
     workspaces,
@@ -262,11 +269,13 @@ const AccountMenu = (({ collapsed, className }: AccountMenuProps) => {
     setActiveWorkspace,
     signOut,
   } = useAccount()
+  const compactTrigger = collapsed && viewportMode === 'medium'
 
   return (
     <DropdownMenu>
       <AccountMenuTrigger
         collapsed={collapsed}
+        compact={compactTrigger}
         name={user.name}
         email={user.email}
         workspace={activeWorkspace.name}

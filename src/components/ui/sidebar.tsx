@@ -6,6 +6,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useSidebarViewportMode } from "@/hooks/use-sidebar-viewport-mode"
+import type { SidebarViewportMode } from "@/lib/layout/sidebar-mode"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,10 +34,14 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
+type SidebarOpenSetter = (open: boolean | ((open: boolean) => boolean)) => void
+
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
+  viewportMode: SidebarViewportMode
+  isIconMode: boolean
   open: boolean
-  setOpen: (open: boolean) => void
+  setOpen: SidebarOpenSetter
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
@@ -67,15 +73,20 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void
 }) {
   const isMobile = useIsMobile()
+  const viewportMode = useSidebarViewportMode()
   const [openMobile, setOpenMobile] = React.useState(false)
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
+  const openRef = React.useRef(open)
+  React.useEffect(() => {
+    openRef.current = open
+  }, [open])
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
-      const openState = typeof value === "function" ? value(open) : value
+      const openState = typeof value === "function" ? value(openRef.current) : value
       if (setOpenProp) {
         setOpenProp(openState)
       } else {
@@ -85,13 +96,31 @@ function SidebarProvider({
       // This sets the cookie to keep the sidebar state.
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
-    [setOpenProp, open]
+    [setOpenProp]
   )
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
   }, [isMobile, setOpen, setOpenMobile])
+
+  const previousViewportModeRef = React.useRef<SidebarViewportMode | null>(null)
+  React.useEffect(() => {
+    if (previousViewportModeRef.current === viewportMode) {
+      return
+    }
+
+    previousViewportModeRef.current = viewportMode
+
+    if (viewportMode === "extended") {
+      setOpen(true)
+      return
+    }
+
+    if (viewportMode === "medium") {
+      setOpen(false)
+    }
+  }, [viewportMode, setOpen])
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
@@ -112,10 +141,13 @@ function SidebarProvider({
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
+  const isIconMode = !isMobile && state === "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
       state,
+      viewportMode,
+      isIconMode,
       open,
       setOpen,
       isMobile,
@@ -123,7 +155,17 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [
+      state,
+      viewportMode,
+      isIconMode,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+    ]
   )
 
   return (

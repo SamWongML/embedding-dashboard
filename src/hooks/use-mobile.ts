@@ -1,6 +1,7 @@
 import * as React from "react"
+import { SIDEBAR_MEDIUM_MIN_WIDTH } from "@/lib/layout/sidebar-mode"
 
-const MOBILE_BREAKPOINT = 768
+const MOBILE_BREAKPOINT = SIDEBAR_MEDIUM_MIN_WIDTH
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
