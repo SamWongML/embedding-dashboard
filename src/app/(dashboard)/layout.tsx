@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
+import { cookies } from 'next/headers'
 import type { AccountSnapshot } from '@/lib/types/account'
 import { AccountProvider } from '@/components/account/account-provider'
 import { AppSidebar } from '@/components/dashboard/sidebar/app-sidebar'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { getAccountSnapshotSupabase } from '@/lib/account/supabase'
+import { parseSidebarOpenCookie, SIDEBAR_STATE_COOKIE_NAME } from '@/lib/layout/sidebar-state'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 function getAuthMode() {
@@ -34,6 +36,10 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode
 }) {
+  const cookieStore = await cookies()
+  const sidebarStateCookie = cookieStore.get(SIDEBAR_STATE_COOKIE_NAME)?.value
+  const defaultSidebarOpen = parseSidebarOpenCookie(sidebarStateCookie)
+
   let initialSnapshot: AccountSnapshot | null = null
 
   try {
@@ -44,7 +50,7 @@ export default async function DashboardLayout({
 
   return (
     <AccountProvider initialSnapshot={initialSnapshot}>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultSidebarOpen}>
         <AppSidebar />
         <SidebarInset className="min-h-svh">
           {children}

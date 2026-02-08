@@ -37,9 +37,11 @@ vi.mock('@/components/account/account-menu', () => ({
 import { AppSidebar } from '@/components/dashboard/sidebar/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 
-function renderSidebar() {
+function renderSidebar(
+  sidebarProviderProps?: Omit<ComponentProps<typeof SidebarProvider>, 'children'>
+) {
   return render(
-    <SidebarProvider>
+    <SidebarProvider {...sidebarProviderProps}>
       <AppSidebar />
     </SidebarProvider>
   )
@@ -52,13 +54,11 @@ describe('AppSidebar responsive behavior', () => {
 
   it('uses the dashboard logo as a toggle in medium viewport mode', async () => {
     viewportMode = 'medium'
-    const { container } = renderSidebar()
+    const { container } = renderSidebar({ defaultOpen: false })
 
-    await waitFor(() => {
-      expect(
-        container.querySelector('[data-slot="sidebar"][data-state]')
-      ).toHaveAttribute('data-state', 'collapsed')
-    })
+    expect(
+      container.querySelector('[data-slot="sidebar"][data-state]')
+    ).toHaveAttribute('data-state', 'collapsed')
 
     const toggleButton = screen.getByRole('button', { name: 'Toggle sidebar' })
     fireEvent.click(toggleButton)

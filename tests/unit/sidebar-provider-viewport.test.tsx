@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { ComponentProps } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SidebarViewportMode } from '@/lib/layout/sidebar-mode'
 
@@ -24,9 +25,11 @@ function SidebarStateProbe() {
   )
 }
 
-function renderProbe() {
+function renderProbe(
+  sidebarProviderProps?: Omit<ComponentProps<typeof SidebarProvider>, 'children'>
+) {
   return render(
-    <SidebarProvider>
+    <SidebarProvider {...sidebarProviderProps}>
       <SidebarStateProbe />
     </SidebarProvider>
   )
@@ -37,29 +40,33 @@ describe('SidebarProvider viewport behavior', () => {
     viewportMode = 'extended'
   })
 
-  it('defaults to collapsed in medium viewport', async () => {
+  it('honors defaultOpen on first render in medium viewport', () => {
     viewportMode = 'medium'
-    renderProbe()
+    renderProbe({ defaultOpen: false })
 
-    await waitFor(() => {
-      expect(screen.getByTestId('state')).toHaveTextContent('collapsed')
-    })
+    expect(screen.getByTestId('state')).toHaveTextContent('collapsed')
     expect(screen.getByTestId('mode')).toHaveTextContent('medium')
+  })
+
+  it('keeps defaultOpen state on first render in extended viewport', () => {
+    viewportMode = 'extended'
+    renderProbe({ defaultOpen: false })
+
+    expect(screen.getByTestId('state')).toHaveTextContent('collapsed')
+    expect(screen.getByTestId('mode')).toHaveTextContent('extended')
   })
 
   it('keeps temporary user expansion in medium until viewport mode changes', async () => {
     viewportMode = 'medium'
-    const { rerender } = renderProbe()
+    const { rerender } = renderProbe({ defaultOpen: false })
 
-    await waitFor(() => {
-      expect(screen.getByTestId('state')).toHaveTextContent('collapsed')
-    })
+    expect(screen.getByTestId('state')).toHaveTextContent('collapsed')
 
     fireEvent.click(screen.getByRole('button', { name: 'Expand' }))
     expect(screen.getByTestId('state')).toHaveTextContent('expanded')
 
     rerender(
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <SidebarStateProbe />
       </SidebarProvider>
     )
@@ -67,7 +74,7 @@ describe('SidebarProvider viewport behavior', () => {
 
     viewportMode = 'extended'
     rerender(
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <SidebarStateProbe />
       </SidebarProvider>
     )
@@ -77,7 +84,7 @@ describe('SidebarProvider viewport behavior', () => {
 
     viewportMode = 'medium'
     rerender(
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <SidebarStateProbe />
       </SidebarProvider>
     )

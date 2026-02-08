@@ -7,6 +7,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useSidebarViewportMode } from "@/hooks/use-sidebar-viewport-mode"
+import { SIDEBAR_STATE_COOKIE_NAME } from "@/lib/layout/sidebar-state"
 import type { SidebarViewportMode } from "@/lib/layout/sidebar-mode"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -27,7 +28,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "var(--sidebar-width)"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
@@ -94,7 +94,7 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      document.cookie = `${SIDEBAR_STATE_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
     [setOpenProp]
   )
@@ -106,6 +106,11 @@ function SidebarProvider({
 
   const previousViewportModeRef = React.useRef<SidebarViewportMode | null>(null)
   React.useEffect(() => {
+    if (previousViewportModeRef.current === null) {
+      previousViewportModeRef.current = viewportMode
+      return
+    }
+
     if (previousViewportModeRef.current === viewportMode) {
       return
     }
