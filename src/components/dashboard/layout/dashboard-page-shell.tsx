@@ -27,7 +27,7 @@ export function DashboardPageShell({
           <SidebarTrigger className="-ml-1 md:hidden xl:inline-flex" />
           <Separator
             orientation="vertical"
-            className="mr-(--form-item-gap) md:hidden xl:block data-[orientation=vertical]:h-4"
+            className="mr-[calc(var(--form-item-gap)-1px)] md:hidden xl:block data-[orientation=vertical]:h-4"
           />
           <h1 className="truncate text-lg font-semibold">{title}</h1>
         </div>
