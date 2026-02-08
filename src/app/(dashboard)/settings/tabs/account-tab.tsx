@@ -33,12 +33,7 @@ function getInitials(name: string) {
 
 export default function AccountTab() {
   const { user, activeWorkspace } = useAccount()
-  const [hasMounted, setHasMounted] = React.useState(false)
   const [actionWarning, setActionWarning] = React.useState<string | null>(null)
-
-  React.useEffect(() => {
-    setHasMounted(true)
-  }, [])
 
   const handleNoOpAction = React.useCallback((actionLabel: string) => {
     setActionWarning(toNoOpActionMessage(actionLabel))
@@ -110,25 +105,23 @@ export default function AccountTab() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {hasMounted ? (
-            <Select
-              defaultValue={activeWorkspace.id}
-              onValueChange={() => handleNoOpAction('Update default workspace')}
+          <Select
+            defaultValue={activeWorkspace.id}
+            onValueChange={() => handleNoOpAction('Update default workspace')}
+          >
+            <SelectTrigger
+              className="w-full md:w-72"
+              id="settings-account-workspace-trigger"
+              aria-controls="settings-account-workspace-content"
             >
-              <SelectTrigger className="w-full md:w-72">
-                <SelectValue placeholder="Select workspace" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={activeWorkspace.id}>
-                  {activeWorkspace.name}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          ) : (
-            <div className="border-input text-muted-foreground flex h-(--input-height) w-full items-center rounded-md border bg-transparent px-(--input-padding-x) text-sm md:w-72">
-              {activeWorkspace.name}
-            </div>
-          )}
+              <SelectValue placeholder="Select workspace" />
+            </SelectTrigger>
+            <SelectContent id="settings-account-workspace-content">
+              <SelectItem value={activeWorkspace.id}>
+                {activeWorkspace.name}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
     </div>

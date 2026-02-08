@@ -36,14 +36,9 @@ const languageOptions = [
 
 export default function PreferencesTab() {
   const { theme, setTheme } = useTheme()
-  const [hasMounted, setHasMounted] = React.useState(false)
   const [timezone, setTimezone] = React.useState('america-los-angeles')
   const [language, setLanguage] = React.useState('en')
   const [actionWarning, setActionWarning] = React.useState<string | null>(null)
-
-  React.useEffect(() => {
-    setHasMounted(true)
-  }, [])
 
   const handleThemeChange = React.useCallback(
     async (value: 'light' | 'dark' | 'system') => {
@@ -81,7 +76,6 @@ export default function PreferencesTab() {
         <CardContent>
           <RadioGroup
             value={theme}
-            disabled={!hasMounted}
             onValueChange={(value) =>
               void handleThemeChange(value as 'light' | 'dark' | 'system')
             }
@@ -128,61 +122,57 @@ export default function PreferencesTab() {
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>Timezone</Label>
-            {hasMounted ? (
-              <Select
-                value={timezone}
-                onValueChange={(value) => {
-                  setTimezone(value)
-                  setActionWarning(
-                    toNoOpActionMessage('Update timezone preference')
-                  )
-                }}
+            <Select
+              value={timezone}
+              onValueChange={(value) => {
+                setTimezone(value)
+                setActionWarning(
+                  toNoOpActionMessage('Update timezone preference')
+                )
+              }}
+            >
+              <SelectTrigger
+                className="w-full"
+                id="settings-preferences-timezone-trigger"
+                aria-controls="settings-preferences-timezone-content"
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select timezone" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timezoneOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="border-input text-muted-foreground flex h-(--input-height) w-full items-center rounded-md border bg-transparent px-(--input-padding-x) text-sm">
-                {timezoneOptions.find((option) => option.value === timezone)?.label}
-              </div>
-            )}
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent id="settings-preferences-timezone-content">
+                {timezoneOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Language</Label>
-            {hasMounted ? (
-              <Select
-                value={language}
-                onValueChange={(value) => {
-                  setLanguage(value)
-                  setActionWarning(
-                    toNoOpActionMessage('Update language preference')
-                  )
-                }}
+            <Select
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value)
+                setActionWarning(
+                  toNoOpActionMessage('Update language preference')
+                )
+              }}
+            >
+              <SelectTrigger
+                className="w-full"
+                id="settings-preferences-language-trigger"
+                aria-controls="settings-preferences-language-content"
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languageOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="border-input text-muted-foreground flex h-(--input-height) w-full items-center rounded-md border bg-transparent px-(--input-padding-x) text-sm">
-                {languageOptions.find((option) => option.value === language)?.label}
-              </div>
-            )}
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent id="settings-preferences-language-content">
+                {languageOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
