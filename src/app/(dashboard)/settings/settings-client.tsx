@@ -19,6 +19,29 @@ const tabs = [
 
 type SettingsTabValue = (typeof tabs)[number]['value']
 
+const tabDomIds: Record<SettingsTabValue, { trigger: string; content: string }> = {
+  account: {
+    trigger: 'settings-tab-trigger-account',
+    content: 'settings-tab-content-account',
+  },
+  preferences: {
+    trigger: 'settings-tab-trigger-preferences',
+    content: 'settings-tab-content-preferences',
+  },
+  notifications: {
+    trigger: 'settings-tab-trigger-notifications',
+    content: 'settings-tab-content-notifications',
+  },
+  security: {
+    trigger: 'settings-tab-trigger-security',
+    content: 'settings-tab-content-security',
+  },
+  workspace: {
+    trigger: 'settings-tab-trigger-workspace',
+    content: 'settings-tab-content-workspace',
+  },
+}
+
 function isSettingsTabValue(value: string): value is SettingsTabValue {
   return tabs.some((tab) => tab.value === value)
 }
@@ -42,21 +65,7 @@ function renderSettingsTabContent(value: SettingsTabValue) {
 export default function SettingsClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [hasMounted, setHasMounted] = React.useState(false)
-  const [activeTab, setActiveTab] = React.useState<SettingsTabValue>(() =>
-    parseSettingsTab(searchParams.get('tab'))
-  )
-
-  React.useEffect(() => {
-    setHasMounted(true)
-  }, [])
-
-  React.useEffect(() => {
-    const tabFromSearchParams = parseSettingsTab(searchParams.get('tab'))
-    if (tabFromSearchParams !== activeTab) {
-      setActiveTab(tabFromSearchParams)
-    }
-  }, [searchParams, activeTab])
+  const activeTab = parseSettingsTab(searchParams.get('tab'))
 
   const handleTabChange = React.useCallback(
     (value: string) => {
@@ -64,35 +73,16 @@ export default function SettingsClient() {
         return
       }
 
-      setActiveTab(value)
-      router.replace(`/settings?tab=${value}`)
-    },
-    [router]
-  )
+      if (value === activeTab) {
+        return
+      }
 
-  if (!hasMounted) {
-    return (
-      <div className="flex flex-col gap-8 md:flex-row">
-        <div className="w-full md:w-56">
-          <div className="text-muted-foreground flex flex-col gap-1">
-            {tabs.map((tab) => (
-              <div
-                key={tab.value}
-                className={`rounded-md px-3 py-2 text-sm font-medium ${
-                  activeTab === tab.value ? 'bg-muted text-foreground' : ''
-                }`}
-              >
-                {tab.label}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="min-w-0 flex-1 space-y-6">
-          {renderSettingsTabContent(activeTab)}
-        </div>
-      </div>
-    )
-  }
+      const nextSearchParams = new URLSearchParams(searchParams.toString())
+      nextSearchParams.set('tab', value)
+      router.replace(`/settings?${nextSearchParams.toString()}`)
+    },
+    [activeTab, router, searchParams]
+  )
 
   return (
     <Tabs
@@ -110,6 +100,8 @@ export default function SettingsClient() {
             key={tab.value}
             value={tab.value}
             className="w-full justify-start"
+            id={tabDomIds[tab.value].trigger}
+            aria-controls={tabDomIds[tab.value].content}
           >
             {tab.label}
           </TabsTrigger>
@@ -117,15 +109,39 @@ export default function SettingsClient() {
       </TabsList>
 
       <div className="min-w-0 flex-1 space-y-6">
-        <TabsContent value="account">{renderSettingsTabContent('account')}</TabsContent>
-        <TabsContent value="preferences">
+        <TabsContent
+          value="account"
+          id={tabDomIds.account.content}
+          aria-labelledby={tabDomIds.account.trigger}
+        >
+          {renderSettingsTabContent('account')}
+        </TabsContent>
+        <TabsContent
+          value="preferences"
+          id={tabDomIds.preferences.content}
+          aria-labelledby={tabDomIds.preferences.trigger}
+        >
           {renderSettingsTabContent('preferences')}
         </TabsContent>
-        <TabsContent value="notifications">
+        <TabsContent
+          value="notifications"
+          id={tabDomIds.notifications.content}
+          aria-labelledby={tabDomIds.notifications.trigger}
+        >
           {renderSettingsTabContent('notifications')}
         </TabsContent>
-        <TabsContent value="security">{renderSettingsTabContent('security')}</TabsContent>
-        <TabsContent value="workspace">
+        <TabsContent
+          value="security"
+          id={tabDomIds.security.content}
+          aria-labelledby={tabDomIds.security.trigger}
+        >
+          {renderSettingsTabContent('security')}
+        </TabsContent>
+        <TabsContent
+          value="workspace"
+          id={tabDomIds.workspace.content}
+          aria-labelledby={tabDomIds.workspace.trigger}
+        >
           {renderSettingsTabContent('workspace')}
         </TabsContent>
       </div>

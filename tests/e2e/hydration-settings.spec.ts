@@ -34,11 +34,14 @@ async function assertNoHydrationWarningsOnReloads({
   try {
     await page.goto(path)
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
-    await expect(page.getByRole('tab', { name: tabName })).toBeVisible()
+    const activeTab = page.getByRole('tab', { name: tabName })
+    await expect(activeTab).toBeVisible()
+    await expect(activeTab).toHaveAttribute('data-state', 'active')
 
     for (let index = 0; index < reloads; index += 1) {
       await page.reload()
       await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+      await expect(activeTab).toHaveAttribute('data-state', 'active')
       await page.waitForTimeout(700)
     }
   } finally {
