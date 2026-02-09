@@ -12,36 +12,22 @@ import {
 
 type MetricsPeriod = '24h' | '7d' | '30d' | string
 
-function toTrendWindow(period: MetricsPeriod) {
-  switch (period) {
-    case '24h':
-      return 1
-    case '7d':
-      return 7
-    default:
-      return 30
-  }
-}
-
-function toAnalyticsWindow(period: MetricsPeriod) {
-  switch (period) {
-    case '24h':
-      return 24
-    case '7d':
-      return 168
-    default:
-      return 168
-  }
-}
-
 function trendsByPeriod(period: MetricsPeriod): EmbeddingTrend[] {
-  const trends = getDemoScenarioState().metricsOverview.trends
-  return cloneDemoValue(trends.slice(-toTrendWindow(period)))
+  const scenario = getDemoScenarioState()
+
+  if (period === '24h') {
+    return cloneDemoValue(scenario.metricsOverview.hourlyTrends ?? [])
+  }
+
+  const trends = scenario.metricsOverview.trends
+  const window = period === '7d' ? 7 : 30
+  return cloneDemoValue(trends.slice(-window))
 }
 
 function analyticsByPeriod(period: MetricsPeriod): SearchAnalytics[] {
   const analytics = getDemoScenarioState().metricsOverview.searchAnalytics
-  return cloneDemoValue(analytics.slice(-toAnalyticsWindow(period)))
+  const window = period === '24h' ? 24 : 168
+  return cloneDemoValue(analytics.slice(-window))
 }
 
 export function getDemoMetricsOverview(period: MetricsPeriod = '24h'): MetricsOverview {

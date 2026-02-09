@@ -28,6 +28,9 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetSection,
+  SheetSectionHeader,
+  SheetPropertyRow,
 } from '@/components/ui/sheet'
 import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image } from 'lucide-react'
 import { toActionErrorMessage } from '@/lib/api'
@@ -281,8 +284,8 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
         open={!!selectedRecordId}
         onOpenChange={(open) => !open && setSelectedRecordId(null)}
       >
-        <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto p-0">
-          <SheetHeader className="px-6 py-5 border-b border-border">
+        <SheetContent className="w-[480px] sm:max-w-[480px] p-0">
+          <SheetHeader>
             <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
           </SheetHeader>
           {detailActionWarning ? (
@@ -299,68 +302,59 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
           {selectedRecord && !detailActionWarning && (
             <div className="px-6 py-6 space-y-8">
               {/* Content Section */}
-              <section>
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                  Content
-                </h4>
+              <SheetSection>
+                <SheetSectionHeader>Content</SheetSectionHeader>
                 <p className="text-sm leading-relaxed text-foreground">
                   {selectedRecord.content}
                 </p>
-              </section>
+              </SheetSection>
 
               {/* Properties Grid */}
-              <section>
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-                  Properties
-                </h4>
+              <SheetSection>
+                <SheetSectionHeader className="mb-1">Properties</SheetSectionHeader>
                 <div className="space-y-0">
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Type</span>
-                    <span className="text-sm font-medium capitalize">{selectedRecord.contentType}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Model</span>
-                    <Badge variant="secondary" className="text-xs font-mono">
-                      {selectedRecord.model}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between py-3 border-b border-border/40">
-                    <span className="text-sm text-muted-foreground">Dimensions</span>
-                    <span className="text-sm font-medium font-mono">{selectedRecord.vectorDimensions}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm text-muted-foreground">Source</span>
-                    <span className="text-sm font-medium">{selectedRecord.source || '—'}</span>
-                  </div>
+                  <SheetPropertyRow
+                    label="Type"
+                    value={<Badge variant="gray-subtle" className="capitalize">{selectedRecord.contentType}</Badge>}
+                  />
+                  <SheetPropertyRow
+                    label="Model"
+                    value={<Badge variant="blue-subtle" className="text-xs font-mono">{selectedRecord.model}</Badge>}
+                  />
+                  <SheetPropertyRow
+                    label="Dimensions"
+                    value={<span className="font-mono">{selectedRecord.vectorDimensions}</span>}
+                  />
+                  <SheetPropertyRow
+                    label="Source"
+                    value={selectedRecord.source || '—'}
+                    isLast
+                  />
                 </div>
-              </section>
+              </SheetSection>
 
               {/* Metadata Section */}
               {selectedRecord.metadata && Object.keys(selectedRecord.metadata).length > 0 && (
-                <section>
-                  <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                    Metadata
-                  </h4>
+                <SheetSection>
+                  <SheetSectionHeader>Metadata</SheetSectionHeader>
                   <div className="bg-muted/30 rounded-lg border border-border/40 p-4">
                     <pre className="text-xs font-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
 {JSON.stringify(selectedRecord.metadata, null, 2)}
                     </pre>
                   </div>
-                </section>
+                </SheetSection>
               )}
 
               {/* Vector Preview Section */}
               {selectedRecord.vector && (
-                <section>
-                  <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                    Vector Preview
-                  </h4>
+                <SheetSection>
+                  <SheetSectionHeader>Vector Preview</SheetSectionHeader>
                   <div className="bg-muted/30 rounded-lg border border-border/40 p-4 max-h-[180px] overflow-y-auto">
                     <code className="text-xs font-mono text-foreground/80 break-all leading-relaxed">
                       [{selectedRecord.vector.slice(0, 10).map(v => v.toFixed(6)).join(', ')}, ...]
                     </code>
                   </div>
-                </section>
+                </SheetSection>
               )}
 
               {/* Timestamps */}

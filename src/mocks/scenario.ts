@@ -524,6 +524,22 @@ function buildTrends(baseDate: Date, seed: number): EmbeddingTrend[] {
   })
 }
 
+function buildHourlyTrends(baseDate: Date, seed: number): EmbeddingTrend[] {
+  const random = createSeededRandom(seed + 41)
+  return Array.from({ length: 24 }, (_, offset) => {
+    const currentDate = new Date(baseDate.getTime() - (23 - offset) * HOUR_MS)
+    const hour = currentDate.getUTCHours()
+    const rushHour = hour >= 8 && hour <= 18 ? 1.15 : 0.85
+
+    return {
+      date: currentDate.toISOString(),
+      textEmbeddings: Math.floor((150 + random() * 80) * rushHour),
+      imageEmbeddings: Math.floor((45 + random() * 30) * rushHour),
+      searches: Math.floor((220 + random() * 100) * rushHour),
+    }
+  })
+}
+
 function buildSearchAnalytics(baseDate: Date, seed: number): SearchAnalytics[] {
   const random = createSeededRandom(seed + 58)
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -839,6 +855,7 @@ export function createDemoDataset(
   const records = buildRecords(baseDate, context)
   const searchResults = buildSearchResults(records, context)
   const trends = buildTrends(baseDate, seed)
+  const hourlyTrends = buildHourlyTrends(baseDate, seed)
   const searchAnalytics = buildSearchAnalytics(baseDate, seed)
   const topHits = buildTopHits(records)
   const topUsers = buildTopUsers(users, baseDate)
@@ -848,6 +865,7 @@ export function createDemoDataset(
     topHits,
     topUsers,
     trends,
+    hourlyTrends,
     searchAnalytics,
   }
   const latencyResponse = buildLatencyResponse(baseDate, seed)

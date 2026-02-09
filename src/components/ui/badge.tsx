@@ -18,6 +18,23 @@ const badgeVariants = cva(
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
+        // Geist subtle semantic color variants
+        "blue-subtle":
+          "bg-[oklch(0.95_0.02_250)] text-[oklch(0.45_0.12_250)] dark:bg-[oklch(0.25_0.04_250)] dark:text-[oklch(0.75_0.10_250)]",
+        "gray-subtle":
+          "bg-[oklch(0.95_0_0)] text-[oklch(0.45_0_0)] dark:bg-[oklch(0.25_0_0)] dark:text-[oklch(0.70_0_0)]",
+        "green-subtle":
+          "bg-[oklch(0.95_0.03_145)] text-[oklch(0.45_0.12_145)] dark:bg-[oklch(0.25_0.04_145)] dark:text-[oklch(0.75_0.10_145)]",
+        "amber-subtle":
+          "bg-[oklch(0.95_0.04_85)] text-[oklch(0.50_0.12_85)] dark:bg-[oklch(0.28_0.05_85)] dark:text-[oklch(0.78_0.10_85)]",
+        "purple-subtle":
+          "bg-[oklch(0.95_0.03_300)] text-[oklch(0.50_0.12_300)] dark:bg-[oklch(0.25_0.05_300)] dark:text-[oklch(0.75_0.10_300)]",
+        "teal-subtle":
+          "bg-[oklch(0.95_0.02_180)] text-[oklch(0.45_0.10_180)] dark:bg-[oklch(0.25_0.04_180)] dark:text-[oklch(0.75_0.08_180)]",
+        "red-subtle":
+          "bg-[oklch(0.95_0.03_25)] text-[oklch(0.50_0.15_25)] dark:bg-[oklch(0.28_0.06_25)] dark:text-[oklch(0.78_0.12_25)]",
+        "cyan-subtle":
+          "bg-[oklch(0.95_0.02_200)] text-[oklch(0.45_0.10_200)] dark:bg-[oklch(0.25_0.04_200)] dark:text-[oklch(0.75_0.08_200)]",
       },
     },
     defaultVariants: {

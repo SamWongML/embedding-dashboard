@@ -62,7 +62,7 @@ function SheetContent({
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-(--z-modal) flex flex-col gap-(--dialog-gap) shadow-lg transition ease-in-out data-[state=closed]:duration-(--duration-slow) data-[state=open]:duration-(--duration-slower)",
           side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-[480px] overflow-y-auto",
           side === "left" &&
             "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
           side === "top" &&
@@ -89,7 +89,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-(--sheet-gap) p-(--sheet-padding)", className)}
+      className={cn("flex flex-col gap-(--sheet-gap) px-6 py-5 border-b border-border", className)}
       {...props}
     />
   )
@@ -131,6 +131,55 @@ function SheetDescription({
   )
 }
 
+function SheetSection({ className, ...props }: React.ComponentProps<"section">) {
+  return (
+    <section
+      data-slot="sheet-section"
+      className={cn("space-y-3", className)}
+      {...props}
+    />
+  )
+}
+
+function SheetSectionHeader({ className, ...props }: React.ComponentProps<"h4">) {
+  return (
+    <h4
+      data-slot="sheet-section-header"
+      className={cn("text-xs font-medium text-muted-foreground uppercase tracking-wider", className)}
+      {...props}
+    />
+  )
+}
+
+interface SheetPropertyRowProps extends React.ComponentProps<"div"> {
+  label: string
+  value: React.ReactNode
+  isLast?: boolean
+}
+
+function SheetPropertyRow({
+  label,
+  value,
+  isLast = false,
+  className,
+  ...props
+}: SheetPropertyRowProps) {
+  return (
+    <div
+      data-slot="sheet-property-row"
+      className={cn(
+        "flex items-center justify-between py-3",
+        !isLast && "border-b border-border/40",
+        className
+      )}
+      {...props}
+    >
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium">{value}</span>
+    </div>
+  )
+}
+
 export {
   Sheet,
   SheetTrigger,
@@ -140,4 +189,7 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  SheetSection,
+  SheetSectionHeader,
+  SheetPropertyRow,
 }

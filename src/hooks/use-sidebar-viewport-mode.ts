@@ -6,15 +6,13 @@ import {
 } from "@/lib/layout/sidebar-mode"
 
 export function useSidebarViewportMode() {
-  const [viewportMode, setViewportMode] = React.useState<SidebarViewportMode>(() => {
-    if (typeof window === "undefined") {
-      return "extended"
-    }
-
-    return getSidebarViewportMode(window.innerWidth)
-  })
+  // Always start with "extended" to match SSR and avoid hydration mismatch
+  const [viewportMode, setViewportMode] = React.useState<SidebarViewportMode>("extended")
 
   React.useEffect(() => {
+    // Set the actual viewport mode after hydration
+    setViewportMode(getSidebarViewportMode(window.innerWidth))
+
     const onResize = () => {
       setViewportMode(getSidebarViewportMode(window.innerWidth))
     }

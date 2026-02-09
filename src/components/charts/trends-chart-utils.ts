@@ -10,7 +10,7 @@ export interface TrendChartPoint {
   Searches: number
 }
 
-function parseTrendTimestamp(date: string): number {
+export function parseTrendTimestamp(date: string): number {
   const normalizedDate = DAY_ONLY_DATE_PATTERN.test(date)
     ? `${date}T00:00:00.000Z`
     : date
@@ -41,14 +41,28 @@ export function normalizeEmbeddingTrends(data: EmbeddingTrend[]): TrendChartPoin
   }))
 }
 
-export function formatTrendDateLabel(date: string, locale = 'en-US'): string {
+export function formatTrendDateLabel(
+  date: string,
+  locale = 'en-US',
+  period?: '24h' | '7d' | '30d'
+): string {
   const timestamp = parseTrendTimestamp(date)
 
   if (!Number.isFinite(timestamp)) return date
+
+  const dateObj = new Date(timestamp)
+
+  if (period === '24h') {
+    return new Intl.DateTimeFormat(locale, {
+      hour: 'numeric',
+      hour12: true,
+      timeZone: 'UTC',
+    }).format(dateObj)
+  }
 
   return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
-  }).format(new Date(timestamp))
+  }).format(dateObj)
 }

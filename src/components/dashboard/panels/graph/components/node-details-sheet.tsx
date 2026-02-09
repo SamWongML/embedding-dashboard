@@ -2,7 +2,14 @@
 
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetSection,
+  SheetSectionHeader,
+} from "@/components/ui/sheet"
 import type { NodeDetail } from "@/lib/schemas/graph"
 
 interface NodeDetailsSheetProps {
@@ -21,37 +28,44 @@ export function NodeDetailsSheet({
       open={!!selectedNodeId}
       onOpenChange={onOpenChange}
     >
-      <SheetContent>
+      <SheetContent className="w-[480px] sm:max-w-[480px] p-0">
         <SheetHeader>
-          <SheetTitle>Node Details</SheetTitle>
+          <SheetTitle className="text-lg font-semibold">Node Details</SheetTitle>
         </SheetHeader>
         {nodeDetail ? (
-          <div className="mt-6 space-y-6">
-            <div>
-              <h4 className="mb-1 text-sm font-medium text-muted-foreground">
-                Label
-              </h4>
-              <p className="text-lg font-medium">{nodeDetail.node.label}</p>
-            </div>
+          <div className="px-6 py-6 space-y-8">
+            {/* Label Section */}
+            <SheetSection>
+              <SheetSectionHeader>Label</SheetSectionHeader>
+              <p className="text-lg font-semibold text-foreground">
+                {nodeDetail.node.label}
+              </p>
+            </SheetSection>
 
-            <div className="flex gap-2">
-              <Badge>{nodeDetail.node.type}</Badge>
-            </div>
+            {/* Type Section */}
+            <SheetSection>
+              <SheetSectionHeader>Type</SheetSectionHeader>
+              <div className="flex gap-2">
+                <Badge variant="blue-subtle">{nodeDetail.node.type}</Badge>
+              </div>
+            </SheetSection>
 
-            <div>
-              <h4 className="mb-2 text-sm font-medium text-muted-foreground">
-                Properties
-              </h4>
-              <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
-                {JSON.stringify(nodeDetail.node.properties, null, 2)}
-              </pre>
-            </div>
+            {/* Properties Section */}
+            <SheetSection>
+              <SheetSectionHeader>Properties</SheetSectionHeader>
+              <div className="bg-muted/30 rounded-lg border border-border/40 p-4">
+                <pre className="text-xs font-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+                  {JSON.stringify(nodeDetail.node.properties, null, 2)}
+                </pre>
+              </div>
+            </SheetSection>
 
-            <div>
-              <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+            {/* Connections Section */}
+            <SheetSection>
+              <SheetSectionHeader>
                 Connections ({nodeDetail.incomingEdges.length + nodeDetail.outgoingEdges.length})
-              </h4>
-              <ScrollArea className="h-[200px]">
+              </SheetSectionHeader>
+              <ScrollArea className="h-[240px]">
                 <div className="space-y-2">
                   {nodeDetail.outgoingEdges.map((edge) => {
                     const targetNode = nodeDetail.relatedNodes.find(
@@ -61,12 +75,15 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="rounded-md bg-muted p-2 text-sm"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm transition-colors hover:bg-muted/40"
                       >
-                        <span className="text-muted-foreground">
-                          {edge.type} →
-                        </span>{" "}
-                        {targetNode?.label || edge.target}
+                        <Badge variant="gray-subtle" className="shrink-0">
+                          {edge.type}
+                        </Badge>
+                        <span className="text-muted-foreground shrink-0">→</span>
+                        <span className="font-medium truncate">
+                          {targetNode?.label || edge.target}
+                        </span>
                       </div>
                     )
                   })}
@@ -78,18 +95,21 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="rounded-md bg-muted p-2 text-sm"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm transition-colors hover:bg-muted/40"
                       >
-                        {sourceNode?.label || edge.source}{" "}
-                        <span className="text-muted-foreground">
-                          → {edge.type}
+                        <span className="font-medium truncate">
+                          {sourceNode?.label || edge.source}
                         </span>
+                        <span className="text-muted-foreground shrink-0">→</span>
+                        <Badge variant="gray-subtle" className="shrink-0">
+                          {edge.type}
+                        </Badge>
                       </div>
                     )
                   })}
                 </div>
               </ScrollArea>
-            </div>
+            </SheetSection>
           </div>
         ) : null}
       </SheetContent>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useMemo } from 'react'
+import { useMemo } from 'react'
 import {
   Area,
   AreaChart,
@@ -13,6 +13,7 @@ import {
 } from 'recharts'
 import { cn } from '@/lib/utils'
 import type { EmbeddingTrend } from '@/lib/schemas/metrics'
+import { useTheme } from '@/components/providers/theme-provider'
 import { ChartTooltipContent } from './chart-tooltip-content'
 import {
   formatTrendDateLabel,
@@ -24,58 +25,51 @@ import {
   chartAxisDefaults,
   chartGridStroke,
   chartTooltipCursor,
-  colorByChartTone,
+  getChartColor,
+  type ChartTone,
 } from './chart-theme'
 
 interface TrendsChartProps {
   data: EmbeddingTrend[]
   className?: string
+  period?: '24h' | '7d' | '30d'
 }
 
-const trendSeries = [
+const trendSeriesConfig = [
   {
     dataKey: 'Text Embeddings',
-    label: 'Text Embeddings (solid)',
-    tone: 'accent',
+    label: 'Text Embeddings',
+    tone: 'accent' as ChartTone,      // Blue (chart-1)
     gradientId: 'trendTextGradient',
-    strokeDasharray: undefined,
-    fillOpacity: 0.22,
+    fillOpacity: 0.24,
   },
   {
     dataKey: 'Image Embeddings',
-    label: 'Image Embeddings (dashed)',
-    tone: 'accentSoft',
+    label: 'Image Embeddings',
+    tone: 'teal' as ChartTone,        // Teal (chart-2)
     gradientId: 'trendImageGradient',
-    strokeDasharray: '6 4',
-    fillOpacity: 0.14,
+    fillOpacity: 0.20,
   },
   {
     dataKey: 'Searches',
-    label: 'Searches (dotted)',
-    tone: 'accentDim',
+    label: 'Searches',
+    tone: 'amber' as ChartTone,       // Amber (chart-3)
     gradientId: 'trendSearchGradient',
-    strokeDasharray: '2 4',
-    fillOpacity: 0.1,
+    fillOpacity: 0.18,
   },
 ] as const
 
-const previousPointCountByChartId = new Map<string, number>()
-
-export function TrendsChart({ data, className }: TrendsChartProps) {
+export function TrendsChart({ data, className, period }: TrendsChartProps) {
   const chartData = useMemo(() => normalizeEmbeddingTrends(data), [data])
-  const chartId = useId()
-  const previousPointCount = previousPointCountByChartId.get(chartId)
-  const shouldAnimate =
-    previousPointCount === undefined ||
-    previousPointCount === chartData.length
+  const { resolvedTheme } = useTheme()
 
-  useEffect(() => {
-    previousPointCountByChartId.set(chartId, chartData.length)
-
-    return () => {
-      previousPointCountByChartId.delete(chartId)
-    }
-  }, [chartId, chartData.length])
+  // Get resolved colors for SVG rendering
+  const trendSeries = useMemo(() => {
+    return trendSeriesConfig.map((series) => ({
+      ...series,
+      color: getChartColor(series.tone, resolvedTheme),
+    }))
+  }, [resolvedTheme])
 
   return (
     <div className={cn('w-full h-[300px]', className)}>
@@ -86,23 +80,19 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
           <defs>
-            {trendSeries.map((series) => {
-              const color = colorByChartTone(series.tone)
-
-              return (
-                <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={series.fillOpacity} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              )
-            })}
+            {trendSeries.map((series) => (
+              <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={series.color} stopOpacity={series.fillOpacity} />
+                <stop offset="95%" stopColor={series.color} stopOpacity={0} />
+              </linearGradient>
+            ))}
           </defs>
           <CartesianGrid stroke={chartGridStroke} vertical={false} />
           <XAxis
             dataKey="date"
             {...chartAxisDefaults}
-            interval="preserveStartEnd"
-            tickFormatter={(value) => formatTrendDateLabel(String(value))}
+            interval={period === '24h' ? 2 : 'preserveStartEnd'}
+            tickFormatter={(value) => formatTrendDateLabel(String(value), 'en-US', period)}
           />
           <YAxis
             {...chartAxisDefaults}
@@ -129,7 +119,7 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
                     {
                       label: series.label,
                       value: value.toLocaleString(),
-                      tone: series.tone,
+                      color: series.color,
                     },
                   ]
                 })
@@ -138,7 +128,7 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
 
                 return (
                   <ChartTooltipContent
-                    label={label ? formatTrendDateLabel(String(label)) : undefined}
+                    label={label ? formatTrendDateLabel(String(label), 'en-US', period) : undefined}
                     rows={rows}
                   />
                 )
@@ -161,17 +151,16 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
               type="monotoneX"
               dataKey={series.dataKey}
               name={series.label}
-              stroke={colorByChartTone(series.tone)}
-              strokeWidth={2}
-              strokeDasharray={series.strokeDasharray}
+              stroke={series.color}
+              strokeWidth={2.5}
               fill={`url(#${series.gradientId})`}
-              isAnimationActive={shouldAnimate}
+              isAnimationActive={true}
               animationDuration={chartAnimationDurationMs}
               animationEasing={chartAnimationEasing}
               activeDot={{
                 r: 5,
                 fill: 'var(--card)',
-                stroke: colorByChartTone(series.tone),
+                stroke: series.color,
                 strokeWidth: 2,
               }}
             />

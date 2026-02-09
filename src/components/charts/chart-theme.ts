@@ -1,22 +1,68 @@
 import type { ReactNode } from 'react'
 
 export type ChartTone =
-  | 'accent'
-  | 'accentSoft'
-  | 'accentDim'
+  | 'accent'        // chart-1 (Blue)
+  | 'accentSoft'    // Light blue
+  | 'accentDim'     // Dark blue
+  | 'teal'          // chart-2
+  | 'amber'         // chart-3
+  | 'green'         // chart-4
+  | 'coral'         // chart-5 (Orange-Red)
   | 'muted'
   | 'success'
   | 'warning'
   | 'error'
 
 export const chartToneToColorVar: Record<ChartTone, string> = {
-  accent: 'var(--chart-accent)',
+  accent: 'var(--chart-1)',
   accentSoft: 'var(--chart-accent-soft)',
   accentDim: 'var(--chart-accent-dim)',
+  teal: 'var(--chart-2)',
+  amber: 'var(--chart-3)',
+  green: 'var(--chart-4)',
+  coral: 'var(--chart-5)',
   muted: 'var(--chart-axis)',
   success: 'var(--success)',
   warning: 'var(--warning)',
   error: 'var(--error)',
+}
+
+// Direct color values for SVG/Canvas rendering (Recharts compatibility)
+// IMPORTANT: These values must stay in sync with globals.css chart variables.
+// CSS custom properties don't work reliably in SVG elements rendered by Recharts,
+// so we duplicate the values here for direct use in charts.
+// Source of truth: src/app/globals.css (--chart-1, --chart-2, --chart-3, etc.)
+export const chartColors = {
+  light: {
+    accent: 'oklch(60% 0.26 250)',      // Blue
+    accentSoft: 'oklch(72% 0.15 250)',
+    accentDim: 'oklch(50% 0.18 250)',
+    teal: 'oklch(62% 0.22 175)',        // Teal
+    amber: 'oklch(68% 0.22 80)',        // Amber
+    green: 'oklch(60% 0.20 150)',
+    coral: 'oklch(65% 0.20 15)',
+    muted: 'oklch(52% 0.005 240)',
+    success: 'oklch(55% 0.18 155)',
+    warning: 'oklch(70% 0.18 80)',
+    error: 'oklch(58% 0.22 25)',
+  },
+  dark: {
+    accent: 'oklch(70% 0.24 250)',      // Blue
+    accentSoft: 'oklch(80% 0.14 250)',
+    accentDim: 'oklch(60% 0.16 250)',
+    teal: 'oklch(70% 0.20 175)',        // Teal
+    amber: 'oklch(78% 0.20 80)',        // Amber
+    green: 'oklch(70% 0.18 155)',
+    coral: 'oklch(72% 0.22 20)',
+    muted: 'oklch(65% 0.003 240)',
+    success: 'oklch(65% 0.18 155)',
+    warning: 'oklch(76% 0.16 80)',
+    error: 'oklch(68% 0.20 25)',
+  },
+} as const
+
+export function getChartColor(tone: ChartTone, theme: 'light' | 'dark'): string {
+  return chartColors[theme][tone]
 }
 
 export function colorByChartTone(tone: ChartTone): string {
@@ -42,8 +88,8 @@ export const chartBarFill = 'var(--chart-accent)'
 
 export const chartTooltipCursor = false
 
-export const chartAnimationDurationMs = 1500
-export const chartAnimationEasing = 'ease'
+export const chartAnimationDurationMs = 800
+export const chartAnimationEasing = 'ease-in-out'
 
 export interface ChartTooltipRow {
   label: string
@@ -53,9 +99,9 @@ export interface ChartTooltipRow {
 }
 
 export const graphNodeToneByType = {
-  document: 'accent',
-  topic: 'accentSoft',
-  'user-group': 'accentDim',
+  document: 'accent',    // Blue
+  topic: 'teal',         // Teal
+  'user-group': 'amber', // Amber
   default: 'muted',
 } as const satisfies Record<string, ChartTone>
 
@@ -75,3 +121,29 @@ export function colorByGraphNodeType(nodeType: string): string {
 export const graphLinkColor = 'var(--chart-grid)'
 export const graphLabelColor = 'var(--chart-axis)'
 export const graphNodeStrokeColor = 'var(--background)'
+
+// Direct graph colors for D3/SVG rendering (CSS variables don't resolve in D3)
+export const graphColors = {
+  light: {
+    link: 'oklch(86% 0.003 240 / 60%)',
+    label: 'oklch(52% 0.005 240)',
+    nodeStroke: 'oklch(100% 0 0)',
+  },
+  dark: {
+    link: 'oklch(35% 0.005 240 / 50%)',
+    label: 'oklch(65% 0.003 240)',
+    nodeStroke: 'oklch(10% 0.005 240)',
+  },
+} as const
+
+export function getGraphColors(theme: 'light' | 'dark') {
+  return {
+    link: graphColors[theme].link,
+    label: graphColors[theme].label,
+    nodeStroke: graphColors[theme].nodeStroke,
+    nodeColor: (nodeType: string) => getChartColor(
+      graphNodeToneByType[nodeType as GraphNodeVisualType] ?? graphNodeToneByType.default,
+      theme
+    ),
+  }
+}

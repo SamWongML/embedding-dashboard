@@ -98,7 +98,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
           {isLoading ? (
             <div className="h-[300px] bg-muted rounded animate-pulse" />
           ) : (
-            <TrendsChart data={data?.trends || []} />
+            <TrendsChart data={data?.trends || []} period={period} />
           )}
         </CardContent>
       </Card>

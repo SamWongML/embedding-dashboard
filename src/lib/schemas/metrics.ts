@@ -41,6 +41,7 @@ export const metricsOverviewSchema = z.object({
   topHits: z.array(topHitSchema),
   topUsers: z.array(topUserSchema),
   trends: z.array(embeddingTrendSchema),
+  hourlyTrends: z.array(embeddingTrendSchema).optional(),
   searchAnalytics: z.array(searchAnalyticsSchema),
 })
 

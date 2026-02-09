@@ -15,16 +15,12 @@ import {
 import { useGraphData, useNodeDetail } from '@/lib/hooks/use-graph'
 import { cn } from '@/lib/utils'
 import type { GraphFilters, GraphNode } from '@/lib/schemas/graph'
+import { useTheme } from '@/components/providers/theme-provider'
 import { GraphCanvas } from './components/graph-canvas'
 import { GraphControls } from './components/graph-controls'
 import { NodeDetailsSheet } from './components/node-details-sheet'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
-import {
-  colorByGraphNodeType,
-  graphLabelColor,
-  graphLinkColor,
-  graphNodeStrokeColor,
-} from '@/components/charts/chart-theme'
+import { getGraphColors } from '@/components/charts/chart-theme'
 
 interface GraphPanelProps {
   className?: string
@@ -42,6 +38,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const [filters, setFilters] = useState<GraphFilters>({ depth: 2, limit: 100 })
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const { resolvedTheme } = useTheme()
 
   const {
     data: graphData,
@@ -70,6 +67,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
   useEffect(() => {
     if (!svgRef.current || !graphData || isLoading) return
 
+    const graphTheme = getGraphColors(resolvedTheme)
     const svg = select(svgRef.current)
     const width = svgRef.current.clientWidth
     const height = svgRef.current.clientHeight
@@ -96,7 +94,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .force('collision', forceCollide().radius(40))
 
     const link = container.append('g')
-      .attr('stroke', graphLinkColor)
+      .attr('stroke', graphTheme.link)
       .attr('stroke-opacity', 0.8)
       .attr('stroke-width', 1.5)
       .selectAll('line')
@@ -146,8 +144,8 @@ export function GraphPanel({ className }: GraphPanelProps) {
 
     node.append('circle')
       .attr('r', 20)
-      .attr('fill', (data) => colorByGraphNodeType(data.type))
-      .attr('stroke', graphNodeStrokeColor)
+      .attr('fill', (data) => graphTheme.nodeColor(data.type))
+      .attr('stroke', graphTheme.nodeStroke)
       .attr('stroke-width', 2)
 
     node.append('text')
@@ -155,7 +153,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .attr('text-anchor', 'middle')
       .attr('dy', 35)
       .attr('font-size', 10)
-      .attr('fill', graphLabelColor)
+      .attr('fill', graphTheme.label)
 
     simulation.on('tick', () => {
       link
@@ -170,7 +168,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
     return () => {
       simulation.stop()
     }
-  }, [graphData, isLoading])
+  }, [graphData, isLoading, resolvedTheme])
 
   if (isError) {
     const errorMessage = error instanceof Error ? error.message : 'Unable to load graph data.'
