@@ -13,27 +13,27 @@ import {
 import type { NodeDetail } from "@/lib/schemas/graph"
 
 interface NodeDetailsSheetProps {
-  selectedNodeId: string | null
+  open: boolean
   onOpenChange: (open: boolean) => void
   nodeDetail: NodeDetail | null | undefined
 }
 
 export function NodeDetailsSheet({
-  selectedNodeId,
+  open,
   onOpenChange,
   nodeDetail,
 }: NodeDetailsSheetProps) {
   return (
     <Sheet
-      open={!!selectedNodeId}
+      open={open}
       onOpenChange={onOpenChange}
     >
-      <SheetContent className="w-[480px] sm:max-w-[480px] p-0">
-        <SheetHeader>
+      <SheetContent variant="geist-floating">
+        <SheetHeader className="border-0 p-6 text-left">
           <SheetTitle className="text-lg font-semibold">Node Details</SheetTitle>
         </SheetHeader>
         {nodeDetail ? (
-          <div className="px-6 py-6 space-y-8">
+          <div className="px-6 py-4 space-y-8">
             {/* Label Section */}
             <SheetSection>
               <SheetSectionHeader>Label</SheetSectionHeader>
@@ -75,7 +75,7 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm transition-colors hover:bg-muted/40"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm leading-5 transition-colors hover:bg-muted/40"
                       >
                         <Badge variant="gray-subtle" className="shrink-0">
                           {edge.type}
@@ -95,7 +95,7 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm transition-colors hover:bg-muted/40"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm leading-5 transition-colors hover:bg-muted/40"
                       >
                         <span className="font-medium truncate">
                           {sourceNode?.label || edge.source}

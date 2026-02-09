@@ -478,6 +478,16 @@
   /* Overlay & Component tokens */
   --overlay-bg: oklch(0% 0 0 / 0.5);
   --slider-thumb-bg: oklch(100% 0 0);
+  --sheet-geist-shadow-light:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 2px 2px 0 rgba(0, 0, 0, 0.04),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgb(250 250 250);
+  --sheet-geist-surface-light: rgb(255 255 255);
+  --sheet-geist-shadow: var(--sheet-geist-shadow-light);
+  --sheet-geist-surface: var(--sheet-geist-surface-light);
 
   /* Chart colors - Geist multi-hue palette */
   --chart-1: oklch(60% 0.26 250);        /* Blue - increased chroma */
@@ -558,6 +568,16 @@
   /* Overlay & Component tokens - dark mode */
   --overlay-bg: oklch(0% 0 0 / 0.7);
   --slider-thumb-bg: oklch(98% 0.002 240);
+  --sheet-geist-shadow-dark:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(255, 255, 255, 0.145),
+    0 2px 2px 0 rgba(0, 0, 0, 0.04),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgb(0 0 0);
+  --sheet-geist-surface-dark: rgb(10 10 10);
+  --sheet-geist-shadow: var(--sheet-geist-shadow-dark);
+  --sheet-geist-surface: var(--sheet-geist-surface-dark);
 
   /* Chart colors - Geist multi-hue palette (dark mode) */
   --chart-1: oklch(70% 0.24 250);        /* Blue */
@@ -881,7 +901,9 @@
     [data-slot="sidebar-gap"],
     [data-slot="sidebar-container"],
     [data-slot="sidebar-group-label"],
-    [data-slot="sidebar-menu-button"] {
+    [data-slot="sidebar-menu-button"],
+    [data-slot="sheet-content"],
+    [data-slot="sheet-overlay"] {
       transition-duration: 1ms !important;
       animation-duration: 1ms !important;
     }

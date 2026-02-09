@@ -48,21 +48,34 @@ function SheetContent({
   className,
   children,
   side = "right",
+  variant = "default",
+  noOverlay = false,
+  shadowPreset = "default",
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left"
+  variant?: "default" | "geist-floating"
+  noOverlay?: boolean
+  shadowPreset?: "default" | "geist"
   showCloseButton?: boolean
 }) {
+  const isGeistFloating = variant === "geist-floating" && side === "right"
+  const useGeistShadow = isGeistFloating || shadowPreset === "geist"
+
   return (
     <SheetPortal>
-      <SheetOverlay />
+      {!noOverlay ? <SheetOverlay /> : null}
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-(--z-modal) flex flex-col gap-(--dialog-gap) shadow-lg transition ease-in-out data-[state=closed]:duration-(--duration-slow) data-[state=open]:duration-(--duration-slower)",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-(--z-modal) flex flex-col gap-(--dialog-gap) transition ease-in-out will-change-transform data-[state=closed]:duration-(--duration-moderate) data-[state=open]:duration-(--duration-moderate)",
           side === "right" &&
+            !isGeistFloating &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-[480px] overflow-y-auto",
+          isGeistFloating &&
+            "data-[state=closed]:slide-out-to-right-10 data-[state=open]:slide-in-from-right-5 inset-y-0 right-0 m-3 h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)] lg:w-[512px] sm:max-w-[none] rounded-[1rem] border-0 p-0 overflow-y-auto bg-[var(--sheet-geist-surface)]",
+          useGeistShadow ? "shadow-[var(--sheet-geist-shadow)]" : "shadow-lg",
           side === "left" &&
             "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
           side === "top" &&

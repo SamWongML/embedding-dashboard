@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/sheet'
 import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image } from 'lucide-react'
 import { toActionErrorMessage } from '@/lib/api'
+import { useDelayedSheetSelection } from '@/lib/hooks/use-delayed-sheet-selection'
 import { useRecordsList, useRecordDetail } from '@/lib/hooks/use-records'
 import { cn } from '@/lib/utils'
 import type { RecordsListParams } from '@/lib/schemas/records'
@@ -42,6 +43,8 @@ interface RecordsPanelProps {
   className?: string
 }
 
+const RECORDS_CONTENT_TYPE_SELECT_CONTENT_ID = 'records-content-type-select-content'
+
 export function RecordsPanel({ className }: RecordsPanelProps) {
   const [params, setParams] = useState<RecordsListParams>({
     page: 1,
@@ -49,7 +52,12 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
     contentType: 'all',
   })
   const [searchInput, setSearchInput] = useState('')
-  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null)
+  const {
+    open: isRecordDetailsOpen,
+    selectedValue: selectedRecordId,
+    selectValue: selectRecord,
+    onOpenChange: onRecordDetailsOpenChange,
+  } = useDelayedSheetSelection<string>()
 
   const {
     data,
@@ -153,10 +161,13 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
               value={params.contentType || 'all'}
               onValueChange={handleContentTypeChange}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger
+                className="w-32"
+                aria-controls={RECORDS_CONTENT_TYPE_SELECT_CONTENT_ID}
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent id={RECORDS_CONTENT_TYPE_SELECT_CONTENT_ID}>
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="text">Text</SelectItem>
                 <SelectItem value="image">Image</SelectItem>
@@ -233,7 +244,8 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setSelectedRecordId(record.id)}
+                          aria-label="View record details"
+                          onClick={() => selectRecord(record.id)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -281,11 +293,11 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
 
       {/* Detail Sheet */}
       <Sheet
-        open={!!selectedRecordId}
-        onOpenChange={(open) => !open && setSelectedRecordId(null)}
+        open={isRecordDetailsOpen}
+        onOpenChange={onRecordDetailsOpenChange}
       >
-        <SheetContent className="w-[480px] sm:max-w-[480px] p-0">
-          <SheetHeader>
+        <SheetContent variant="geist-floating">
+          <SheetHeader className="border-0 p-6 text-left">
             <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
           </SheetHeader>
           {detailActionWarning ? (
@@ -300,11 +312,11 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
             </div>
           ) : null}
           {selectedRecord && !detailActionWarning && (
-            <div className="px-6 py-6 space-y-8">
+            <div className="px-6 py-4 space-y-8">
               {/* Content Section */}
               <SheetSection>
                 <SheetSectionHeader>Content</SheetSectionHeader>
-                <p className="text-sm leading-relaxed text-foreground">
+                <p className="text-sm leading-5 text-foreground">
                   {selectedRecord.content}
                 </p>
               </SheetSection>

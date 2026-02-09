@@ -13,6 +13,7 @@ import {
   zoomIdentity,
 } from 'd3'
 import { useGraphData, useNodeDetail } from '@/lib/hooks/use-graph'
+import { useDelayedSheetSelection } from '@/lib/hooks/use-delayed-sheet-selection'
 import { cn } from '@/lib/utils'
 import type { GraphFilters, GraphNode } from '@/lib/schemas/graph'
 import { useTheme } from '@/components/providers/theme-provider'
@@ -37,7 +38,12 @@ function resolveGraphPoint(value: unknown): { x?: number; y?: number } | null {
 export function GraphPanel({ className }: GraphPanelProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const [filters, setFilters] = useState<GraphFilters>({ depth: 2, limit: 100 })
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const {
+    open: isNodeDetailsOpen,
+    selectedValue: selectedNodeId,
+    selectValue: selectNode,
+    onOpenChange: onNodeDetailsOpenChange,
+  } = useDelayedSheetSelection<string>()
   const { resolvedTheme } = useTheme()
 
   const {
@@ -107,7 +113,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .join('g')
       .attr('cursor', 'pointer')
       .on('click', (_, data) => {
-        setSelectedNodeId(data.id)
+        selectNode(data.id)
       })
 
     const dragBehavior = drag<SVGGElement, GraphNode>()
@@ -168,7 +174,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
     return () => {
       simulation.stop()
     }
-  }, [graphData, isLoading, resolvedTheme])
+  }, [graphData, isLoading, resolvedTheme, selectNode])
 
   if (isError) {
     const errorMessage = error instanceof Error ? error.message : 'Unable to load graph data.'
@@ -202,12 +208,8 @@ export function GraphPanel({ className }: GraphPanelProps) {
       />
       <GraphCanvas svgRef={svgRef} isLoading={isLoading} />
       <NodeDetailsSheet
-        selectedNodeId={selectedNodeId}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedNodeId(null)
-          }
-        }}
+        open={isNodeDetailsOpen}
+        onOpenChange={onNodeDetailsOpenChange}
         nodeDetail={nodeDetail}
       />
     </div>
