@@ -68,7 +68,7 @@ export default function LoginPage() {
             {isLoading ? 'Sending...' : 'Continue with email'}
           </Button>
           {message ? (
-            <p className="text-xs text-emerald-600">{message}</p>
+            <p className="text-xs text-success">{message}</p>
           ) : null}
           {error ? (
             <p className="text-xs text-destructive">{error}</p>

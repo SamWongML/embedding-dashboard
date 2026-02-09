@@ -4,9 +4,9 @@ import { Badge } from '@/components/ui/badge'
 import { useDevApiSimulationScenario } from '@/components/providers/dev-api-simulation-provider'
 
 const scenarioStyles: Record<'success' | 'error' | 'slow', string> = {
-  success: 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
+  success: 'border-success/40 text-success',
   error: 'border-destructive/40 text-destructive',
-  slow: 'border-amber-500/40 text-amber-700 dark:text-amber-300',
+  slow: 'border-warning/40 text-warning',
 }
 
 export function DevSimulationIndicator() {
