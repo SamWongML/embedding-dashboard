@@ -1,8 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { AnimationEventHandler } from 'react'
 
-export const DEFAULT_SHEET_EXIT_DELAY_MS = 200
+export const DEFAULT_SHEET_EXIT_DELAY_MS = 260
 
 interface UseDelayedSheetSelectionOptions {
   exitDelayMs?: number
@@ -13,6 +14,7 @@ interface UseDelayedSheetSelectionResult<T> {
   selectedValue: T | null
   selectValue: (value: T) => void
   onOpenChange: (open: boolean) => void
+  onSheetAnimationEnd: AnimationEventHandler<HTMLElement>
   close: () => void
   clearImmediately: () => void
 }
@@ -32,6 +34,11 @@ export function useDelayedSheetSelection<T>(
     }
   }, [])
 
+  const clearSelection = useCallback(() => {
+    clearPendingTimer()
+    setSelectedValue(null)
+  }, [clearPendingTimer])
+
   const selectValue = useCallback(
     (value: T) => {
       clearPendingTimer()
@@ -45,10 +52,9 @@ export function useDelayedSheetSelection<T>(
     clearPendingTimer()
     setOpen(false)
     clearTimerRef.current = setTimeout(() => {
-      setSelectedValue(null)
-      clearTimerRef.current = null
+      clearSelection()
     }, exitDelayMs)
-  }, [clearPendingTimer, exitDelayMs])
+  }, [clearPendingTimer, clearSelection, exitDelayMs])
 
   const onOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -64,11 +70,29 @@ export function useDelayedSheetSelection<T>(
     [clearPendingTimer, close, selectedValue]
   )
 
+  const onSheetAnimationEnd = useCallback<AnimationEventHandler<HTMLElement>>(
+    (event) => {
+      if (event.target !== event.currentTarget) {
+        return
+      }
+
+      if (event.animationName !== 'exit') {
+        return
+      }
+
+      if (event.currentTarget.getAttribute('data-state') !== 'closed') {
+        return
+      }
+
+      clearSelection()
+    },
+    [clearSelection]
+  )
+
   const clearImmediately = useCallback(() => {
-    clearPendingTimer()
     setOpen(false)
-    setSelectedValue(null)
-  }, [clearPendingTimer])
+    clearSelection()
+  }, [clearSelection])
 
   useEffect(() => {
     return () => {
@@ -81,6 +105,7 @@ export function useDelayedSheetSelection<T>(
     selectedValue,
     selectValue,
     onOpenChange,
+    onSheetAnimationEnd,
     close,
     clearImmediately,
   }

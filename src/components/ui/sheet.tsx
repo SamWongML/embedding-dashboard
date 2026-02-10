@@ -69,19 +69,19 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-(--z-modal) flex flex-col gap-(--dialog-gap) transition ease-in-out will-change-transform data-[state=closed]:duration-(--duration-moderate) data-[state=open]:duration-(--duration-moderate)",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed z-(--z-modal) flex flex-col gap-(--dialog-gap) transition ease-in-out will-change-transform data-[state=closed]:duration-(--duration-moderate) data-[state=open]:duration-(--duration-moderate)",
           side === "right" &&
             !isGeistFloating &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-[480px] overflow-y-auto",
+            "data-[state=closed]:slide-out-to-right-10 data-[state=open]:slide-in-from-right-5 inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-[480px] overflow-y-auto",
           isGeistFloating &&
             "data-[state=closed]:slide-out-to-right-10 data-[state=open]:slide-in-from-right-5 inset-y-0 right-0 m-3 h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)] lg:w-[512px] sm:max-w-[none] rounded-[1rem] border-0 p-0 overflow-y-auto bg-[var(--sheet-geist-surface)]",
           useGeistShadow ? "shadow-[var(--sheet-geist-shadow)]" : "shadow-lg",
           side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+            "data-[state=closed]:slide-out-to-left-10 data-[state=open]:slide-in-from-left-5 inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
           side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
+            "data-[state=closed]:slide-out-to-top-10 data-[state=open]:slide-in-from-top-5 inset-x-0 top-0 h-auto border-b",
           side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+            "data-[state=closed]:slide-out-to-bottom-10 data-[state=open]:slide-in-from-bottom-5 inset-x-0 bottom-0 h-auto border-t",
           className
         )}
         {...props}

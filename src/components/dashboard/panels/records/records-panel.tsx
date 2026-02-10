@@ -57,6 +57,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
     selectedValue: selectedRecordId,
     selectValue: selectRecord,
     onOpenChange: onRecordDetailsOpenChange,
+    onSheetAnimationEnd: onRecordDetailsAnimationEnd,
   } = useDelayedSheetSelection<string>()
 
   const {
@@ -296,7 +297,10 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
         open={isRecordDetailsOpen}
         onOpenChange={onRecordDetailsOpenChange}
       >
-        <SheetContent variant="geist-floating">
+        <SheetContent
+          variant="geist-floating"
+          onAnimationEnd={onRecordDetailsAnimationEnd}
+        >
           <SheetHeader className="border-0 p-6 text-left">
             <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
           </SheetHeader>

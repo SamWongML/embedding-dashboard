@@ -1,5 +1,6 @@
 "use client"
 
+import type { ComponentProps } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -16,19 +17,24 @@ interface NodeDetailsSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   nodeDetail: NodeDetail | null | undefined
+  onAnimationEnd?: ComponentProps<typeof SheetContent>["onAnimationEnd"]
 }
 
 export function NodeDetailsSheet({
   open,
   onOpenChange,
   nodeDetail,
+  onAnimationEnd,
 }: NodeDetailsSheetProps) {
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
     >
-      <SheetContent variant="geist-floating">
+      <SheetContent
+        variant="geist-floating"
+        onAnimationEnd={onAnimationEnd}
+      >
         <SheetHeader className="border-0 p-6 text-left">
           <SheetTitle className="text-lg font-semibold">Node Details</SheetTitle>
         </SheetHeader>

@@ -43,6 +43,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
     selectedValue: selectedNodeId,
     selectValue: selectNode,
     onOpenChange: onNodeDetailsOpenChange,
+    onSheetAnimationEnd: onNodeDetailsAnimationEnd,
   } = useDelayedSheetSelection<string>()
   const { resolvedTheme } = useTheme()
 
@@ -211,6 +212,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
         open={isNodeDetailsOpen}
         onOpenChange={onNodeDetailsOpenChange}
         nodeDetail={nodeDetail}
+        onAnimationEnd={onNodeDetailsAnimationEnd}
       />
     </div>
   )
