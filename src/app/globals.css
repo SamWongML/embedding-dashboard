@@ -489,21 +489,21 @@
   --sheet-geist-shadow: var(--sheet-geist-shadow-light);
   --sheet-geist-surface: var(--sheet-geist-surface-light);
 
-  /* Chart colors - Geist multi-hue palette */
-  --chart-1: oklch(60% 0.26 250);        /* Blue - increased chroma */
-  --chart-2: oklch(62% 0.22 175);        /* Teal - shifted hue, increased chroma */
-  --chart-3: oklch(68% 0.22 80);         /* Amber - increased chroma */
-  --chart-4: oklch(60% 0.20 150);        /* Green */
-  --chart-5: oklch(65% 0.20 15);         /* Orange-Red */
+  /* Chart colors - Muted multi-hue palette (Vercel/Linear aesthetic) */
+  --chart-1: oklch(58% 0.14 250);        /* Blue */
+  --chart-2: oklch(60% 0.12 175);        /* Teal */
+  --chart-3: oklch(66% 0.13 80);         /* Amber */
+  --chart-4: oklch(58% 0.12 150);        /* Green */
+  --chart-5: oklch(63% 0.12 15);         /* Coral */
 
   /* Blue accent variants (for single-series charts, graph nodes) */
   --chart-accent: var(--chart-1);
-  --chart-accent-soft: oklch(72% 0.15 250);
-  --chart-accent-dim: oklch(50% 0.18 250);
+  --chart-accent-soft: oklch(70% 0.08 250);
+  --chart-accent-dim: oklch(48% 0.10 250);
 
   /* Supporting tokens */
   --chart-axis: oklch(52% 0.005 240);
-  --chart-grid: oklch(86% 0.003 240 / 60%);
+  --chart-grid: oklch(86% 0.003 240 / 30%);
   --chart-track: oklch(96% 0.003 240);
 
   /* Status Colors - Geist palette */
@@ -579,21 +579,21 @@
   --sheet-geist-shadow: var(--sheet-geist-shadow-dark);
   --sheet-geist-surface: var(--sheet-geist-surface-dark);
 
-  /* Chart colors - Geist multi-hue palette (dark mode) */
-  --chart-1: oklch(70% 0.24 250);        /* Blue */
-  --chart-2: oklch(70% 0.20 175);        /* Teal */
-  --chart-3: oklch(78% 0.20 80);         /* Amber */
-  --chart-4: oklch(70% 0.18 155);        /* Green */
-  --chart-5: oklch(72% 0.22 20);         /* Orange-Red */
+  /* Chart colors - Muted multi-hue palette (dark mode) */
+  --chart-1: oklch(68% 0.14 250);        /* Blue */
+  --chart-2: oklch(68% 0.12 175);        /* Teal */
+  --chart-3: oklch(75% 0.13 80);         /* Amber */
+  --chart-4: oklch(68% 0.12 155);        /* Green */
+  --chart-5: oklch(70% 0.13 20);         /* Coral */
 
   /* Blue accent variants */
   --chart-accent: var(--chart-1);
-  --chart-accent-soft: oklch(80% 0.14 250);
-  --chart-accent-dim: oklch(60% 0.16 250);
+  --chart-accent-soft: oklch(78% 0.08 250);
+  --chart-accent-dim: oklch(58% 0.10 250);
 
   /* Supporting tokens */
   --chart-axis: oklch(65% 0.003 240);
-  --chart-grid: oklch(35% 0.005 240 / 50%);
+  --chart-grid: oklch(35% 0.005 240 / 25%);
   --chart-track: oklch(22% 0.005 240);
 
   /* Status Colors - Geist dark mode */

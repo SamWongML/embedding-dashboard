@@ -17,6 +17,7 @@ import {
   chartAxisDefaults,
   chartBarFill,
   chartBarRadius,
+  chartGridConfig,
   chartGridStroke,
   chartTooltipCursor,
 } from './chart-theme'
@@ -49,7 +50,7 @@ export function ServiceUsageChart({ data, className }: ServiceUsageChartProps) {
           layout="vertical"
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
-          <CartesianGrid stroke={chartGridStroke} vertical={false} />
+          <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             type="number"
             {...chartAxisDefaults}
@@ -95,7 +96,7 @@ export function ServiceUsageChart({ data, className }: ServiceUsageChartProps) {
             radius={chartBarRadius}
             fill={chartBarFill}
             activeBar={false}
-            background={{ fill: 'var(--chart-track)', radius: 6 }}
+            background={{ fill: 'var(--chart-track)', radius: chartBarRadius[1] }}
             animationDuration={chartAnimationDurationMs}
             animationEasing={chartAnimationEasing}
           />

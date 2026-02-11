@@ -18,6 +18,7 @@ import {
   chartAxisDefaults,
   chartBarFill,
   chartBarRadius,
+  chartGridConfig,
   chartGridStroke,
   chartTooltipCursor,
 } from './chart-theme'
@@ -37,7 +38,7 @@ export function TopHitsChart({ data, className }: TopHitsChartProps) {
           layout="vertical"
           margin={{ top: 0, right: 10, left: 0, bottom: 0 }}
         >
-          <CartesianGrid stroke={chartGridStroke} vertical={false} />
+          <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             type="number"
             {...chartAxisDefaults}
@@ -81,7 +82,7 @@ export function TopHitsChart({ data, className }: TopHitsChartProps) {
             radius={chartBarRadius}
             fill={chartBarFill}
             activeBar={false}
-            background={{ fill: 'var(--chart-track)', radius: 6 }}
+            background={{ fill: 'var(--chart-track)', radius: chartBarRadius[1] }}
             animationDuration={chartAnimationDurationMs}
             animationEasing={chartAnimationEasing}
           />

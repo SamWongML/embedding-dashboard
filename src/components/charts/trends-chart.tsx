@@ -23,7 +23,11 @@ import {
   chartAnimationDurationMs,
   chartAnimationEasing,
   chartAxisDefaults,
+  chartDotConfig,
+  chartFillOpacity,
+  chartGridConfig,
   chartGridStroke,
+  chartStrokeWidth,
   chartTooltipCursor,
   getChartColor,
   type ChartTone,
@@ -41,21 +45,18 @@ const trendSeriesConfig = [
     label: 'Text Embeddings',
     tone: 'accent' as ChartTone,      // Blue (chart-1)
     gradientId: 'trendTextGradient',
-    fillOpacity: 0.24,
   },
   {
     dataKey: 'Image Embeddings',
     label: 'Image Embeddings',
     tone: 'teal' as ChartTone,        // Teal (chart-2)
     gradientId: 'trendImageGradient',
-    fillOpacity: 0.20,
   },
   {
     dataKey: 'Searches',
     label: 'Searches',
     tone: 'amber' as ChartTone,       // Amber (chart-3)
     gradientId: 'trendSearchGradient',
-    fillOpacity: 0.18,
   },
 ] as const
 
@@ -82,12 +83,12 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
           <defs>
             {trendSeries.map((series) => (
               <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={series.color} stopOpacity={series.fillOpacity} />
-                <stop offset="95%" stopColor={series.color} stopOpacity={0} />
+                <stop offset="0%" stopColor={series.color} stopOpacity={chartFillOpacity.area} />
+                <stop offset="100%" stopColor={series.color} stopOpacity={0} />
               </linearGradient>
             ))}
           </defs>
-          <CartesianGrid stroke={chartGridStroke} vertical={false} />
+          <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             dataKey="date"
             {...chartAxisDefaults}
@@ -140,9 +141,9 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
             verticalAlign="top"
             height={36}
             iconType="circle"
-            iconSize={8}
+            iconSize={6}
             formatter={(value) => (
-              <span className="text-xs text-muted-foreground">{value}</span>
+              <span className="text-[11px] text-muted-foreground">{value}</span>
             )}
           />
           {trendSeries.map((series) => (
@@ -152,16 +153,17 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
               dataKey={series.dataKey}
               name={series.label}
               stroke={series.color}
-              strokeWidth={2.5}
+              strokeWidth={chartStrokeWidth.area}
               fill={`url(#${series.gradientId})`}
               isAnimationActive={true}
               animationDuration={chartAnimationDurationMs}
               animationEasing={chartAnimationEasing}
+              dot={chartDotConfig.default}
               activeDot={{
-                r: 5,
+                r: chartDotConfig.active.r,
                 fill: 'var(--card)',
                 stroke: series.color,
-                strokeWidth: 2,
+                strokeWidth: chartDotConfig.active.strokeWidth,
               }}
             />
           ))}

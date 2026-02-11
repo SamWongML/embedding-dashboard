@@ -16,21 +16,21 @@ export function ChartTooltipContent({ label, rows, className }: ChartTooltipCont
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-popover px-3 py-2 shadow-lg',
+        'rounded-md border border-border bg-popover px-2.5 py-2 shadow-md',
         className
       )}
     >
-      {label ? <p className="mb-1 text-xs font-medium text-foreground">{label}</p> : null}
+      {label ? <p className="mb-1 text-[11px] font-normal text-muted-foreground tabular-nums">{label}</p> : null}
       <div className="space-y-1.5">
         {rows.map((row) => {
           const indicatorColor = row.color ?? colorByChartTone(row.tone ?? 'accent')
 
           return (
-            <div key={row.label} className="flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
+            <div key={row.label} className="flex items-center justify-between gap-4 text-[11px]">
+              <div className="flex items-center gap-1.5 font-normal text-muted-foreground">
                 <span
                   aria-hidden
-                  className="h-2 w-2 rounded-full"
+                  className="h-1.5 w-1.5 shrink-0 rounded-full"
                   style={{ backgroundColor: indicatorColor }}
                 />
                 <span>{row.label}</span>

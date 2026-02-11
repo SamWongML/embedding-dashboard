@@ -7,7 +7,11 @@ import {
   chartAnimationDurationMs,
   chartAnimationEasing,
   chartAxisDefaults,
+  chartDotConfig,
+  chartFillOpacity,
+  chartGridConfig,
   chartGridStroke,
+  chartStrokeWidth,
   chartTooltipCursor,
 } from './chart-theme'
 
@@ -35,11 +39,11 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
         >
           <defs>
             <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--chart-accent)" stopOpacity={0.28} />
-              <stop offset="95%" stopColor="var(--chart-accent)" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--chart-accent)" stopOpacity={chartFillOpacity.area} />
+              <stop offset="100%" stopColor="var(--chart-accent)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke={chartGridStroke} vertical={false} />
+          <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             dataKey="time"
             {...chartAxisDefaults}
@@ -76,15 +80,16 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
             type="monotone"
             dataKey="latency"
             stroke="var(--chart-accent)"
-            strokeWidth={2}
+            strokeWidth={chartStrokeWidth.area}
             fill="url(#latencyGradient)"
             animationDuration={chartAnimationDurationMs}
             animationEasing={chartAnimationEasing}
+            dot={chartDotConfig.default}
             activeDot={{
-              r: 6,
-              fill: 'var(--chart-accent)',
-              stroke: 'var(--card)',
-              strokeWidth: 2,
+              r: chartDotConfig.active.r,
+              fill: 'var(--card)',
+              stroke: 'var(--chart-accent)',
+              strokeWidth: chartDotConfig.active.strokeWidth,
             }}
           />
         </AreaChart>

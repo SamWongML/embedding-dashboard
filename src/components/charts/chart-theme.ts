@@ -34,26 +34,26 @@ export const chartToneToColorVar: Record<ChartTone, string> = {
 // Source of truth: src/app/globals.css (--chart-1, --chart-2, --chart-3, etc.)
 export const chartColors = {
   light: {
-    accent: 'oklch(60% 0.26 250)',      // Blue
-    accentSoft: 'oklch(72% 0.15 250)',
-    accentDim: 'oklch(50% 0.18 250)',
-    teal: 'oklch(62% 0.22 175)',        // Teal
-    amber: 'oklch(68% 0.22 80)',        // Amber
-    green: 'oklch(60% 0.20 150)',
-    coral: 'oklch(65% 0.20 15)',
+    accent: 'oklch(58% 0.14 250)',      // Blue
+    accentSoft: 'oklch(70% 0.08 250)',
+    accentDim: 'oklch(48% 0.10 250)',
+    teal: 'oklch(60% 0.12 175)',        // Teal
+    amber: 'oklch(66% 0.13 80)',        // Amber
+    green: 'oklch(58% 0.12 150)',
+    coral: 'oklch(63% 0.12 15)',
     muted: 'oklch(52% 0.005 240)',
     success: 'oklch(55% 0.18 155)',
     warning: 'oklch(70% 0.18 80)',
     error: 'oklch(58% 0.22 25)',
   },
   dark: {
-    accent: 'oklch(70% 0.24 250)',      // Blue
-    accentSoft: 'oklch(80% 0.14 250)',
-    accentDim: 'oklch(60% 0.16 250)',
-    teal: 'oklch(70% 0.20 175)',        // Teal
-    amber: 'oklch(78% 0.20 80)',        // Amber
-    green: 'oklch(70% 0.18 155)',
-    coral: 'oklch(72% 0.22 20)',
+    accent: 'oklch(68% 0.14 250)',      // Blue
+    accentSoft: 'oklch(78% 0.08 250)',
+    accentDim: 'oklch(58% 0.10 250)',
+    teal: 'oklch(68% 0.12 175)',        // Teal
+    amber: 'oklch(75% 0.13 80)',        // Amber
+    green: 'oklch(68% 0.12 155)',
+    coral: 'oklch(70% 0.13 20)',
     muted: 'oklch(65% 0.003 240)',
     success: 'oklch(65% 0.18 155)',
     warning: 'oklch(76% 0.16 80)',
@@ -70,7 +70,7 @@ export function colorByChartTone(tone: ChartTone): string {
 }
 
 export const chartAxisTick = {
-  fontSize: 10,
+  fontSize: 11,
   fill: 'var(--chart-axis)',
 }
 
@@ -88,8 +88,13 @@ export const chartBarFill = 'var(--chart-accent)'
 
 export const chartTooltipCursor = false
 
-export const chartAnimationDurationMs = 800
-export const chartAnimationEasing = 'ease-in-out'
+export const chartStrokeWidth = { area: 1.5, line: 1.5, sparkline: 1.5 } as const
+export const chartFillOpacity = { area: 0.10 } as const
+export const chartDotConfig = { default: false, active: { r: 4, strokeWidth: 2 } } as const
+export const chartGridConfig = { strokeDasharray: '3 3', horizontal: true, vertical: false } as const
+
+export const chartAnimationDurationMs = 350
+export const chartAnimationEasing = 'ease-out'
 
 export interface ChartTooltipRow {
   label: string
@@ -125,12 +130,12 @@ export const graphNodeStrokeColor = 'var(--background)'
 // Direct graph colors for D3/SVG rendering (CSS variables don't resolve in D3)
 export const graphColors = {
   light: {
-    link: 'oklch(86% 0.003 240 / 60%)',
+    link: 'oklch(86% 0.003 240 / 30%)',
     label: 'oklch(52% 0.005 240)',
     nodeStroke: 'oklch(100% 0 0)',
   },
   dark: {
-    link: 'oklch(35% 0.005 240 / 50%)',
+    link: 'oklch(35% 0.005 240 / 25%)',
     label: 'oklch(65% 0.003 240)',
     nodeStroke: 'oklch(10% 0.005 240)',
   },
