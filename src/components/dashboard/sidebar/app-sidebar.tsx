@@ -22,50 +22,55 @@ import {
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const { state, viewportMode, toggleSidebar } = useSidebar()
+  const { state, viewportMode, toggleSidebar, isMobile, setOpenMobile } = useSidebar()
   const collapsed = state === "collapsed"
   const isMediumViewport = viewportMode === "medium"
+  const accountMenuCollapsed = viewportMode === "limited" ? false : collapsed
+
+  const closeMobileSidebarOnNavigate = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
+  const brandContent = (
+    <>
+      <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+        <Layers className="size-4" />
+      </div>
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-semibold">Embeddings</span>
+        <span className="truncate text-xs">Dashboard</span>
+      </div>
+    </>
+  )
+
+  const renderBrandAsToggle = () => (
+    <SidebarMenuButton
+      size="lg"
+      tooltip={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      onClick={toggleSidebar}
+      aria-label="Toggle sidebar"
+      aria-expanded={state === "expanded"}
+    >
+      {brandContent}
+    </SidebarMenuButton>
+  )
+
+  const renderBrandAsHomeLink = () => (
+    <SidebarMenuButton asChild size="lg" tooltip="Embedding Dashboard">
+      <Link href="/" onClick={closeMobileSidebarOnNavigate}>
+        {brandContent}
+      </Link>
+    </SidebarMenuButton>
+  )
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild={!isMediumViewport}
-              size="lg"
-              tooltip={
-                isMediumViewport
-                  ? collapsed
-                    ? "Expand sidebar"
-                    : "Collapse sidebar"
-                  : "Embedding Dashboard"
-              }
-              onClick={isMediumViewport ? toggleSidebar : undefined}
-              aria-label={isMediumViewport ? "Toggle sidebar" : undefined}
-            >
-              {isMediumViewport ? (
-                <>
-                  <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <Layers className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Embeddings</span>
-                    <span className="truncate text-xs">Dashboard</span>
-                  </div>
-                </>
-              ) : (
-                <Link href="/">
-                  <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <Layers className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Embeddings</span>
-                    <span className="truncate text-xs">Dashboard</span>
-                  </div>
-                </Link>
-              )}
-            </SidebarMenuButton>
+            {isMediumViewport ? renderBrandAsToggle() : renderBrandAsHomeLink()}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -81,7 +86,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton asChild isActive={isActive} tooltip={item.label}>
-                        <Link href={item.href}>
+                        <Link href={item.href} onClick={closeMobileSidebarOnNavigate}>
                           <item.icon />
                           <span>{item.label}</span>
                         </Link>
@@ -95,7 +100,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <AccountMenu collapsed={collapsed} viewportMode={viewportMode} />
+        <AccountMenu collapsed={accountMenuCollapsed} viewportMode={viewportMode} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

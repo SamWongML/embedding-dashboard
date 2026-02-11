@@ -61,15 +61,48 @@ test.describe('Sidebar', () => {
     await page.goto('/')
 
     // Find and click collapse button
-    const collapseButton = page.getByRole('button', { name: 'Toggle sidebar' })
+    const collapseButton = page
+      .getByRole('main')
+      .getByRole('button', { name: 'Toggle Sidebar' })
     await collapseButton.click()
 
-    // Sidebar should be collapsed (narrow width)
-    const sidebar = page.locator('aside')
-    await expect(sidebar).toHaveClass(/w-16/)
+    // Sidebar state should collapse.
+    const sidebar = page.locator('[data-slot="sidebar"][data-state]')
+    await expect(sidebar).toHaveAttribute('data-state', 'collapsed')
 
     // Click again to expand
     await collapseButton.click()
-    await expect(sidebar).toHaveClass(/w-64/)
+    await expect(sidebar).toHaveAttribute('data-state', 'expanded')
+  })
+})
+
+test.describe('Sidebar mobile behavior', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('navigates home from sidebar logo and closes the temporary drawer', async ({
+    page,
+  }) => {
+    await page.goto('/metrics')
+
+    await page.getByRole('button', { name: 'Toggle Sidebar' }).first().click()
+    const sidebarDialog = page.getByRole('dialog', { name: 'Sidebar' })
+    await expect(sidebarDialog).toBeVisible()
+
+    await page.getByRole('link', { name: 'Embeddings Dashboard' }).click()
+    await expect(page).toHaveURL('/')
+    // Dev note: ignore bottom-right Next.js dev badge overlap in localhost.
+    await expect(sidebarDialog).toBeHidden()
+  })
+
+  test('closes the temporary drawer after navigation link click', async ({ page }) => {
+    await page.goto('/')
+
+    await page.getByRole('button', { name: 'Toggle Sidebar' }).first().click()
+    const sidebarDialog = page.getByRole('dialog', { name: 'Sidebar' })
+    await expect(sidebarDialog).toBeVisible()
+
+    await page.getByRole('link', { name: 'Metrics' }).click()
+    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await expect(sidebarDialog).toBeHidden()
   })
 })

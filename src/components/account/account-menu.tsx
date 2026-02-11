@@ -275,7 +275,8 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
     signOut,
   } = useAccount()
   const [hasMounted, setHasMounted] = React.useState(false)
-  const compactTrigger = collapsed && viewportMode === 'medium'
+  const effectiveCollapsed = viewportMode === 'limited' ? false : collapsed
+  const compactTrigger = effectiveCollapsed && viewportMode === 'medium'
 
   React.useEffect(() => {
     setHasMounted(true)
@@ -284,7 +285,7 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
   if (!hasMounted) {
     return (
       <AccountMenuTrigger
-        collapsed={collapsed}
+        collapsed={effectiveCollapsed}
         compact={compactTrigger}
         name={user.name}
         email={user.email}
@@ -299,7 +300,7 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
   return (
     <DropdownMenu>
       <AccountMenuTrigger
-        collapsed={collapsed}
+        collapsed={effectiveCollapsed}
         compact={compactTrigger}
         name={user.name}
         email={user.email}

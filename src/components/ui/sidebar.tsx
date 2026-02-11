@@ -116,6 +116,8 @@ function SidebarProvider({
     }
 
     previousViewportModeRef.current = viewportMode
+    // Reset temporary mobile sheet state across viewport mode changes.
+    setOpenMobile(false)
 
     if (viewportMode === "extended") {
       setOpen(true)
@@ -125,7 +127,7 @@ function SidebarProvider({
     if (viewportMode === "medium") {
       setOpen(false)
     }
-  }, [viewportMode, setOpen])
+  }, [viewportMode, setOpen, setOpenMobile])
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {

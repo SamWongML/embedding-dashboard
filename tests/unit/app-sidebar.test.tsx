@@ -61,6 +61,7 @@ describe('AppSidebar responsive behavior', () => {
     ).toHaveAttribute('data-state', 'collapsed')
 
     const toggleButton = screen.getByRole('button', { name: 'Toggle sidebar' })
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(toggleButton)
 
     await waitFor(() => {
@@ -68,6 +69,7 @@ describe('AppSidebar responsive behavior', () => {
         container.querySelector('[data-slot="sidebar"][data-state]')
       ).toHaveAttribute('data-state', 'expanded')
     })
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('keeps the logo as a home link in extended viewport mode', () => {
@@ -75,5 +77,14 @@ describe('AppSidebar responsive behavior', () => {
 
     expect(screen.queryByRole('button', { name: 'Toggle sidebar' })).toBeNull()
     expect(container.querySelector('[data-sidebar="header"] a[href="/"]')).toBeTruthy()
+  })
+
+  it('keeps the logo as a home link and account trigger expanded in limited viewport mode', () => {
+    viewportMode = 'limited'
+    const { container } = renderSidebar({ defaultOpen: false })
+
+    expect(screen.queryByRole('button', { name: 'Toggle sidebar' })).toBeNull()
+    expect(container.querySelector('[data-sidebar="header"] a[href="/"]')).toBeTruthy()
+    expect(screen.getByTestId('account-menu')).toHaveAttribute('data-collapsed', 'false')
   })
 })
