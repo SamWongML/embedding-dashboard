@@ -283,6 +283,8 @@
   --button-font-size: var(--text-copy-14);
   --button-font-weight: var(--font-weight-medium);
   --button-line-height: var(--leading-copy-14);
+  --button-radius-square: var(--radius-md);
+  --button-radius-circle: 9999px;
 
   /* ===== INPUT TOKENS (Enhanced) ===== */
   --input-height: 2.25rem;
@@ -326,6 +328,9 @@
   --avatar-size-sm: 2rem;
   --avatar-size-md: 2.25rem;
   --avatar-size-lg: 2.5rem;
+  --account-trigger-avatar-size-expanded: var(--avatar-size-sm);
+  --account-trigger-avatar-size-collapsed: var(--avatar-size-md);
+  --account-trigger-hit-size-collapsed: var(--button-height-lg);
 
   /* ===== DROPDOWN/POPOVER TOKENS ===== */
   --dropdown-item-padding-x: 0.5rem;
@@ -432,6 +437,9 @@
 
   --input-line-height: 1.25rem;
   --input-font-weight: 400;
+
+  --button-radius-square: var(--radius-md);
+  --button-radius-circle: 9999px;
 
   /* Base Radius */
   --radius: 0.5rem;

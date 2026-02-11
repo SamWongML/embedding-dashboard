@@ -38,7 +38,6 @@ interface AccountMenuProps {
 
 interface AccountMenuTriggerProps {
   collapsed: boolean
-  compact: boolean
   name: string
   email: string
   workspace: string
@@ -73,7 +72,6 @@ function formatRole(role: string) {
 
 function AccountMenuTrigger({
   collapsed,
-  compact,
   name,
   email,
   workspace,
@@ -81,41 +79,52 @@ function AccountMenuTrigger({
   className,
   interactive = true,
 }: AccountMenuTriggerProps) {
-  const button = (
+  const avatarSizeClassName = collapsed
+    ? 'size-(--account-trigger-avatar-size-collapsed)'
+    : 'size-(--account-trigger-avatar-size-expanded)'
+
+  const avatar = (
+    <Avatar className={cn(avatarSizeClassName, 'border border-sidebar-border/70')}>
+      {avatarUrl ? (
+        <AvatarImage src={avatarUrl} alt={name} />
+      ) : null}
+      <AvatarFallback>{getInitials(name)}</AvatarFallback>
+    </Avatar>
+  )
+
+  const button = collapsed ? (
     <Button
       variant="ghost"
+      size="icon"
+      shape="circle"
       className={cn(
-        'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
-        collapsed && 'justify-center px-0',
-        compact && 'mx-auto size-(--button-height-sm) justify-center rounded-md p-0',
+        'mx-auto size-(--account-trigger-hit-size-collapsed)! -translate-x-[calc((var(--account-trigger-hit-size-collapsed)-var(--button-height-sm))/2)] items-center justify-center border border-transparent p-0 text-left hover:bg-transparent dark:hover:bg-transparent',
         className
       )}
     >
-      <Avatar
-        className={cn(
-          'size-(--avatar-size-sm) border border-sidebar-border/70',
-          collapsed && 'size-(--avatar-size-md)',
-          compact && 'size-(--avatar-size-xs)'
-        )}
-      >
-        {avatarUrl ? (
-          <AvatarImage src={avatarUrl} alt={name} />
-        ) : null}
-        <AvatarFallback>{getInitials(name)}</AvatarFallback>
-      </Avatar>
-      {!collapsed && (
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
-            {name}
-          </span>
-          <span className="truncate text-xs leading-tight text-muted-foreground">
-            {workspace}
-          </span>
-        </div>
+      {avatar}
+      <span className="sr-only">Open account menu</span>
+    </Button>
+  ) : (
+    <Button
+      variant="ghost"
+      size="default"
+      shape="square"
+      className={cn(
+        'w-full items-center justify-start gap-(--sidebar-item-gap) rounded-lg border border-transparent px-2.5 py-(--space-sm) text-left transition-colors hover:border-sidebar-border/70 hover:bg-sidebar-accent/60',
+        className
       )}
-      {!collapsed && (
-        <ChevronsUpDown className="ml-auto size-(--icon-sm) text-muted-foreground/70" />
-      )}
+    >
+      {avatar}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
+          {name}
+        </span>
+        <span className="truncate text-xs leading-tight text-muted-foreground">
+          {workspace}
+        </span>
+      </div>
+      <ChevronsUpDown className="ml-auto size-(--icon-sm) text-muted-foreground/70" />
       <span className="sr-only">Open account menu</span>
     </Button>
   )
@@ -276,7 +285,6 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
   } = useAccount()
   const [hasMounted, setHasMounted] = React.useState(false)
   const effectiveCollapsed = viewportMode === 'limited' ? false : collapsed
-  const compactTrigger = effectiveCollapsed && viewportMode === 'medium'
 
   React.useEffect(() => {
     setHasMounted(true)
@@ -286,7 +294,6 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
     return (
       <AccountMenuTrigger
         collapsed={effectiveCollapsed}
-        compact={compactTrigger}
         name={user.name}
         email={user.email}
         workspace={activeWorkspace.name}
@@ -301,7 +308,6 @@ const AccountMenu = (({ collapsed, viewportMode, className }: AccountMenuProps) 
     <DropdownMenu>
       <AccountMenuTrigger
         collapsed={effectiveCollapsed}
-        compact={compactTrigger}
         name={user.name}
         email={user.email}
         workspace={activeWorkspace.name}

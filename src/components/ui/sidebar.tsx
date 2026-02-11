@@ -10,7 +10,11 @@ import { useSidebarViewportMode } from "@/hooks/use-sidebar-viewport-mode"
 import { SIDEBAR_STATE_COOKIE_NAME } from "@/lib/layout/sidebar-state"
 import type { SidebarViewportMode } from "@/lib/layout/sidebar-mode"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import {
+  IconButton,
+  buttonBaseInteractionClassName,
+  buttonIconChildClassName,
+} from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -306,15 +310,16 @@ function SidebarTrigger({
   className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: Omit<React.ComponentProps<typeof IconButton>, "aria-label" | "aria-labelledby">) {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
+    <IconButton
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
+      aria-label="Toggle Sidebar"
       className={cn("size-7", className)}
       onClick={(event) => {
         onClick?.(event)
@@ -323,8 +328,7 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+    </IconButton>
   )
 }
 
@@ -346,6 +350,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        buttonBaseInteractionClassName,
+        "focus-visible:ring-ring/50 focus-visible:ring-(--ring-width) focus-visible:ring-2",
         className
       )}
       {...props}
@@ -423,7 +429,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-(--form-item-gap) overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-(--form-item-gap) overflow-x-hidden overflow-y-auto group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       {...props}
@@ -523,7 +529,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-(--form-item-gap) overflow-hidden rounded-md p-(--space-sm) text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-(--opacity-disabled) group-has-data-[sidebar=menu-action]/menu-item:pr-(--button-height-sm) aria-disabled:pointer-events-none aria-disabled:opacity-(--opacity-disabled) data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-(--button-height-sm)! group-data-[collapsible=icon]:p-(--space-sm)! [&>span:last-child]:truncate [&>svg]:size-(--icon-sm) [&>svg]:shrink-0",
+  `peer/menu-button flex w-full items-center gap-(--form-item-gap) overflow-hidden rounded-md p-(--space-sm) text-left text-sm ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground ${buttonBaseInteractionClassName} ${buttonIconChildClassName} group-has-data-[sidebar=menu-action]/menu-item:pr-(--button-height-sm) aria-disabled:pointer-events-none aria-disabled:opacity-(--opacity-disabled) data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-(--button-height-sm)! group-data-[collapsible=icon]:p-(--space-sm)! [&>span:last-child]:truncate [&>svg]:size-(--icon-sm)`,
   {
     variants: {
       variant: {
@@ -610,7 +616,9 @@ function SidebarMenuAction({
       data-slot="sidebar-menu-action"
       data-sidebar="menu-action"
       className={cn(
-        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-(--dropdown-item-padding-y) right-(--dropdown-gap) flex aspect-square w-(--icon-md) items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-(--icon-sm) [&>svg]:shrink-0",
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-(--dropdown-item-padding-y) right-(--dropdown-gap) flex aspect-square w-(--icon-md) items-center justify-center rounded-md p-0 transition-transform focus-visible:ring-2 [&>svg]:size-(--icon-sm)",
+        buttonBaseInteractionClassName,
+        buttonIconChildClassName,
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 md:after:hidden",
         "peer-data-[size=sm]/menu-button:top-(--dropdown-gap)",

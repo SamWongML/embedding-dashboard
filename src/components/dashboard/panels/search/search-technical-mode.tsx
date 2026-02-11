@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -247,14 +247,15 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
                       }
                       className="flex-1"
                     />
-                    <Button
+                    <IconButton
                       type="button"
                       variant="ghost"
                       size="icon"
+                      aria-label="Remove filter"
                       onClick={() => removeFilter(index)}
                     >
                       <X className="h-4 w-4" />
-                    </Button>
+                    </IconButton>
                   </div>
                 ))}
               </div>

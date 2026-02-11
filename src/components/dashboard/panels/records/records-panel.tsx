@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -242,14 +242,14 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                         {formatDate(record.createdAt)}
                       </TableCell>
                       <TableCell>
-                        <Button
+                        <IconButton
                           variant="ghost"
                           size="icon"
                           aria-label="View record details"
                           onClick={() => selectRecord(record.id)}
                         >
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))

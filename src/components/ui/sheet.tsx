@@ -5,6 +5,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { IconButton } from "@/components/ui/button"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -88,9 +89,16 @@ function SheetContent({
       >
         {children}
         {showCloseButton && (
-          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-(--space-lg) right-(--space-lg) rounded-xs opacity-(--opacity-muted) transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-            <XIcon className="size-(--icon-sm)" />
-            <span className="sr-only">Close</span>
+          <SheetPrimitive.Close asChild>
+            <IconButton
+              data-slot="sheet-close"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Close"
+              className="data-[state=open]:bg-secondary absolute top-(--space-lg) right-(--space-lg) opacity-(--opacity-muted) transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <XIcon />
+            </IconButton>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Content>

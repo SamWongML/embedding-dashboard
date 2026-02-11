@@ -5,7 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button, IconButton } from "@/components/ui/button"
 
 function Dialog({
   ...props
@@ -68,12 +68,16 @@ function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-(--space-lg) right-(--space-lg) rounded-xs opacity-(--opacity-muted) transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)"
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
+          <DialogPrimitive.Close asChild>
+            <IconButton
+              data-slot="dialog-close"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Close"
+              className="data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-(--space-lg) right-(--space-lg) opacity-(--opacity-muted) transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <XIcon />
+            </IconButton>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

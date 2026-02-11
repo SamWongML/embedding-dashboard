@@ -11,6 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { Button } from '@/components/ui/button'
 import { navigationItems } from '@/components/dashboard/navigation.config'
 
 export function CommandPalette() {
@@ -41,17 +42,18 @@ export function CommandPalette() {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={() => setOpen(true)}
-        className="flex w-(--search-width) items-center gap-(--form-item-gap) rounded-md border border-input bg-background px-(--input-padding-x) py-(--space-sm) text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        className="w-(--search-width) justify-start gap-(--form-item-gap) border-input bg-background px-(--input-padding-x) py-(--space-sm) text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground"
       >
         <Search className="size-(--icon-sm)" />
         <span className="flex-1 text-left">Search...</span>
         <kbd className="pointer-events-none hidden h-(--search-kbd-height) select-none items-center gap-(--dropdown-gap) rounded border bg-muted px-(--dropdown-item-padding-y) font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
-      </button>
+      </Button>
       {hasMounted ? (
         <CommandDialog open={open} onOpenChange={setOpen}>
           <CommandInput placeholder="Type a command or search..." />

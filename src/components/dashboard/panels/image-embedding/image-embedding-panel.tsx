@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Button } from '@/components/ui/button'
+import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -161,15 +161,16 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                             <span className="text-sm flex-1 truncate">
                               {uploadedFile.name}
                             </span>
-                            <Button
+                            <IconButton
                               type="button"
                               variant="ghost"
                               size="icon"
+                              aria-label="Remove uploaded image"
                               className="h-6 w-6"
                               onClick={clearFile}
                             >
                               <X className="h-4 w-4" />
-                            </Button>
+                            </IconButton>
                           </div>
                         </div>
                       ) : (

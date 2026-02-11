@@ -3,7 +3,7 @@
 import { MoreHorizontal } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -167,9 +167,13 @@ export function UsersTable({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <IconButton
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Open actions for ${user.email}`}
+                      >
                         <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      </IconButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>Edit</DropdownMenuItem>

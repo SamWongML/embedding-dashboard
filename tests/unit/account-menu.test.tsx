@@ -55,12 +55,25 @@ describe('AccountMenu responsive trigger behavior', () => {
     )
   })
 
-  it('uses compact trigger in medium viewport when collapsed', () => {
+  it('uses circular trigger in medium viewport when collapsed', () => {
     render(<AccountMenu collapsed viewportMode="medium" />)
 
     expect(screen.queryByText('Avery Chen')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Open account menu/i }).className).toContain(
-      'size-(--button-height-sm)'
-    )
+    const compactTriggerClassName = screen.getByRole('button', { name: /Open account menu/i }).className
+
+    expect(compactTriggerClassName).toContain('size-(--account-trigger-hit-size-collapsed)')
+    expect(compactTriggerClassName).not.toContain('w-full')
+    expect(compactTriggerClassName).toContain('rounded-(--button-radius-circle)')
+  })
+
+  it('uses circular trigger in extended viewport when collapsed', () => {
+    render(<AccountMenu collapsed viewportMode="extended" />)
+
+    expect(screen.queryByText('Avery Chen')).not.toBeInTheDocument()
+    const collapsedTriggerClassName = screen.getByRole('button', { name: /Open account menu/i }).className
+
+    expect(collapsedTriggerClassName).toContain('size-(--account-trigger-hit-size-collapsed)')
+    expect(collapsedTriggerClassName).toContain('rounded-(--button-radius-circle)')
+    expect(collapsedTriggerClassName).not.toContain('w-full')
   })
 })
