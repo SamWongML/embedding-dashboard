@@ -21,8 +21,8 @@ export function DashboardPageShell({
   className,
 }: DashboardPageShellProps) {
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col", className)}>
-      <header className="sticky top-0 z-(--z-fixed) flex h-(--header-height) items-center justify-between border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col", className)}>
+      <header className="sticky top-0 z-(--z-sticky) flex h-(--header-height) shrink-0 items-center justify-between border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex min-w-0 items-center gap-(--form-item-gap)">
           <SidebarTrigger className="-ml-1 md:hidden xl:inline-flex" />
           <Separator
@@ -39,7 +39,7 @@ export function DashboardPageShell({
           {actions}
         </div>
       </header>
-      <div className="flex-1 p-6">{children}</div>
+      <div className="min-h-0 min-w-0 flex-1 p-6">{children}</div>
     </div>
   )
 }

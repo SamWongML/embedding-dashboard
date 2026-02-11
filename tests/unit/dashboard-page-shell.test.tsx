@@ -28,6 +28,20 @@ describe('DashboardPageShell', () => {
     expect(screen.getByText('Action')).toBeInTheDocument()
     expect(screen.getByText('Panel content')).toBeInTheDocument()
 
+    const header = screen.getByRole('heading', { name: 'Metrics' }).closest('header')
+    expect(header).not.toBeNull()
+    expect(header).toHaveClass('z-(--z-sticky)')
+    expect(header).toHaveClass('shrink-0')
+
+    const shellRoot = header?.parentElement
+    expect(shellRoot).not.toBeNull()
+    expect(shellRoot).toHaveClass('min-w-0')
+
+    const contentRegion = header?.nextElementSibling
+    expect(contentRegion).not.toBeNull()
+    expect(contentRegion).toHaveClass('min-h-0')
+    expect(contentRegion).toHaveClass('min-w-0')
+
     const trigger = screen.getByRole('button', { name: 'Toggle Sidebar' })
     expect(trigger).toHaveClass('md:hidden')
     expect(trigger).toHaveClass('xl:inline-flex')

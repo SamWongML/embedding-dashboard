@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { DashboardPageShell } from '@/components/dashboard/layout/dashboard-page-shell'
 import SettingsClient from './settings-client'
 
 function SettingsClientFallback() {
@@ -12,10 +11,8 @@ function SettingsClientFallback() {
 
 export default function SettingsPage() {
   return (
-    <DashboardPageShell title="Settings" className="settings-typography">
-      <Suspense fallback={<SettingsClientFallback />}>
-        <SettingsClient />
-      </Suspense>
-    </DashboardPageShell>
+    <Suspense fallback={<SettingsClientFallback />}>
+      <SettingsClient />
+    </Suspense>
   )
 }

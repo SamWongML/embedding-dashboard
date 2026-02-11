@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { cookies } from 'next/headers'
 import type { AccountSnapshot } from '@/lib/types/account'
 import { AccountProvider } from '@/components/account/account-provider'
+import { DashboardAppShell } from '@/components/dashboard/layout/dashboard-app-shell'
 import { AppSidebar } from '@/components/dashboard/sidebar/app-sidebar'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { getAccountSnapshotSupabase } from '@/lib/account/supabase'
@@ -53,7 +54,7 @@ export default async function DashboardLayout({
       <SidebarProvider defaultOpen={defaultSidebarOpen}>
         <AppSidebar />
         <SidebarInset className="min-h-svh">
-          {children}
+          <DashboardAppShell>{children}</DashboardAppShell>
         </SidebarInset>
       </SidebarProvider>
     </AccountProvider>
