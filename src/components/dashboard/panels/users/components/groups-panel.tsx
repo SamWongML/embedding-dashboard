@@ -15,7 +15,7 @@ export function GroupsPanel({ groups, isLoading }: GroupsPanelProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base font-medium">
+        <CardTitle className="typography-size-base typography-weight-medium">
           User Groups
         </CardTitle>
         <Button size="sm">
@@ -41,14 +41,14 @@ export function GroupsPanel({ groups, isLoading }: GroupsPanelProps) {
                 className="flex items-center justify-between rounded-lg border p-4"
               >
                 <div>
-                  <h4 className="font-medium">{group.name}</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="typography-weight-medium">{group.name}</h4>
+                  <p className="typography-size-sm text-muted-foreground">
                     {group.description}
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="text-sm font-medium">
+                    <p className="typography-size-sm typography-weight-medium">
                       {group.memberCount} members
                     </p>
                     <div className="mt-1 flex gap-1">
@@ -56,7 +56,7 @@ export function GroupsPanel({ groups, isLoading }: GroupsPanelProps) {
                         <Badge
                           key={permission}
                           variant="secondary"
-                          className="text-xs"
+                          className="typography-size-xs"
                         >
                           {permission}
                         </Badge>

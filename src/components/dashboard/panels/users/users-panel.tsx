@@ -102,7 +102,7 @@ export function UsersPanel({ className }: UsersPanelProps) {
         <TabsContent value="users" className="mt-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base font-medium">
+              <CardTitle className="typography-size-base typography-weight-medium">
                 Users ({users?.length || 0})
               </CardTitle>
               <InviteUserDialog

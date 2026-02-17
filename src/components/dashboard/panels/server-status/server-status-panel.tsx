@@ -75,7 +75,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
               System Status
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
@@ -86,7 +86,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
             ) : (
               <HealthIndicator status={health?.status || 'healthy'} />
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="typography-size-xs text-muted-foreground mt-1">
               v{health?.version || '1.0.0'}
             </p>
           </CardContent>
@@ -117,7 +117,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Latency Over Time</CardTitle>
+            <CardTitle className="typography-size-base typography-weight-medium">Latency Over Time</CardTitle>
           </CardHeader>
           <CardContent>
             {latencyLoading ? (
@@ -132,7 +132,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Service Usage</CardTitle>
+            <CardTitle className="typography-size-base typography-weight-medium">Service Usage</CardTitle>
           </CardHeader>
           <CardContent>
             {servicesLoading ? (
@@ -150,7 +150,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
       {errorsLoading ? (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-medium">Recent Logs</CardTitle>
+            <CardTitle className="typography-size-base typography-weight-medium">Recent Logs</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] bg-muted rounded animate-pulse" />

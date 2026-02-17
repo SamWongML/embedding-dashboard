@@ -1,13 +1,14 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import {
   Select,
@@ -54,6 +55,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
   const [copied, setCopied] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [imagePreviewError, setImagePreviewError] = useState(false)
 
   const { data: models } = useImageEmbeddingModels()
   const createEmbedding = useCreateImageEmbedding()
@@ -67,19 +69,24 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
     },
   })
 
-  const watchedUrl = form.watch('url')
+  const watchedUrl = useWatch({
+    control: form.control,
+    name: 'url',
+  })
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setUploadedFile(file)
       setPreviewUrl(URL.createObjectURL(file))
+      setImagePreviewError(false)
       form.setValue('url', '')
     }
   }, [form])
 
   const clearFile = useCallback(() => {
     setUploadedFile(null)
+    setImagePreviewError(false)
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl)
       setPreviewUrl(null)
@@ -123,7 +130,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
         <div className="grid gap-6 lg:grid-cols-2 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-medium">Input</CardTitle>
+              <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -140,6 +147,10 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                             <Input
                               placeholder="https://example.com/image.jpg"
                               {...field}
+                              onChange={(event) => {
+                                setImagePreviewError(false)
+                                field.onChange(event)
+                              }}
                               disabled={!!uploadedFile}
                             />
                           </FormControl>
@@ -148,7 +159,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                       )}
                     />
 
-                    <div className="text-center text-sm text-muted-foreground">
+                    <div className="text-center typography-size-sm text-muted-foreground">
                       or
                     </div>
 
@@ -158,7 +169,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                         <div className="mt-2 relative">
                           <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
                             <ImageIcon className="h-4 w-4" />
-                            <span className="text-sm flex-1 truncate">
+                            <span className="typography-size-sm flex-1 truncate">
                               {uploadedFile.name}
                             </span>
                             <IconButton
@@ -177,7 +188,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                         <label className="mt-2 flex items-center justify-center w-full h-24 border-2 border-dashed border-muted-foreground/25 rounded-md cursor-pointer hover:border-muted-foreground/50 transition-colors">
                           <div className="flex flex-col items-center gap-1">
                             <Upload className="h-6 w-6 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
+                            <span className="typography-size-xs text-muted-foreground">
                               Click to upload
                             </span>
                           </div>
@@ -194,16 +205,18 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                   </div>
 
                   {/* Preview */}
-                  {(previewUrl || watchedUrl) && (
+                  {(previewUrl || watchedUrl) && !imagePreviewError && (
                     <div className="mt-4">
                       <FormLabel>Preview</FormLabel>
                       <div className="mt-2 relative aspect-video bg-muted rounded-md overflow-hidden">
-                        <img
+                        <Image
                           src={previewUrl || watchedUrl || ''}
                           alt="Preview"
-                          className="object-contain w-full h-full"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none'
+                          fill
+                          unoptimized
+                          className="object-contain"
+                          onError={() => {
+                            setImagePreviewError(true)
                           }}
                         />
                       </div>
@@ -298,7 +311,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base font-medium">Result</CardTitle>
+              <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
               {result && (
                 <Button
                   variant="ghost"
@@ -317,38 +330,38 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
             <CardContent>
               {result ? (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 typography-size-sm">
                     <div>
                       <p className="text-muted-foreground">Model</p>
-                      <p className="font-medium">{result.result.model}</p>
+                      <p className="typography-weight-medium">{result.result.model}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Resolution</p>
-                      <p className="font-medium">{result.result.resolution}px</p>
+                      <p className="typography-weight-medium">{result.result.resolution}px</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Dimensions</p>
-                      <p className="font-medium">{result.result.vector.length}</p>
+                      <p className="typography-weight-medium">{result.result.vector.length}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Processing Time</p>
-                      <p className="font-medium">
+                      <p className="typography-weight-medium">
                         {result.processingTime.toFixed(0)}ms
                       </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <p className="typography-size-sm text-muted-foreground mb-2">
                       Vector Preview
                     </p>
-                    <div className="bg-muted rounded-md p-3 font-mono text-xs overflow-x-auto">
+                    <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
                       [{result.result.vector.slice(0, 8).map(v => v.toFixed(6)).join(', ')}
                       , ...]
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
+                <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
                   Results will appear here
                 </div>
               )}

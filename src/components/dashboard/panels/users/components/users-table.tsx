@@ -106,15 +106,15 @@ export function UsersTable({
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
+                      <AvatarFallback className="typography-size-xs">
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">
+                      <p className="typography-size-sm typography-weight-medium">
                         {user.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="typography-size-xs text-muted-foreground">
                         {user.email}
                       </p>
                     </div>
@@ -141,19 +141,19 @@ export function UsersTable({
                       <Badge
                         key={group}
                         variant="outline"
-                        className="text-xs"
+                        className="typography-size-xs"
                       >
                         {group}
                       </Badge>
                     ))}
                     {user.groups.length > 2 ? (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="typography-size-xs">
                         +{user.groups.length - 2}
                       </Badge>
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="typography-size-sm text-muted-foreground">
                   {user.lastLoginAt
                     ? formatDate(user.lastLoginAt)
                     : "Never"}

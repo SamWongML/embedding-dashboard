@@ -21,7 +21,7 @@ import { GraphCanvas } from './components/graph-canvas'
 import { GraphControls } from './components/graph-controls'
 import { NodeDetailsSheet } from './components/node-details-sheet'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
-import { getGraphColors } from '@/components/charts/chart-theme'
+import { getGraphColors, getGraphLabelFontSizePx } from '@/components/charts/chart-theme'
 
 interface GraphPanelProps {
   className?: string
@@ -75,6 +75,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
     if (!svgRef.current || !graphData || isLoading) return
 
     const graphTheme = getGraphColors(resolvedTheme)
+    const graphLabelFontSize = getGraphLabelFontSizePx()
     const svg = select(svgRef.current)
     const width = svgRef.current.clientWidth
     const height = svgRef.current.clientHeight
@@ -159,7 +160,7 @@ export function GraphPanel({ className }: GraphPanelProps) {
       .text((data) => data.label.slice(0, 12))
       .attr('text-anchor', 'middle')
       .attr('dy', 35)
-      .attr('font-size', 10)
+      .attr('font-size', graphLabelFontSize)
       .attr('fill', graphTheme.label)
 
     simulation.on('tick', () => {

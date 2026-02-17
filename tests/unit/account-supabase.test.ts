@@ -6,7 +6,10 @@ import {
   upsertPreferencesSupabase,
 } from '@/lib/account/supabase'
 
-function createSupabaseStub(queues: Record<string, Record<string, any[]>>) {
+type SnapshotSupabaseClient = Parameters<typeof getAccountSnapshotSupabase>[0]
+type SnapshotAuthUser = Parameters<typeof getAccountSnapshotSupabase>[1]
+
+function createSupabaseStub(queues: Record<string, Record<string, unknown[]>>) {
   const dequeue = (table: string, op: string) => {
     const queue = queues[table]?.[op] ?? []
     return queue.shift()
@@ -15,7 +18,7 @@ function createSupabaseStub(queues: Record<string, Record<string, any[]>>) {
   const createBuilder = (table: string) => {
     let op = 'select'
 
-    const builder: any = {
+    const builder = {
       select: () => builder,
       insert: () => {
         op = 'insert'
@@ -33,12 +36,17 @@ function createSupabaseStub(queues: Record<string, Record<string, any[]>>) {
       maybeSingle: async () => ({ data: dequeue(table, op) ?? null }),
       single: async () => {
         const value = dequeue(table, op)
-        if (value?.error) {
+        if (
+          typeof value === 'object' &&
+          value !== null &&
+          'error' in value &&
+          value.error
+        ) {
           return { data: null, error: value.error }
         }
         return { data: value ?? null, error: null }
       },
-      then: (resolve: (value: any) => unknown) =>
+      then: (resolve: (value: { data: unknown }) => unknown) =>
         Promise.resolve({ data: dequeue(table, op) ?? null }).then(resolve),
     }
 
@@ -94,7 +102,10 @@ describe('supabase account helpers', () => {
       preferences: { select: [preferences] },
     })
 
-    const snapshot = await getAccountSnapshotSupabase(supabase as any, authUser as any)
+    const snapshot = await getAccountSnapshotSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
 
     expect(snapshot.user.id).toBe('user-1')
     expect(snapshot.workspaces).toHaveLength(1)
@@ -132,7 +143,10 @@ describe('supabase account helpers', () => {
       preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-2' }] },
     })
 
-    const snapshot = await getAccountSnapshotSupabase(supabase as any, authUser as any)
+    const snapshot = await getAccountSnapshotSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
 
     expect(snapshot.workspaces[0].id).toBe('ws-2')
     expect(snapshot.activeWorkspaceId).toBe('ws-2')
@@ -170,7 +184,10 @@ describe('supabase account helpers', () => {
       preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-3' }] },
     })
 
-    const snapshot = await getAccountSnapshotSupabase(supabase as any, authUser as any)
+    const snapshot = await getAccountSnapshotSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
     expect(snapshot.user.authUserId).toBe('auth-user-1')
   })
 
@@ -206,7 +223,10 @@ describe('supabase account helpers', () => {
       preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-8' }] },
     })
 
-    const snapshot = await getAccountSnapshotSupabase(supabase as any, authUser as any)
+    const snapshot = await getAccountSnapshotSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
     expect(snapshot.user.id).toBe('user-8')
   })
 
@@ -230,7 +250,11 @@ describe('supabase account helpers', () => {
     })
 
     await expect(
-      setActiveWorkspaceSupabase(supabase as any, authUser as any, 'ws-1')
+      setActiveWorkspaceSupabase(
+        supabase as SnapshotSupabaseClient,
+        authUser as SnapshotAuthUser,
+        'ws-1'
+      )
     ).resolves.toBeUndefined()
   })
 
@@ -252,7 +276,11 @@ describe('supabase account helpers', () => {
     })
 
     await expect(
-      setActiveWorkspaceSupabase(supabase as any, authUser as any, 'ws-missing')
+      setActiveWorkspaceSupabase(
+        supabase as SnapshotSupabaseClient,
+        authUser as SnapshotAuthUser,
+        'ws-missing'
+      )
     ).rejects.toThrow('Forbidden')
   })
 
@@ -280,7 +308,10 @@ describe('supabase account helpers', () => {
       preferences: { select: [preferences] },
     })
 
-    const result = await getPreferencesSupabase(supabase as any, authUser as any)
+    const result = await getPreferencesSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
     expect(result?.theme).toBe('dark')
   })
 
@@ -310,10 +341,14 @@ describe('supabase account helpers', () => {
       },
     })
 
-    const result = await upsertPreferencesSupabase(supabase as any, authUser as any, {
-      theme: 'light',
-      active_workspace_id: 'ws-1',
-    })
+    const result = await upsertPreferencesSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser,
+      {
+        theme: 'light',
+        active_workspace_id: 'ws-1',
+      }
+    )
 
     expect(result.theme).toBe('light')
   })

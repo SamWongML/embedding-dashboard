@@ -37,7 +37,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-(--button-gap) rounded-md border bg-transparent px-(--input-padding-x) py-(--space-sm) text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-(--ring-width) disabled:cursor-not-allowed disabled:opacity-(--opacity-disabled) data-[size=default]:h-(--input-height) data-[size=sm]:h-(--input-height-sm) *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-(--button-gap) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-(--button-gap) rounded-md border bg-transparent px-(--input-padding-x) py-(--space-sm) [font-size:var(--select-trigger-font-size)] [line-height:var(--select-trigger-line-height)] whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-(--ring-width) disabled:cursor-not-allowed disabled:opacity-(--opacity-disabled) data-[size=default]:h-(--input-height) data-[size=sm]:h-(--input-height-sm) *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-(--button-gap) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
         className
       )}
       {...props}
@@ -94,7 +94,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn("text-muted-foreground px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) text-xs", className)}
+      className={cn("text-muted-foreground px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) [font-size:var(--select-label-font-size)] [line-height:var(--select-label-line-height)]", className)}
       {...props}
     />
   )
@@ -109,7 +109,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--space-2xl) pl-(--dropdown-item-padding-x) text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm) *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-(--button-gap)",
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--space-2xl) pl-(--dropdown-item-padding-x) [font-size:var(--select-item-font-size)] [line-height:var(--select-item-line-height)] outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm) *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-(--button-gap)",
         className
       )}
       {...props}

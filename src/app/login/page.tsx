@@ -68,13 +68,13 @@ export default function LoginPage() {
             {isLoading ? 'Sending...' : 'Continue with email'}
           </Button>
           {message ? (
-            <p className="text-xs text-success">{message}</p>
+            <p className="typography-size-xs text-success">{message}</p>
           ) : null}
           {error ? (
-            <p className="text-xs text-destructive">{error}</p>
+            <p className="typography-size-xs text-destructive">{error}</p>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              We'll send a secure sign-in link to your email address.
+            <p className="typography-size-xs text-muted-foreground">
+              We&apos;ll send a secure sign-in link to your email address.
             </p>
           )}
         </CardContent>

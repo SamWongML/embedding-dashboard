@@ -34,7 +34,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-(--button-height-md) px-(--button-padding-x-md) py-(--space-sm) has-[>svg]:px-(--button-padding-x-sm)",
-        xs: "h-(--button-height-xs) gap-(--button-gap-xs) px-(--button-padding-x-xs) text-xs has-[>svg]:px-(--dropdown-item-padding-y) [&_svg:not([class*='size-'])]:size-(--icon-xs)",
+        xs: "h-(--button-height-xs) gap-(--button-gap-xs) px-(--button-padding-x-xs) typography-size-xs has-[>svg]:px-(--dropdown-item-padding-y) [&_svg:not([class*='size-'])]:size-(--icon-xs)",
         sm: "h-(--button-height-sm) gap-(--button-gap-sm) px-(--button-padding-x-sm) has-[>svg]:px-(--dropdown-item-padding-x)",
         lg: "h-(--button-height-lg) px-(--button-padding-x-lg) has-[>svg]:px-(--button-padding-x-md)",
         icon: "size-(--button-height-md)",

@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -32,7 +32,7 @@ import {
   SheetSectionHeader,
   SheetPropertyRow,
 } from '@/components/ui/sheet'
-import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Eye, FileText, Image as ImageIcon } from 'lucide-react'
 import { toActionErrorMessage } from '@/lib/api'
 import { useDelayedSheetSelection } from '@/lib/hooks/use-delayed-sheet-selection'
 import { useRecordsList, useRecordDetail } from '@/lib/hooks/use-records'
@@ -222,23 +222,23 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                         {record.contentType === 'text' ? (
                           <FileText className="h-4 w-4 text-muted-foreground" />
                         ) : (
-                          <Image className="h-4 w-4 text-muted-foreground" />
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
                         )}
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm truncate max-w-[400px]">
+                        <p className="typography-size-sm truncate max-w-[400px]">
                           {record.content}
                         </p>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="typography-size-xs">
                           {record.model}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="typography-size-sm text-muted-foreground">
                         {record.vectorDimensions}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="typography-size-sm text-muted-foreground">
                         {formatDate(record.createdAt)}
                       </TableCell>
                       <TableCell>
@@ -263,7 +263,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
       {/* Pagination */}
       {data && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+          <p className="typography-size-sm text-muted-foreground">
             Showing {(data.page - 1) * data.pageSize + 1} to{' '}
             {Math.min(data.page * data.pageSize, data.totalCount)} of{' '}
             {data.totalCount} records
@@ -277,7 +277,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm">
+            <span className="typography-size-sm">
               Page {data.page} of {data.totalPages}
             </span>
             <Button
@@ -302,7 +302,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
           onAnimationEnd={onRecordDetailsAnimationEnd}
         >
           <SheetHeader className="border-0 p-6 text-left">
-            <SheetTitle className="text-lg font-semibold">Record Details</SheetTitle>
+            <SheetTitle className="typography-size-lg typography-weight-semibold">Record Details</SheetTitle>
           </SheetHeader>
           {detailActionWarning ? (
             <div className="p-6">
@@ -320,7 +320,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
               {/* Content Section */}
               <SheetSection>
                 <SheetSectionHeader>Content</SheetSectionHeader>
-                <p className="text-sm leading-5 text-foreground">
+                <p className="typography-size-sm leading-5 text-foreground">
                   {selectedRecord.content}
                 </p>
               </SheetSection>
@@ -335,11 +335,11 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                   />
                   <SheetPropertyRow
                     label="Model"
-                    value={<Badge variant="blue-subtle" className="text-xs font-mono">{selectedRecord.model}</Badge>}
+                    value={<Badge variant="blue-subtle" className="typography-size-xs typography-family-mono">{selectedRecord.model}</Badge>}
                   />
                   <SheetPropertyRow
                     label="Dimensions"
-                    value={<span className="font-mono">{selectedRecord.vectorDimensions}</span>}
+                    value={<span className="typography-family-mono">{selectedRecord.vectorDimensions}</span>}
                   />
                   <SheetPropertyRow
                     label="Source"
@@ -354,7 +354,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                 <SheetSection>
                   <SheetSectionHeader>Metadata</SheetSectionHeader>
                   <div className="bg-muted/30 rounded-lg border border-border/40 p-4">
-                    <pre className="text-xs font-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+                    <pre className="typography-size-xs typography-family-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
 {JSON.stringify(selectedRecord.metadata, null, 2)}
                     </pre>
                   </div>
@@ -366,7 +366,7 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
                 <SheetSection>
                   <SheetSectionHeader>Vector Preview</SheetSectionHeader>
                   <div className="bg-muted/30 rounded-lg border border-border/40 p-4 max-h-[180px] overflow-y-auto">
-                    <code className="text-xs font-mono text-foreground/80 break-all leading-relaxed">
+                    <code className="typography-size-xs typography-family-mono text-foreground/80 break-all leading-relaxed">
                       [{selectedRecord.vector.slice(0, 10).map(v => v.toFixed(6)).join(', ')}, ...]
                     </code>
                   </div>
@@ -377,12 +377,12 @@ export function RecordsPanel({ className }: RecordsPanelProps) {
               <section className="pt-6 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Created</p>
-                    <p className="text-sm font-medium">{formatDate(selectedRecord.createdAt)}</p>
+                    <p className="typography-size-xs text-muted-foreground">Created</p>
+                    <p className="typography-size-sm typography-weight-medium">{formatDate(selectedRecord.createdAt)}</p>
                   </div>
                   <div className="space-y-1 text-right">
-                    <p className="text-xs text-muted-foreground">Updated</p>
-                    <p className="text-sm font-medium">{formatDate(selectedRecord.updatedAt)}</p>
+                    <p className="typography-size-xs text-muted-foreground">Updated</p>
+                    <p className="typography-size-sm typography-weight-medium">{formatDate(selectedRecord.updatedAt)}</p>
                   </div>
                 </div>
               </section>

@@ -72,7 +72,7 @@ export function SimpleMode({ className }: SimpleModeProps) {
     <div className={cn('grid gap-6 lg:grid-cols-2', className)}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-medium">Input</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -127,7 +127,7 @@ export function SimpleMode({ className }: SimpleModeProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-medium">Result</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
           {result && (
             <Button
               variant="ghost"
@@ -146,40 +146,40 @@ export function SimpleMode({ className }: SimpleModeProps) {
         <CardContent>
           {result ? (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 typography-size-sm">
                 <div>
                   <p className="text-muted-foreground">Model</p>
-                  <p className="font-medium">{result.results[0]?.model}</p>
+                  <p className="typography-weight-medium">{result.results[0]?.model}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Tokens</p>
-                  <p className="font-medium">{result.totalTokens}</p>
+                  <p className="typography-weight-medium">{result.totalTokens}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Dimensions</p>
-                  <p className="font-medium">
+                  <p className="typography-weight-medium">
                     {result.results[0]?.vector.length}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Processing Time</p>
-                  <p className="font-medium">
+                  <p className="typography-weight-medium">
                     {result.processingTime.toFixed(0)}ms
                   </p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="typography-size-sm text-muted-foreground mb-2">
                   Vector Preview
                 </p>
-                <div className="bg-muted rounded-md p-3 font-mono text-xs overflow-x-auto">
+                <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
                   [{result.results[0]?.vector.slice(0, 5).map(v => v.toFixed(6)).join(', ')}
                   , ...]
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
+            <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
               Results will appear here
             </div>
           )}

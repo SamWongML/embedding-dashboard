@@ -3,7 +3,7 @@ import SettingsClient from './settings-client'
 
 function SettingsClientFallback() {
   return (
-    <div className="rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">
+    <div className="rounded-md border border-dashed border-border p-6 typography-size-sm text-muted-foreground">
       Loading settings...
     </div>
   )

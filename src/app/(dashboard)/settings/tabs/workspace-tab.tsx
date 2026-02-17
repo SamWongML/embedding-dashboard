@@ -44,7 +44,7 @@ export default function WorkspaceTab() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Avery Chen</div>
+              <div className="typography-copy-14 typography-weight-medium">Avery Chen</div>
               <p className="typography-copy-13 text-muted-foreground">Owner</p>
             </div>
             <Badge variant="secondary" className="typography-copy-13">Owner</Badge>
@@ -52,7 +52,7 @@ export default function WorkspaceTab() {
           <Separator />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Jordan Lee</div>
+              <div className="typography-copy-14 typography-weight-medium">Jordan Lee</div>
               <p className="typography-copy-13 text-muted-foreground">Admin</p>
             </div>
             <Badge variant="outline" className="typography-copy-13">Admin</Badge>
@@ -60,7 +60,7 @@ export default function WorkspaceTab() {
           <Separator />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Sam Rivera</div>
+              <div className="typography-copy-14 typography-weight-medium">Sam Rivera</div>
               <p className="typography-copy-13 text-muted-foreground">Member</p>
             </div>
             <Badge variant="outline" className="typography-copy-13">Member</Badge>
@@ -83,7 +83,7 @@ export default function WorkspaceTab() {
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Current plan</div>
+              <div className="typography-copy-14 typography-weight-medium">Current plan</div>
               <p className="typography-copy-13 text-muted-foreground">
                 {activeWorkspace.plan.toUpperCase()} plan
               </p>
@@ -98,7 +98,7 @@ export default function WorkspaceTab() {
           </div>
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Payment method</div>
+              <div className="typography-copy-14 typography-weight-medium">Payment method</div>
               <p className="typography-copy-13 text-muted-foreground">Visa ending in 4242</p>
             </div>
             <Button

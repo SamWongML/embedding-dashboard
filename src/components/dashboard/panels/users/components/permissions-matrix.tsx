@@ -25,7 +25,7 @@ export function PermissionsMatrix({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-medium">
+        <CardTitle className="typography-size-base typography-weight-medium">
           Permission Matrix
         </CardTitle>
       </CardHeader>
@@ -48,7 +48,7 @@ export function PermissionsMatrix({
               <TableBody>
                 {permissions.resources.map((resource) => (
                   <TableRow key={resource}>
-                    <TableCell className="font-medium capitalize">
+                    <TableCell className="typography-weight-medium capitalize">
                       {resource}
                     </TableCell>
                     {permissions.roles.map((role) => (
@@ -58,7 +58,7 @@ export function PermissionsMatrix({
                             <Badge
                               key={permission}
                               variant="outline"
-                              className="text-xs"
+                              className="typography-size-xs"
                             >
                               {permission}
                             </Badge>

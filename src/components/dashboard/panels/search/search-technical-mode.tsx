@@ -14,7 +14,6 @@ import { Separator } from '@/components/ui/separator'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -102,7 +101,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
     <div className={cn('grid gap-6 lg:grid-cols-3', className)}>
       <Card className="lg:col-span-1">
         <CardHeader>
-          <CardTitle className="text-base font-medium">Search Options</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Search Options</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -123,7 +122,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
               <Separator />
 
               <div className="space-y-4">
-                <h4 className="text-sm font-medium">Weight Distribution</h4>
+                <h4 className="typography-size-sm typography-weight-medium">Weight Distribution</h4>
 
                 <FormField
                   control={form.control}
@@ -132,7 +131,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
                     <FormItem>
                       <div className="flex justify-between">
                         <FormLabel>Vector</FormLabel>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="typography-size-xs text-muted-foreground">
                           {(field.value * 100).toFixed(0)}%
                         </span>
                       </div>
@@ -156,7 +155,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
                     <FormItem>
                       <div className="flex justify-between">
                         <FormLabel>BM25</FormLabel>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="typography-size-xs text-muted-foreground">
                           {(field.value * 100).toFixed(0)}%
                         </span>
                       </div>
@@ -180,7 +179,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
                     <FormItem>
                       <div className="flex justify-between">
                         <FormLabel>Graph</FormLabel>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="typography-size-xs text-muted-foreground">
                           {(field.value * 100).toFixed(0)}%
                         </span>
                       </div>
@@ -202,7 +201,7 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium">Filters</h4>
+                  <h4 className="typography-size-sm typography-weight-medium">Filters</h4>
                   <Button
                     type="button"
                     variant="ghost"
@@ -313,11 +312,11 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
       <Card className="lg:col-span-2">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium">
+            <CardTitle className="typography-size-base typography-weight-medium">
               Results {result ? `(${result.totalCount})` : ''}
             </CardTitle>
             {result && (
-              <span className="text-xs text-muted-foreground">
+              <span className="typography-size-xs text-muted-foreground">
                 {result.took.toFixed(0)}ms
               </span>
             )}
@@ -326,11 +325,11 @@ export function SearchTechnicalMode({ className }: SearchTechnicalModeProps) {
         <CardContent className="p-0">
           <ScrollArea className="h-[500px]">
             {!result ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm p-6">
+              <div className="flex items-center justify-center h-full text-muted-foreground typography-size-sm p-6">
                 Run a search to see results
               </div>
             ) : result.results.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm p-6">
+              <div className="flex items-center justify-center h-full text-muted-foreground typography-size-sm p-6">
                 No results found
               </div>
             ) : (
@@ -352,38 +351,38 @@ function TechnicalSearchResultItem({ result }: { result: SearchResult }) {
     <div className="px-4 py-4 hover:bg-muted/50 transition-colors">
       <div className="flex items-start justify-between gap-4 mb-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="default" className="text-xs">
+          <Badge variant="default" className="typography-size-xs">
             {(result.score * 100).toFixed(0)}% total
           </Badge>
           {result.vectorScore !== undefined && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="typography-size-xs">
               Vec: {(result.vectorScore * 100).toFixed(0)}%
             </Badge>
           )}
           {result.bm25Score !== undefined && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="typography-size-xs">
               BM25: {(result.bm25Score * 100).toFixed(0)}%
             </Badge>
           )}
           {result.graphScore !== undefined && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="typography-size-xs">
               Graph: {(result.graphScore * 100).toFixed(0)}%
             </Badge>
           )}
         </div>
         {result.source && (
-          <span className="text-xs text-muted-foreground shrink-0">
+          <span className="typography-size-xs text-muted-foreground shrink-0">
             {result.source}
           </span>
         )}
       </div>
-      <p className="text-sm text-foreground">{result.content}</p>
+      <p className="typography-size-sm text-foreground">{result.content}</p>
       {result.highlights && result.highlights.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {result.highlights.map((highlight, i) => (
             <span
               key={i}
-              className="text-xs bg-accent px-1.5 py-0.5 rounded"
+              className="typography-size-xs bg-accent px-1.5 py-0.5 rounded"
             >
               {highlight}
             </span>
@@ -391,7 +390,7 @@ function TechnicalSearchResultItem({ result }: { result: SearchResult }) {
         </div>
       )}
       {result.metadata && Object.keys(result.metadata).length > 0 && (
-        <div className="mt-2 text-xs text-muted-foreground">
+        <div className="mt-2 typography-size-xs text-muted-foreground">
           {Object.entries(result.metadata).slice(0, 3).map(([key, value]) => (
             <span key={key} className="mr-3">
               {key}: {String(value)}
