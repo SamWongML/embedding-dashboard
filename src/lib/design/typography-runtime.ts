@@ -35,8 +35,13 @@ export function readTypographyPxVar(token: `--${string}`, fallbackPx: number): n
     return fallbackPx
   }
 
-  const rootStyles = window.getComputedStyle(document.documentElement)
-  const tokenValue = rootStyles.getPropertyValue(token)
-  const remBasePx = resolveRemBasePx(rootStyles)
-  return parseCssLengthToPx(tokenValue, remBasePx) ?? fallbackPx
+  try {
+    const rootStyles = window.getComputedStyle(document.documentElement)
+    const tokenValue = rootStyles.getPropertyValue(token)
+    const remBasePx = resolveRemBasePx(rootStyles)
+    return parseCssLengthToPx(tokenValue, remBasePx) ?? fallbackPx
+  } catch (error) {
+    console.warn(`Failed to read typography variable ${token}:`, error)
+    return fallbackPx
+  }
 }

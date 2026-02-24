@@ -36,6 +36,27 @@ import {
 import { cn } from '@/lib/utils'
 import type { ImageEmbeddingResponse } from '@/lib/schemas/image-embedding'
 
+// URL validation for image sources
+// Only allow HTTPS URLs and blob URLs (for uploaded files)
+// This prevents SSRF attacks via unoptimized Next.js Image component
+function isValidImageUrl(url: string): boolean {
+  if (!url) return false
+
+  try {
+    const parsed = new URL(url)
+    // Allow blob URLs for local file uploads
+    if (parsed.protocol === 'blob:') return true
+    // Only allow HTTPS for external URLs
+    if (parsed.protocol !== 'https:') return false
+
+    // Optional: Add domain allowlist if NEXT_PUBLIC_SUPABASE_URL is set
+    // This would restrict to trusted domains only
+    return true
+  } catch {
+    return false
+  }
+}
+
 const imageFormSchema = z.object({
   url: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
   model: z.string().optional(),
@@ -209,16 +230,21 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                     <div className="mt-4">
                       <FormLabel>Preview</FormLabel>
                       <div className="mt-2 relative aspect-video bg-muted rounded-md overflow-hidden">
-                        <Image
-                          src={previewUrl || watchedUrl || ''}
-                          alt="Preview"
-                          fill
-                          unoptimized
-                          className="object-contain"
-                          onError={() => {
-                            setImagePreviewError(true)
-                          }}
-                        />
+                        {isValidImageUrl(previewUrl || watchedUrl || '') ? (
+                          <Image
+                            src={previewUrl || watchedUrl || ''}
+                            alt="Preview"
+                            fill
+                            className="object-contain"
+                            onError={() => {
+                              setImagePreviewError(true)
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-muted-foreground typography-size-sm">
+                            Invalid image URL. Only HTTPS URLs are allowed.
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

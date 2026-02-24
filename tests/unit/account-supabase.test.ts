@@ -352,4 +352,54 @@ describe('supabase account helpers', () => {
 
     expect(result.theme).toBe('light')
   })
+
+  it('filters out memberships with null workspaces', async () => {
+    const userRow = {
+      id: 'user-9',
+      name: 'Test User',
+      email: 'test@example.com',
+      avatar_url: null,
+      auth_provider: 'supabase',
+      auth_user_id: 'auth-user-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-02T00:00:00Z',
+    }
+    const memberships = [
+      {
+        role: 'owner',
+        workspaces: {
+          id: 'ws-1',
+          name: 'Workspace 1',
+          slug: 'ws-1',
+          plan: 'free',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-03T00:00:00Z',
+        },
+      },
+      {
+        role: 'member',
+        workspaces: null,
+      },
+    ]
+    const preferences = {
+      theme: 'system',
+      locale: null,
+      timezone: null,
+      active_workspace_id: 'ws-1',
+    }
+
+    const supabase = createSupabaseStub({
+      users: { select: [userRow] },
+      workspace_members: { select: [memberships] },
+      preferences: { select: [preferences] },
+    })
+
+    const snapshot = await getAccountSnapshotSupabase(
+      supabase as SnapshotSupabaseClient,
+      authUser as SnapshotAuthUser
+    )
+
+    expect(snapshot.workspaces).toHaveLength(1)
+    expect(snapshot.workspaces[0].id).toBe('ws-1')
+  })
 })
