@@ -1,0 +1,299 @@
+@layer utilities {
+  /* Opt-in utility for theme transition smoothing */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  /* Settings-only compact typography scope */
+  .settings-typography {
+    --page-title-size: var(--text-copy-16);
+    --page-title-line-height: var(--leading-copy-16);
+    --page-title-weight: var(--font-weight-semibold);
+
+    --tabs-trigger-font-size: var(--text-copy-14);
+    --tabs-trigger-line-height: var(--leading-copy-14);
+    --tabs-trigger-font-weight: var(--font-weight-medium);
+
+    --card-title-size: 0.9375rem; /* 15px */
+    --card-description-size: var(--text-copy-14);
+
+    --label-font-size: var(--text-copy-13);
+    --label-line-height: var(--leading-copy-13);
+    --label-font-weight: var(--font-weight-medium);
+
+    --input-font-size: var(--text-copy-14);
+    --input-line-height: var(--leading-copy-14);
+    --input-font-weight: var(--font-weight-normal);
+
+    --button-font-size: var(--text-copy-14);
+    --button-line-height: var(--leading-copy-14);
+    --button-font-weight: var(--font-weight-medium);
+  }
+
+  /* ===== TYPOGRAPHY UTILITIES ===== */
+  .typography-size-xs {
+    font-size: var(--font-size-xs);
+    line-height: 1rem;
+  }
+
+  .typography-size-sm {
+    font-size: var(--font-size-sm);
+    line-height: 1.25rem;
+  }
+
+  .typography-size-base {
+    font-size: var(--font-size-base);
+    line-height: 1.5rem;
+  }
+
+  .typography-size-lg {
+    font-size: var(--font-size-md);
+    line-height: 1.75rem;
+  }
+
+  .typography-size-xl {
+    font-size: var(--font-size-lg);
+    line-height: 1.75rem;
+  }
+
+  .typography-size-2xl {
+    font-size: var(--font-size-xl);
+    line-height: 2rem;
+  }
+
+  .typography-micro-11 {
+    font-size: var(--text-micro-11);
+    line-height: var(--leading-micro-11);
+    font-weight: var(--weight-micro-11);
+  }
+
+  .typography-micro-10 {
+    font-size: var(--text-micro-10);
+    line-height: var(--leading-micro-10);
+    font-weight: var(--weight-micro-10);
+  }
+
+  .typography-weight-normal {
+    font-weight: var(--font-weight-normal);
+  }
+
+  .typography-weight-medium {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .typography-weight-semibold {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .typography-weight-bold {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .typography-family-mono {
+    font-family: var(--font-mono);
+  }
+
+  .typography-copy-16 {
+    font-size: var(--text-copy-16);
+    line-height: var(--leading-copy-16);
+  }
+
+  .typography-copy-14 {
+    font-size: var(--text-copy-14);
+    line-height: var(--leading-copy-14);
+  }
+
+  .typography-copy-13 {
+    font-size: var(--text-copy-13);
+    line-height: var(--leading-copy-13);
+  }
+
+  .typography-display-2xl {
+    font-size: var(--text-display-2xl);
+    line-height: var(--leading-display-2xl);
+    letter-spacing: var(--tracking-display-2xl);
+    font-weight: var(--weight-display-2xl);
+  }
+
+  .typography-display-xl {
+    font-size: var(--text-display-xl);
+    line-height: var(--leading-display-xl);
+    letter-spacing: var(--tracking-display-xl);
+    font-weight: var(--weight-display-xl);
+  }
+
+  .typography-display-lg {
+    font-size: var(--text-display-lg);
+    line-height: var(--leading-display-lg);
+    letter-spacing: var(--tracking-display-lg);
+    font-weight: var(--weight-display-lg);
+  }
+
+  .typography-heading-1 {
+    font-size: var(--text-heading-1);
+    line-height: var(--leading-heading-1);
+    letter-spacing: var(--tracking-heading-1);
+    font-weight: var(--weight-heading-1);
+  }
+
+  .typography-heading-2 {
+    font-size: var(--text-heading-2);
+    line-height: var(--leading-heading-2);
+    letter-spacing: var(--tracking-heading-2);
+    font-weight: var(--weight-heading-2);
+  }
+
+  .typography-heading-3 {
+    font-size: var(--text-heading-3);
+    line-height: var(--leading-heading-3);
+    letter-spacing: var(--tracking-heading-3);
+    font-weight: var(--weight-heading-3);
+  }
+
+  .typography-heading-4 {
+    font-size: var(--text-heading-4);
+    line-height: var(--leading-heading-4);
+    letter-spacing: var(--tracking-heading-4);
+    font-weight: var(--weight-heading-4);
+  }
+
+  .typography-body-lg {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+    font-weight: var(--weight-body-lg);
+  }
+
+  .typography-body-base {
+    font-size: var(--text-body-base);
+    line-height: var(--leading-body-base);
+    font-weight: var(--weight-body-base);
+  }
+
+  .typography-body-sm {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    font-weight: var(--weight-body-sm);
+  }
+
+  .typography-label-lg {
+    font-size: var(--text-label-lg);
+    line-height: var(--leading-label-lg);
+    font-weight: var(--weight-label-lg);
+  }
+
+  .typography-label-base {
+    font-size: var(--text-label-base);
+    line-height: var(--leading-label-base);
+    font-weight: var(--weight-label-base);
+  }
+
+  .typography-label-sm {
+    font-size: var(--text-label-sm);
+    line-height: var(--leading-label-sm);
+    letter-spacing: var(--tracking-label-sm);
+    font-weight: var(--weight-label-sm);
+  }
+
+  .typography-caption {
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    font-weight: var(--weight-caption);
+  }
+
+  .typography-overline {
+    font-size: var(--text-overline);
+    line-height: var(--leading-overline);
+    letter-spacing: var(--tracking-overline);
+    font-weight: var(--weight-overline);
+    text-transform: uppercase;
+  }
+
+  .typography-code-base {
+    font-family: var(--font-mono);
+    font-size: var(--text-code-base);
+    line-height: var(--leading-code-base);
+  }
+
+  .typography-code-sm {
+    font-family: var(--font-mono);
+    font-size: var(--text-code-sm);
+    line-height: var(--leading-code-sm);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Shimmer loading animation */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(90% 0.01 var(--base-hue) / 50%) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Subtle pulse for real-time indicators */
+  .pulse-subtle {
+    animation: pulseSubtle 2s infinite;
+  }
+
+  @keyframes pulseSubtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="sidebar-gap"],
+    [data-slot="sidebar-container"],
+    [data-slot="sidebar-group-label"],
+    [data-slot="sidebar-menu-button"],
+    [data-slot="sheet-content"],
+    [data-slot="sheet-overlay"] {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+    }
+  }
+}

@@ -143,7 +143,7 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
             iconType="circle"
             iconSize={6}
             formatter={(value) => (
-              <span className="text-[11px] text-muted-foreground">{value}</span>
+              <span className="typography-micro-11 text-muted-foreground">{value}</span>
             )}
           />
           {trendSeries.map((series) => (

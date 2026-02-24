@@ -133,7 +133,10 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
+      className={cn(
+        "text-foreground [font-size:var(--sheet-title-size)] [line-height:var(--sheet-title-line-height)] [font-weight:var(--sheet-title-font-weight)]",
+        className
+      )}
       {...props}
     />
   )
@@ -146,7 +149,10 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(
+        "text-muted-foreground [font-size:var(--sheet-description-size)] [line-height:var(--sheet-description-line-height)] [font-weight:var(--sheet-description-font-weight)]",
+        className
+      )}
       {...props}
     />
   )
@@ -166,7 +172,10 @@ function SheetSectionHeader({ className, ...props }: React.ComponentProps<"h4">)
   return (
     <h4
       data-slot="sheet-section-header"
-      className={cn("text-xs font-medium text-muted-foreground uppercase tracking-wider", className)}
+      className={cn(
+        "text-muted-foreground uppercase tracking-wider [font-size:var(--sheet-section-label-size)] [line-height:var(--sheet-section-label-line-height)] [font-weight:var(--sheet-section-label-font-weight)]",
+        className
+      )}
       {...props}
     />
   )
@@ -195,8 +204,8 @@ function SheetPropertyRow({
       )}
       {...props}
     >
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="text-sm font-medium">{value}</span>
+      <span className="text-muted-foreground [font-size:var(--sheet-property-label-size)] [line-height:var(--sheet-property-label-line-height)]">{label}</span>
+      <span className="[font-size:var(--sheet-property-value-size)] [line-height:var(--sheet-property-value-line-height)] [font-weight:var(--sheet-property-value-font-weight)]">{value}</span>
     </div>
   )
 }

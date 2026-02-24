@@ -20,14 +20,14 @@ export function ChartTooltipContent({ label, rows, className }: ChartTooltipCont
         className
       )}
     >
-      {label ? <p className="mb-1 text-[11px] font-normal text-muted-foreground tabular-nums">{label}</p> : null}
+      {label ? <p className="mb-1 typography-micro-11 typography-weight-normal text-muted-foreground tabular-nums">{label}</p> : null}
       <div className="space-y-1.5">
         {rows.map((row) => {
           const indicatorColor = row.color ?? colorByChartTone(row.tone ?? 'accent')
 
           return (
-            <div key={row.label} className="flex items-center justify-between gap-4 text-[11px]">
-              <div className="flex items-center gap-1.5 font-normal text-muted-foreground">
+            <div key={row.label} className="typography-micro-11 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1.5 typography-weight-normal text-muted-foreground">
                 <span
                   aria-hidden
                   className="h-1.5 w-1.5 shrink-0 rounded-full"
@@ -35,7 +35,7 @@ export function ChartTooltipContent({ label, rows, className }: ChartTooltipCont
                 />
                 <span>{row.label}</span>
               </div>
-              <span className="font-medium tabular-nums text-foreground">{row.value}</span>
+              <span className="typography-weight-medium tabular-nums text-foreground">{row.value}</span>
             </div>
           )
         })}

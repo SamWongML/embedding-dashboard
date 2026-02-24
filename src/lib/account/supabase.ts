@@ -13,6 +13,18 @@ export interface PreferencePayload {
   active_workspace_id?: string | null
 }
 
+interface WorkspaceMembershipRow {
+  role: WorkspaceSummary['role']
+  workspaces: {
+    id: string
+    name: string
+    slug: string
+    plan: WorkspaceSummary['plan']
+    created_at: string | null
+    updated_at: string | null
+  } | null
+}
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -99,14 +111,14 @@ async function ensureUserRow(
 async function ensureWorkspaceMembership(
   supabase: SupabaseServerClient,
   userId: string
-) {
+): Promise<WorkspaceMembershipRow[]> {
   const { data: memberships } = await supabase
     .from('workspace_members')
     .select('role, workspaces(id, name, slug, plan, created_at, updated_at)')
     .eq('user_id', userId)
 
   if (memberships && memberships.length > 0) {
-    return memberships
+    return memberships as unknown as WorkspaceMembershipRow[]
   }
 
   const personalName = 'Personal'
@@ -140,7 +152,7 @@ async function ensureWorkspaceMembership(
     throw new Error(memberError.message)
   }
 
-  return [member]
+  return [member as unknown as WorkspaceMembershipRow]
 }
 
 async function ensurePreferences(
@@ -180,9 +192,13 @@ async function ensurePreferences(
   return inserted
 }
 
-function mapWorkspaces(memberships: any[]): WorkspaceSummary[] {
-  return memberships.map((membership) => {
+function mapWorkspaces(memberships: WorkspaceMembershipRow[]): WorkspaceSummary[] {
+  return memberships.flatMap((membership) => {
     const workspace = membership.workspaces
+    if (!workspace) {
+      return []
+    }
+
     return {
       id: workspace.id,
       name: workspace.name,

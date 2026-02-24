@@ -1,0 +1,220 @@
+:root {
+  /* Core Design Variables - Change these to adjust the entire theme */
+  --base-hue: 240;
+  --accent-hue: 250;
+  --contrast: 1.0;
+
+  /* Runtime typography tokens (used by component custom-properties) */
+  --text-copy-16: var(--font-size-base);
+  --leading-copy-16: 1.5rem;
+  --text-copy-14: var(--font-size-sm);
+  --leading-copy-14: 1.25rem;
+  --text-copy-13: 0.8125rem;
+  --leading-copy-13: 1.125rem;
+  --text-micro-11: 0.6875rem;
+  --leading-micro-11: 1rem;
+  --weight-micro-11: var(--font-weight-normal);
+  --text-micro-10: 0.625rem;
+  --leading-micro-10: 0.875rem;
+  --weight-micro-10: var(--font-weight-medium);
+
+  --page-title-size: var(--font-size-md);
+  --page-title-line-height: 1.75rem;
+  --page-title-weight: var(--font-weight-semibold);
+
+  --tabs-trigger-font-size: var(--text-copy-14);
+  --tabs-trigger-line-height: var(--leading-copy-14);
+  --tabs-trigger-font-weight: var(--font-weight-medium);
+
+  --label-font-size: var(--text-copy-14);
+  --label-line-height: var(--leading-copy-14);
+  --label-font-weight: var(--font-weight-medium);
+
+  --input-font-size: var(--text-copy-14);
+  --input-line-height: var(--leading-copy-14);
+  --input-font-weight: var(--font-weight-normal);
+
+  --button-radius-square: var(--radius-md);
+  --button-radius-circle: 9999px;
+
+  /* Base Radius */
+  --radius: 0.5rem;
+
+  /* Shadow/Elevation Scale (Theme-aware) */
+  --shadow-color: oklch(0% 0 0 / 0.08);
+  --shadow-color-strong: oklch(0% 0 0 / 0.15);
+
+  /* Light Theme OKLCH Colors - Geist Design System */
+  --background: oklch(100% 0 0);
+  --foreground: oklch(15% 0.005 240);
+
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(15% 0.005 240);
+
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(15% 0.005 240);
+
+  --primary: oklch(55% 0.18 250);
+  --primary-foreground: oklch(100% 0 0);
+
+  --secondary: oklch(96% 0.003 240);
+  --secondary-foreground: oklch(20% 0.005 240);
+
+  --muted: oklch(96% 0.003 240);
+  --muted-foreground: oklch(52% 0.005 240);
+
+  --accent: oklch(95% 0.04 250);
+  --accent-foreground: oklch(32% 0.12 250);
+
+  --destructive: oklch(58% 0.22 25);
+
+  --border: oklch(92% 0.003 240);
+  --input: oklch(92% 0.003 240);
+  --ring: oklch(55% 0.18 250);
+
+  /* Overlay & Component tokens */
+  --overlay-bg: oklch(0% 0 0 / 0.5);
+  --slider-thumb-bg: oklch(100% 0 0);
+  --sheet-geist-shadow-light:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 2px 2px 0 rgba(0, 0, 0, 0.04),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgb(250 250 250);
+  --sheet-geist-surface-light: rgb(255 255 255);
+  --sheet-geist-shadow: var(--sheet-geist-shadow-light);
+  --sheet-geist-surface: var(--sheet-geist-surface-light);
+
+  /* Chart colors - Muted multi-hue palette (Vercel/Linear aesthetic) */
+  --chart-1: oklch(58% 0.14 250);        /* Blue */
+  --chart-2: oklch(60% 0.12 175);        /* Teal */
+  --chart-3: oklch(66% 0.13 80);         /* Amber */
+  --chart-4: oklch(58% 0.12 150);        /* Green */
+  --chart-5: oklch(63% 0.12 15);         /* Coral */
+
+  /* Blue accent variants (for single-series charts, graph nodes) */
+  --chart-accent: var(--chart-1);
+  --chart-accent-soft: oklch(70% 0.08 250);
+  --chart-accent-dim: oklch(48% 0.10 250);
+
+  /* Supporting tokens */
+  --chart-axis: oklch(52% 0.005 240);
+  --chart-grid: oklch(86% 0.003 240 / 30%);
+  --chart-track: oklch(96% 0.003 240);
+
+  /* Status Colors - Geist palette */
+  --success: oklch(55% 0.18 155);
+  --success-foreground: oklch(100% 0 0);
+  --warning: oklch(70% 0.18 80);
+  --warning-foreground: oklch(20% 0.02 80);
+  --error: oklch(58% 0.22 25);
+  --error-foreground: oklch(100% 0 0);
+  --info: oklch(55% 0.18 250);
+  --info-foreground: oklch(100% 0 0);
+
+  /* Scrollbar Colors */
+  --scrollbar-thumb: oklch(65% 0.005 var(--base-hue));
+  --scrollbar-thumb-hover: oklch(55% 0.005 var(--base-hue));
+  --scrollbar-track: transparent;
+
+  /* Sidebar - slightly darker than background for depth */
+  --sidebar: oklch(98% 0.005 var(--base-hue));
+  --sidebar-foreground: oklch(15% 0.005 240);
+  --sidebar-primary: oklch(55% 0.18 250);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(95% 0.04 250);
+  --sidebar-accent-foreground: oklch(32% 0.12 250);
+  --sidebar-border: oklch(92% 0.003 240);
+  --sidebar-ring: oklch(55% 0.18 250);
+}
+
+.dark {
+  /* Dark Theme OKLCH Colors - Geist Design System */
+  --background: oklch(10% 0.005 240);
+  --foreground: oklch(98% 0.002 240);
+
+  /* Shadow/Elevation Scale (Dark mode) */
+  --shadow-color: oklch(0% 0 0 / 0.4);
+  --shadow-color-strong: oklch(0% 0 0 / 0.6);
+
+  --card: oklch(15% 0.007 240);
+  --card-foreground: oklch(98% 0.002 240);
+
+  --popover: oklch(15% 0.007 240);
+  --popover-foreground: oklch(98% 0.002 240);
+
+  --primary: oklch(70% 0.14 250);
+  --primary-foreground: oklch(10% 0.005 240);
+
+  --secondary: oklch(22% 0.005 240);
+  --secondary-foreground: oklch(98% 0.002 240);
+
+  --muted: oklch(22% 0.005 240);
+  --muted-foreground: oklch(65% 0.003 240);
+
+  --accent: oklch(22% 0.02 250);
+  --accent-foreground: oklch(98% 0.002 250);
+
+  --destructive: oklch(68% 0.20 25);
+
+  --border: oklch(28% 0.005 240);
+  --input: oklch(28% 0.005 240);
+  --ring: oklch(70% 0.14 250);
+
+  /* Overlay & Component tokens - dark mode */
+  --overlay-bg: oklch(0% 0 0 / 0.7);
+  --slider-thumb-bg: oklch(98% 0.002 240);
+  --sheet-geist-shadow-dark:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 0 rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(255, 255, 255, 0.145),
+    0 2px 2px 0 rgba(0, 0, 0, 0.04),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgb(0 0 0);
+  --sheet-geist-surface-dark: rgb(10 10 10);
+  --sheet-geist-shadow: var(--sheet-geist-shadow-dark);
+  --sheet-geist-surface: var(--sheet-geist-surface-dark);
+
+  /* Chart colors - Muted multi-hue palette (dark mode) */
+  --chart-1: oklch(68% 0.14 250);        /* Blue */
+  --chart-2: oklch(68% 0.12 175);        /* Teal */
+  --chart-3: oklch(75% 0.13 80);         /* Amber */
+  --chart-4: oklch(68% 0.12 155);        /* Green */
+  --chart-5: oklch(70% 0.13 20);         /* Coral */
+
+  /* Blue accent variants */
+  --chart-accent: var(--chart-1);
+  --chart-accent-soft: oklch(78% 0.08 250);
+  --chart-accent-dim: oklch(58% 0.10 250);
+
+  /* Supporting tokens */
+  --chart-axis: oklch(65% 0.003 240);
+  --chart-grid: oklch(35% 0.005 240 / 25%);
+  --chart-track: oklch(22% 0.005 240);
+
+  /* Status Colors - Geist dark mode */
+  --success: oklch(65% 0.18 155);
+  --success-foreground: oklch(10% 0.02 155);
+  --warning: oklch(76% 0.16 80);
+  --warning-foreground: oklch(20% 0.02 80);
+  --error: oklch(68% 0.20 25);
+  --error-foreground: oklch(100% 0 0);
+  --info: oklch(70% 0.14 250);
+  --info-foreground: oklch(10% 0.02 250);
+
+  /* Scrollbar Colors - dark mode */
+  --scrollbar-thumb: oklch(45% 0.005 240);
+  --scrollbar-thumb-hover: oklch(55% 0.005 240);
+  --scrollbar-track: transparent;
+
+  /* Sidebar - dark mode */
+  --sidebar: oklch(12% 0.005 240);
+  --sidebar-foreground: oklch(98% 0.002 240);
+  --sidebar-primary: oklch(70% 0.14 250);
+  --sidebar-primary-foreground: oklch(10% 0.005 240);
+  --sidebar-accent: oklch(22% 0.02 250);
+  --sidebar-accent-foreground: oklch(98% 0.002 250);
+  --sidebar-border: oklch(28% 0.005 240);
+  --sidebar-ring: oklch(70% 0.14 250);
+}

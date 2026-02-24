@@ -52,7 +52,7 @@ describe('supabase clients', () => {
   it('creates server client with cookie helpers', async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321'
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon'
-    createServerClient.mockImplementation((_url, _key, _options) => ({ id: 'server' }))
+    createServerClient.mockImplementation(() => ({ id: 'server' }))
     createServerClient.mockReturnValue({ id: 'server' })
 
     const { getSupabaseServerClient } = await import('@/lib/supabase/server')
@@ -81,12 +81,15 @@ describe('supabase clients', () => {
   it('creates middleware client with request cookies', async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321'
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon'
-    createServerClient.mockImplementation((_url, _key, _options) => ({ id: 'middleware' }))
+    createServerClient.mockImplementation(() => ({ id: 'middleware' }))
 
     const { createSupabaseMiddlewareClient } = await import('@/lib/supabase/middleware')
     const request = { cookies: { get: vi.fn(() => ({ value: 'cookie' })) } }
     const response = { cookies: { set: vi.fn() } }
-    const client = createSupabaseMiddlewareClient(request as any, response as any)
+    const client = createSupabaseMiddlewareClient(
+      request as Parameters<typeof createSupabaseMiddlewareClient>[0],
+      response as Parameters<typeof createSupabaseMiddlewareClient>[1]
+    )
 
     expect(client).toEqual({ id: 'middleware' })
     expect(createServerClient).toHaveBeenCalled()

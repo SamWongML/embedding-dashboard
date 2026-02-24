@@ -74,7 +74,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) data-[inset]:pl-(--space-2xl) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
+        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) [font-size:var(--dropdown-item-font-size)] [line-height:var(--dropdown-item-line-height)] [font-weight:var(--dropdown-item-font-weight)] outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) data-[inset]:pl-(--space-2xl) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
         className
       )}
       {...props}
@@ -92,7 +92,7 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--dropdown-item-padding-x) pl-(--space-2xl) text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--dropdown-item-padding-x) pl-(--space-2xl) [font-size:var(--dropdown-item-font-size)] [line-height:var(--dropdown-item-line-height)] [font-weight:var(--dropdown-item-font-weight)] outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
         className
       )}
       checked={checked}
@@ -128,7 +128,7 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--dropdown-item-padding-x) pl-(--space-2xl) text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-(--button-gap) rounded-sm py-(--dropdown-item-padding-y) pr-(--dropdown-item-padding-x) pl-(--space-2xl) [font-size:var(--dropdown-item-font-size)] [line-height:var(--dropdown-item-line-height)] [font-weight:var(--dropdown-item-font-weight)] outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-(--opacity-disabled) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
         className
       )}
       {...props}
@@ -155,7 +155,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) text-sm font-medium data-[inset]:pl-(--space-2xl)",
+        "px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) [font-size:var(--dropdown-label-font-size)] [line-height:var(--dropdown-label-line-height)] [font-weight:var(--dropdown-label-font-weight)] data-[inset]:pl-(--space-2xl)",
         className
       )}
       {...props}
@@ -184,7 +184,7 @@ function DropdownMenuShortcut({
     <span
       data-slot="dropdown-menu-shortcut"
       className={cn(
-        "text-muted-foreground ml-auto text-xs tracking-widest",
+        "text-muted-foreground ml-auto tracking-widest [font-size:var(--dropdown-shortcut-font-size)] [line-height:var(--dropdown-shortcut-line-height)] [font-weight:var(--dropdown-shortcut-font-weight)]",
         className
       )}
       {...props}
@@ -211,7 +211,7 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex cursor-default items-center gap-(--button-gap) rounded-sm px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) text-sm outline-hidden select-none data-[inset]:pl-(--space-2xl) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex cursor-default items-center gap-(--button-gap) rounded-sm px-(--dropdown-item-padding-x) py-(--dropdown-item-padding-y) [font-size:var(--dropdown-item-font-size)] [line-height:var(--dropdown-item-line-height)] [font-weight:var(--dropdown-item-font-weight)] outline-hidden select-none data-[inset]:pl-(--space-2xl) [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--icon-sm)",
         className
       )}
       {...props}

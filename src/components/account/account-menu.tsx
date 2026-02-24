@@ -117,10 +117,10 @@ function AccountMenuTrigger({
     >
       {avatar}
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-sm font-medium tracking-tight text-sidebar-foreground">
+        <span className="truncate typography-size-sm typography-weight-medium tracking-tight text-sidebar-foreground">
           {name}
         </span>
-        <span className="truncate text-xs leading-tight text-muted-foreground">
+        <span className="truncate typography-size-xs leading-tight text-muted-foreground">
           {workspace}
         </span>
       </div>
@@ -180,18 +180,18 @@ function AccountMenuContent({
             <AvatarFallback>{getInitials(userName)}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold">{userName}</div>
-            <div className="truncate text-xs text-muted-foreground">{userEmail}</div>
-            <div className="truncate text-xs text-muted-foreground">{workspaceName}</div>
+            <div className="truncate typography-size-sm typography-weight-semibold">{userName}</div>
+            <div className="truncate typography-size-xs text-muted-foreground">{userEmail}</div>
+            <div className="truncate typography-size-xs text-muted-foreground">{workspaceName}</div>
           </div>
         </div>
-        <div className="mt-(--space-md) flex flex-wrap items-center gap-(--form-item-gap) text-xs">
+        <div className="mt-(--space-md) flex flex-wrap items-center gap-(--form-item-gap) typography-size-xs">
           <Badge variant="secondary">{planLabel}</Badge>
           <Badge variant="outline">{roleLabel}</Badge>
         </div>
       </div>
       <DropdownMenuSeparator />
-      <DropdownMenuLabel className="text-xs text-muted-foreground">
+      <DropdownMenuLabel className="typography-size-xs text-muted-foreground">
         Workspaces
       </DropdownMenuLabel>
       {workspaceOptions.map((workspace) => (
@@ -209,7 +209,7 @@ function AccountMenuContent({
             )}
           />
           <span className="flex-1 truncate">{workspace.name}</span>
-          <span className="text-xs text-muted-foreground">
+          <span className="typography-size-xs text-muted-foreground">
             {formatRole(workspace.role)}
           </span>
         </DropdownMenuItem>
