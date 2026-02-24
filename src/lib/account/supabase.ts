@@ -111,14 +111,14 @@ async function ensureUserRow(
 async function ensureWorkspaceMembership(
   supabase: SupabaseServerClient,
   userId: string
-) {
+): Promise<WorkspaceMembershipRow[]> {
   const { data: memberships } = await supabase
     .from('workspace_members')
     .select('role, workspaces(id, name, slug, plan, created_at, updated_at)')
     .eq('user_id', userId)
 
   if (memberships && memberships.length > 0) {
-    return memberships
+    return memberships as unknown as WorkspaceMembershipRow[]
   }
 
   const personalName = 'Personal'
@@ -152,7 +152,7 @@ async function ensureWorkspaceMembership(
     throw new Error(memberError.message)
   }
 
-  return [member]
+  return [member as unknown as WorkspaceMembershipRow]
 }
 
 async function ensurePreferences(
