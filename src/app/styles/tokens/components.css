@@ -1,0 +1,252 @@
+@theme inline {
+  /* ===== BUTTON TOKENS (Enhanced) ===== */
+  --button-height-xs: 1.5rem;
+  --button-height-sm: 2rem;
+  --button-height-md: 2.25rem;
+  --button-height-lg: 2.5rem;
+  --button-padding-x-xs: var(--space-2);
+  --button-padding-x-sm: var(--space-3);
+  --button-padding-x-md: var(--space-4);
+  --button-padding-x-lg: var(--space-6);
+  --button-gap: var(--space-2);
+  --button-gap-sm: var(--space-1\.5);
+  --button-gap-xs: var(--space-1);
+  --button-font-size: var(--text-copy-14);
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--leading-copy-14);
+  --button-radius-square: var(--radius-md);
+  --button-radius-circle: 9999px;
+
+  /* ===== INPUT TOKENS (Enhanced) ===== */
+  --input-height: 2.25rem;
+  --input-height-sm: 2rem;
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-1);
+  --input-font-size: var(--text-copy-14);
+  --input-line-height: var(--leading-copy-14);
+  --input-font-weight: var(--font-weight-normal);
+
+  /* ===== CARD TOKENS (Enhanced) ===== */
+  --card-padding: var(--space-4);
+  --card-padding-compact: var(--space-3);
+  --card-gap: var(--space-3);
+  --card-header-gap: var(--space-1);
+  --card-title-size: var(--font-size-sm);
+  --card-title-weight: var(--font-weight-medium);
+  --card-description-size: var(--font-size-xs);
+
+  /* ===== DIALOG TOKENS ===== */
+  --dialog-padding: 1.5rem;
+  --dialog-gap: 1rem;
+  --dialog-header-gap: 0.5rem;
+  --dialog-title-size: var(--text-heading-4);
+  --dialog-title-line-height: var(--leading-heading-4);
+  --dialog-title-weight: var(--font-weight-semibold);
+  --dialog-description-size: var(--text-copy-14);
+  --dialog-description-line-height: var(--leading-copy-14);
+  --dialog-description-weight: var(--font-weight-normal);
+
+  /* ===== SIDEBAR TOKENS ===== */
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4rem;
+  --sidebar-item-padding-x: 0.75rem;
+  --sidebar-item-padding-y: 0.5rem;
+  --sidebar-item-gap: 0.75rem;
+  --sidebar-group-label-font-size: var(--text-label-sm);
+  --sidebar-group-label-line-height: var(--leading-label-sm);
+  --sidebar-group-label-font-weight: var(--font-weight-medium);
+  --sidebar-menu-button-font-size: var(--text-copy-14);
+  --sidebar-menu-button-line-height: var(--leading-copy-14);
+  --sidebar-menu-button-font-size-sm: var(--text-label-sm);
+  --sidebar-menu-button-line-height-sm: var(--leading-label-sm);
+  --sidebar-menu-badge-font-size: var(--text-label-sm);
+  --sidebar-menu-badge-line-height: var(--leading-label-sm);
+  --sidebar-menu-badge-font-weight: var(--font-weight-medium);
+  --sidebar-menu-sub-button-font-size-sm: var(--text-label-sm);
+  --sidebar-menu-sub-button-line-height-sm: var(--leading-label-sm);
+  --sidebar-menu-sub-button-font-size-md: var(--text-copy-14);
+  --sidebar-menu-sub-button-line-height-md: var(--leading-copy-14);
+
+  /* ===== HEADER TOKENS ===== */
+  --header-height: 3.5rem;
+  --header-padding-x: 1.5rem;
+  --page-title-size: var(--font-size-md);
+  --page-title-line-height: 1.75rem;
+  --page-title-weight: var(--font-weight-semibold);
+
+  /* ===== AVATAR TOKENS ===== */
+  --avatar-size-xs: 1.5rem;
+  --avatar-size-sm: 2rem;
+  --avatar-size-md: 2.25rem;
+  --avatar-size-lg: 2.5rem;
+  --avatar-fallback-font-size: var(--text-copy-14);
+  --avatar-fallback-line-height: var(--leading-copy-14);
+  --avatar-fallback-font-size-sm: var(--text-label-sm);
+  --avatar-fallback-line-height-sm: var(--leading-label-sm);
+  --avatar-group-count-font-size: var(--text-copy-14);
+  --avatar-group-count-line-height: var(--leading-copy-14);
+  --account-trigger-avatar-size-expanded: var(--avatar-size-sm);
+  --account-trigger-avatar-size-collapsed: var(--avatar-size-md);
+  --account-trigger-hit-size-collapsed: var(--button-height-lg);
+
+  /* ===== DROPDOWN/POPOVER TOKENS ===== */
+  --dropdown-item-padding-x: 0.5rem;
+  --dropdown-item-padding-y: 0.375rem;
+  --dropdown-gap: 0.25rem;
+  --dropdown-item-font-size: var(--text-copy-14);
+  --dropdown-item-line-height: var(--leading-copy-14);
+  --dropdown-item-font-weight: var(--font-weight-normal);
+  --dropdown-label-font-size: var(--text-copy-14);
+  --dropdown-label-line-height: var(--leading-copy-14);
+  --dropdown-label-font-weight: var(--font-weight-medium);
+  --dropdown-shortcut-font-size: var(--text-label-sm);
+  --dropdown-shortcut-line-height: var(--leading-label-sm);
+  --dropdown-shortcut-font-weight: var(--font-weight-medium);
+  --popover-padding: 1rem;
+  --popover-width: 18rem;
+  --popover-header-font-size: var(--text-copy-14);
+  --popover-header-line-height: var(--leading-copy-14);
+  --popover-title-font-size: var(--text-copy-14);
+  --popover-title-line-height: var(--leading-copy-14);
+  --popover-title-font-weight: var(--font-weight-medium);
+  --popover-description-font-size: var(--text-copy-14);
+  --popover-description-line-height: var(--leading-copy-14);
+  --popover-description-font-weight: var(--font-weight-normal);
+
+  /* ===== TOOLTIP TOKENS ===== */
+  --tooltip-padding-x: 0.75rem;
+  --tooltip-padding-y: 0.375rem;
+  --tooltip-font-size: var(--text-label-sm);
+  --tooltip-line-height: var(--leading-label-sm);
+  --tooltip-font-weight: var(--font-weight-medium);
+
+  /* ===== BADGE TOKENS ===== */
+  --badge-padding-x: 0.5rem;
+  --badge-padding-y: 0.125rem;
+  --badge-gap: 0.25rem;
+  --badge-font-size: var(--text-label-sm);
+  --badge-line-height: var(--leading-label-sm);
+  --badge-font-weight: var(--font-weight-medium);
+
+  /* ===== TABS TOKENS ===== */
+  --tabs-list-height: 2.25rem;
+  --tabs-trigger-padding-x: 0.5rem;
+  --tabs-trigger-padding-y: 0.25rem;
+  --tabs-trigger-font-size: var(--text-copy-14);
+  --tabs-trigger-line-height: var(--leading-copy-14);
+  --tabs-trigger-font-weight: var(--font-weight-medium);
+  --tabs-gap: 0.5rem;
+
+  /* ===== TABLE TOKENS ===== */
+  --table-cell-padding-x: var(--space-4);
+  --table-cell-padding-y: var(--space-2\.5);
+  --table-header-height: 2.25rem;
+  --table-row-height: 2.75rem;
+  --table-font-size: var(--text-copy-14);
+  --table-line-height: var(--leading-copy-14);
+  --table-head-font-size: var(--text-copy-14);
+  --table-head-line-height: var(--leading-copy-14);
+  --table-head-font-weight: var(--font-weight-medium);
+  --table-footer-font-size: var(--text-copy-14);
+  --table-footer-line-height: var(--leading-copy-14);
+  --table-footer-font-weight: var(--font-weight-medium);
+  --table-caption-font-size: var(--text-copy-14);
+  --table-caption-line-height: var(--leading-copy-14);
+
+  /* ===== LIST ITEM TOKENS (Logs, Lists) ===== */
+  --list-item-padding-x: var(--space-4);
+  --list-item-padding-y: var(--space-2\.5);
+  --list-item-gap: var(--space-2);
+
+  /* ===== FORM TOKENS ===== */
+  --form-item-gap: 0.5rem;
+  --label-font-size: var(--text-copy-14);
+  --label-line-height: var(--leading-copy-14);
+  --label-font-weight: var(--font-weight-medium);
+
+  /* ===== COMMAND TOKENS ===== */
+  --command-input-height: 2.75rem;
+  --command-item-padding-x: 0.5rem;
+  --command-item-padding-y: 0.375rem;
+  --command-input-font-size: var(--text-copy-14);
+  --command-input-line-height: var(--leading-copy-14);
+  --command-empty-font-size: var(--text-copy-14);
+  --command-empty-line-height: var(--leading-copy-14);
+  --command-group-heading-font-size: var(--text-label-sm);
+  --command-group-heading-line-height: var(--leading-label-sm);
+  --command-group-heading-font-weight: var(--font-weight-medium);
+  --command-item-font-size: var(--text-copy-14);
+  --command-item-line-height: var(--leading-copy-14);
+  --command-shortcut-font-size: var(--text-label-sm);
+  --command-shortcut-line-height: var(--leading-label-sm);
+  --command-shortcut-font-weight: var(--font-weight-medium);
+
+  /* ===== SHEET TOKENS ===== */
+  --sheet-padding: 1rem;
+  --sheet-gap: 0.5rem;
+  --sheet-title-size: var(--text-copy-16);
+  --sheet-title-line-height: var(--leading-copy-16);
+  --sheet-title-font-weight: var(--font-weight-semibold);
+  --sheet-description-size: var(--text-copy-14);
+  --sheet-description-line-height: var(--leading-copy-14);
+  --sheet-description-font-weight: var(--font-weight-normal);
+  --sheet-section-label-size: var(--text-label-sm);
+  --sheet-section-label-line-height: var(--leading-label-sm);
+  --sheet-section-label-font-weight: var(--font-weight-medium);
+  --sheet-property-label-size: var(--text-copy-14);
+  --sheet-property-label-line-height: var(--leading-copy-14);
+  --sheet-property-value-size: var(--text-copy-14);
+  --sheet-property-value-line-height: var(--leading-copy-14);
+  --sheet-property-value-font-weight: var(--font-weight-medium);
+
+  /* ===== CHECKBOX/SWITCH TOKENS ===== */
+  --checkbox-size: 1rem;
+  --switch-height: 1.15rem;
+  --switch-height-sm: 0.875rem;
+  --switch-width: 2rem;
+  --switch-width-sm: 1.5rem;
+  --switch-thumb-size: 1rem;
+  --switch-thumb-size-sm: 0.75rem;
+
+  /* ===== SLIDER TOKENS ===== */
+  --slider-track-height: 0.375rem;
+  --slider-thumb-size: 1rem;
+
+  /* ===== RADIO TOKENS ===== */
+  --radio-size: 1rem;
+  --radio-indicator-size: 0.5rem;
+
+  /* ===== SEARCH COMMAND TOKENS ===== */
+  --search-width: 16rem;
+  --search-kbd-height: 1.25rem;
+  --search-kbd-font-size: var(--text-micro-10);
+  --search-kbd-line-height: var(--leading-micro-10);
+  --search-kbd-font-weight: var(--weight-micro-10);
+
+  /* ===== SELECT TOKENS ===== */
+  --select-trigger-font-size: var(--text-copy-14);
+  --select-trigger-line-height: var(--leading-copy-14);
+  --select-label-font-size: var(--text-label-sm);
+  --select-label-line-height: var(--leading-label-sm);
+  --select-item-font-size: var(--text-copy-14);
+  --select-item-line-height: var(--leading-copy-14);
+
+  /* ===== TEXTAREA TOKENS ===== */
+  --textarea-font-size: var(--text-copy-14);
+  --textarea-line-height: var(--leading-copy-14);
+  --textarea-font-weight: var(--font-weight-normal);
+
+  /* ===== CHART/GRAPH TYPOGRAPHY TOKENS ===== */
+  --chart-axis-tick-size: var(--text-micro-11);
+  --chart-axis-tick-line-height: var(--leading-micro-11);
+  --chart-tooltip-label-size: var(--text-micro-11);
+  --chart-tooltip-label-line-height: var(--leading-micro-11);
+  --chart-tooltip-row-size: var(--text-micro-11);
+  --chart-tooltip-row-line-height: var(--leading-micro-11);
+  --chart-tooltip-row-font-weight: var(--font-weight-normal);
+  --chart-tooltip-value-font-weight: var(--font-weight-medium);
+  --chart-legend-size: var(--text-micro-11);
+  --chart-legend-line-height: var(--leading-micro-11);
+  --graph-label-size: var(--text-micro-10);
+  --graph-label-line-height: var(--leading-micro-10);
+}

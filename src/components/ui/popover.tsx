@@ -49,7 +49,10 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="popover-header"
-      className={cn("flex flex-col gap-(--dropdown-gap) text-sm", className)}
+      className={cn(
+        "flex flex-col gap-(--dropdown-gap) [font-size:var(--popover-header-font-size)] [line-height:var(--popover-header-line-height)]",
+        className
+      )}
       {...props}
     />
   )
@@ -59,7 +62,10 @@ function PopoverTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return (
     <div
       data-slot="popover-title"
-      className={cn("font-medium", className)}
+      className={cn(
+        "[font-size:var(--popover-title-font-size)] [line-height:var(--popover-title-line-height)] [font-weight:var(--popover-title-font-weight)]",
+        className
+      )}
       {...props}
     />
   )
@@ -72,7 +78,10 @@ function PopoverDescription({
   return (
     <p
       data-slot="popover-description"
-      className={cn("text-muted-foreground", className)}
+      className={cn(
+        "text-muted-foreground [font-size:var(--popover-description-font-size)] [line-height:var(--popover-description-line-height)] [font-weight:var(--popover-description-font-weight)]",
+        className
+      )}
       {...props}
     />
   )

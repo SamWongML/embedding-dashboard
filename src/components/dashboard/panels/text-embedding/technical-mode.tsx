@@ -114,7 +114,7 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
     <div className={cn('grid gap-6 lg:grid-cols-2', className)}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-medium">Input</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -238,7 +238,7 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
                         <FormControl>
                           <Textarea
                             placeholder='{"source": "manual", "tags": ["demo"]}'
-                            className="min-h-[80px] font-mono text-sm"
+                            className="min-h-[80px] typography-family-mono typography-size-sm"
                             {...field}
                           />
                         </FormControl>
@@ -302,7 +302,7 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-medium">Result</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
           {result && (
             <Button
               variant="ghost"
@@ -321,24 +321,24 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
         <CardContent>
           {result ? (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 typography-size-sm">
                 <div>
                   <p className="text-muted-foreground">Model</p>
-                  <p className="font-medium">{result.results[0]?.model}</p>
+                  <p className="typography-weight-medium">{result.results[0]?.model}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Total Tokens</p>
-                  <p className="font-medium">{result.totalTokens}</p>
+                  <p className="typography-weight-medium">{result.totalTokens}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Dimensions</p>
-                  <p className="font-medium">
+                  <p className="typography-weight-medium">
                     {result.results[0]?.vector.length}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Processing Time</p>
-                  <p className="font-medium">
+                  <p className="typography-weight-medium">
                     {result.processingTime.toFixed(0)}ms
                   </p>
                 </div>
@@ -346,13 +346,13 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
                   <>
                     <div>
                       <p className="text-muted-foreground">Chunks</p>
-                      <p className="font-medium">
+                      <p className="typography-weight-medium">
                         {result.results[0].totalChunks}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Current Chunk</p>
-                      <p className="font-medium">
+                      <p className="typography-weight-medium">
                         {(result.results[0].chunkIndex || 0) + 1} /{' '}
                         {result.results[0].totalChunks}
                       </p>
@@ -361,25 +361,25 @@ export function TechnicalMode({ className }: TechnicalModeProps) {
                 )}
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="typography-size-sm text-muted-foreground mb-2">
                   Vector Preview
                 </p>
-                <div className="bg-muted rounded-md p-3 font-mono text-xs overflow-x-auto max-h-[200px]">
+                <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto max-h-[200px]">
                   [{result.results[0]?.vector.slice(0, 10).map(v => v.toFixed(6)).join(', ')}
                   , ... ({result.results[0]?.vector.length} dimensions)]
                 </div>
               </div>
               {result.results[0]?.metadata && (
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">Metadata</p>
-                  <div className="bg-muted rounded-md p-3 font-mono text-xs overflow-x-auto">
+                  <p className="typography-size-sm text-muted-foreground mb-2">Metadata</p>
+                  <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
                     {JSON.stringify(result.results[0].metadata, null, 2)}
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
+            <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
               Results will appear here
             </div>
           )}

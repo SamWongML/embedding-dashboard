@@ -43,7 +43,7 @@ export default function SecurityTab() {
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Current device</div>
+              <div className="typography-copy-14 typography-weight-medium">Current device</div>
               <p className="typography-copy-13 text-muted-foreground">
                 San Francisco, CA · Chrome on macOS
               </p>
@@ -52,7 +52,7 @@ export default function SecurityTab() {
           </div>
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">iPhone 15 Pro</div>
+              <div className="typography-copy-14 typography-weight-medium">iPhone 15 Pro</div>
               <p className="typography-copy-13 text-muted-foreground">
                 Last active 2 hours ago
               </p>
@@ -86,7 +86,7 @@ export default function SecurityTab() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Two-factor authentication</div>
+              <div className="typography-copy-14 typography-weight-medium">Two-factor authentication</div>
               <p className="typography-copy-13 text-muted-foreground">
                 Require a second factor when signing in.
               </p>
@@ -100,7 +100,7 @@ export default function SecurityTab() {
           <Separator />
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="typography-copy-14 font-medium">Trusted devices</div>
+              <div className="typography-copy-14 typography-weight-medium">Trusted devices</div>
               <p className="typography-copy-13 text-muted-foreground">
                 Skip prompts on devices you approve.
               </p>

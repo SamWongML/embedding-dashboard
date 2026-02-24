@@ -24,11 +24,11 @@ export function GraphControls({
   return (
     <Card className="lg:col-span-1">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">Graph Controls</CardTitle>
+        <CardTitle className="typography-size-base typography-weight-medium">Graph Controls</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-medium">Depth: {filters.depth}</label>
+          <label className="typography-size-sm typography-weight-medium">Depth: {filters.depth}</label>
           <Slider
             min={1}
             max={5}
@@ -40,7 +40,7 @@ export function GraphControls({
         </div>
 
         <div>
-          <label className="text-sm font-medium">Limit: {filters.limit}</label>
+          <label className="typography-size-sm typography-weight-medium">Limit: {filters.limit}</label>
           <Slider
             min={10}
             max={500}
@@ -64,7 +64,7 @@ export function GraphControls({
         </div>
 
         <div className="border-t pt-4">
-          <h4 className="mb-2 text-sm font-medium">Legend</h4>
+          <h4 className="mb-2 typography-size-sm typography-weight-medium">Legend</h4>
           <div className="space-y-2">
             {Object.entries(graphNodeColorByType)
               .filter(([key]) => key !== "default")
@@ -74,14 +74,14 @@ export function GraphControls({
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: color }}
                   />
-                  <span className="text-xs capitalize">{type.replace("-", " ")}</span>
+                  <span className="typography-size-xs capitalize">{type.replace("-", " ")}</span>
                 </div>
               ))}
           </div>
         </div>
 
         {graphData ? (
-          <div className="border-t pt-4 text-sm text-muted-foreground">
+          <div className="border-t pt-4 typography-size-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Badge variant="outline">Nodes: {graphData.nodes.length}</Badge>
               <Badge variant="outline">Edges: {graphData.edges.length}</Badge>

@@ -44,9 +44,9 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
     return (
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">Metrics</CardTitle>
+          <CardTitle className="typography-size-base typography-weight-medium">Metrics</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
+        <CardContent className="typography-size-sm text-muted-foreground">
           No metrics data is available yet.
         </CardContent>
       </Card>
@@ -90,7 +90,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       {/* Trends Chart */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">
+          <CardTitle className="typography-size-base typography-weight-medium">
             Embedding Trends
           </CardTitle>
         </CardHeader>
@@ -107,7 +107,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">
+            <CardTitle className="typography-size-base typography-weight-medium">
               Most Accessed Embeddings
             </CardTitle>
           </CardHeader>
@@ -123,7 +123,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         {isLoading ? (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Top Users</CardTitle>
+              <CardTitle className="typography-size-base typography-weight-medium">Top Users</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[250px] bg-muted rounded animate-pulse" />

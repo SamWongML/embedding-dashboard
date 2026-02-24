@@ -13,6 +13,18 @@ export interface PreferencePayload {
   active_workspace_id?: string | null
 }
 
+interface WorkspaceMembershipRow {
+  role: WorkspaceSummary['role']
+  workspaces: {
+    id: string
+    name: string
+    slug: string
+    plan: WorkspaceSummary['plan']
+    created_at: string | null
+    updated_at: string | null
+  } | null
+}
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -180,9 +192,13 @@ async function ensurePreferences(
   return inserted
 }
 
-function mapWorkspaces(memberships: any[]): WorkspaceSummary[] {
-  return memberships.map((membership) => {
+function mapWorkspaces(memberships: WorkspaceMembershipRow[]): WorkspaceSummary[] {
+  return memberships.flatMap((membership) => {
     const workspace = membership.workspaces
+    if (!workspace) {
+      return []
+    }
+
     return {
       id: workspace.id,
       name: workspace.name,

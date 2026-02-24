@@ -12,7 +12,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
+        className={cn("w-full caption-bottom [font-size:var(--table-font-size)] [line-height:var(--table-line-height)]", className)}
         {...props}
       />
     </div>
@@ -44,7 +44,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
+        "bg-muted/50 border-t [font-size:var(--table-footer-font-size)] [line-height:var(--table-footer-line-height)] [font-weight:var(--table-footer-font-weight)] [&>tr]:last:border-b-0",
         className
       )}
       {...props}
@@ -70,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-(--table-header-height) px-(--table-cell-padding-x) text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-foreground h-(--table-header-height) px-(--table-cell-padding-x) text-left align-middle [font-size:var(--table-head-font-size)] [line-height:var(--table-head-line-height)] [font-weight:var(--table-head-font-weight)] whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -98,7 +98,7 @@ function TableCaption({
   return (
     <caption
       data-slot="table-caption"
-      className={cn("text-muted-foreground mt-(--space-lg) text-sm", className)}
+      className={cn("text-muted-foreground mt-(--space-lg) [font-size:var(--table-caption-font-size)] [line-height:var(--table-caption-line-height)]", className)}
       {...props}
     />
   )

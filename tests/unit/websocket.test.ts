@@ -32,7 +32,7 @@ describe('WebSocketManager', () => {
   beforeEach(() => {
     MockWebSocket.instances = []
     process.env = { ...ORIGINAL_ENV, NEXT_PUBLIC_ENABLE_REALTIME: 'true' }
-    vi.stubGlobal('WebSocket', MockWebSocket as any)
+    vi.stubGlobal('WebSocket', MockWebSocket as unknown as typeof WebSocket)
   })
 
   afterEach(() => {
@@ -84,7 +84,7 @@ describe('WebSocketManager', () => {
   })
 
   it('throws when used on the server', () => {
-    const originalWindow = (globalThis as any).window
+    const originalWindow = globalThis.window
     vi.stubGlobal('window', undefined)
     expect(() => getWebSocketManager()).toThrow('WebSocketManager can only be used in the browser')
     vi.stubGlobal('window', originalWindow)

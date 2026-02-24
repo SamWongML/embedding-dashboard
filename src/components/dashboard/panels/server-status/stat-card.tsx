@@ -26,7 +26,7 @@ export function StatCard({
   return (
     <Card className={cn(className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
           {title}
         </CardTitle>
         {icon && (
@@ -35,11 +35,11 @@ export function StatCard({
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold">{value}</span>
+          <span className="typography-size-2xl typography-weight-bold">{value}</span>
           {trend && (
             <span
               className={cn(
-                'text-xs font-medium',
+                'typography-size-xs typography-weight-medium',
                 trend.isPositive ? 'text-success' : 'text-error'
               )}
             >
@@ -48,7 +48,7 @@ export function StatCard({
           )}
         </div>
         {subtitle && (
-          <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+          <p className="typography-size-xs text-muted-foreground mt-1">{subtitle}</p>
         )}
       </CardContent>
     </Card>

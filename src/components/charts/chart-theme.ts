@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { readTypographyPxVar } from '@/lib/design/typography-runtime'
 
 export type ChartTone =
   | 'accent'        // chart-1 (Blue)
@@ -70,7 +71,7 @@ export function colorByChartTone(tone: ChartTone): string {
 }
 
 export const chartAxisTick = {
-  fontSize: 11,
+  fontSize: readTypographyPxVar('--chart-axis-tick-size', 11),
   fill: 'var(--chart-axis)',
 }
 
@@ -126,6 +127,10 @@ export function colorByGraphNodeType(nodeType: string): string {
 export const graphLinkColor = 'var(--chart-grid)'
 export const graphLabelColor = 'var(--chart-axis)'
 export const graphNodeStrokeColor = 'var(--background)'
+
+export function getGraphLabelFontSizePx() {
+  return readTypographyPxVar('--graph-label-size', 10)
+}
 
 // Direct graph colors for D3/SVG rendering (CSS variables don't resolve in D3)
 export const graphColors = {

@@ -104,10 +104,10 @@ export function SearchSimpleMode({ className }: SearchSimpleModeProps) {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-medium">
+              <CardTitle className="typography-size-base typography-weight-medium">
                 Results ({result.totalCount})
               </CardTitle>
-              <span className="text-xs text-muted-foreground">
+              <span className="typography-size-xs text-muted-foreground">
                 {result.took.toFixed(0)}ms
               </span>
             </div>
@@ -115,7 +115,7 @@ export function SearchSimpleMode({ className }: SearchSimpleModeProps) {
           <CardContent className="p-0">
             <ScrollArea className="h-[400px]">
               {result.results.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-muted-foreground text-sm p-6">
+                <div className="flex items-center justify-center h-full text-muted-foreground typography-size-sm p-6">
                   No results found
                 </div>
               ) : (
@@ -138,23 +138,23 @@ function SearchResultItem({ result }: { result: SearchResult }) {
     <div className="px-4 py-3 hover:bg-muted/50 transition-colors">
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="typography-size-xs">
             {(result.score * 100).toFixed(0)}%
           </Badge>
           {result.source && (
-            <span className="text-xs text-muted-foreground">
+            <span className="typography-size-xs text-muted-foreground">
               {result.source}
             </span>
           )}
         </div>
       </div>
-      <p className="text-sm text-foreground line-clamp-3">{result.content}</p>
+      <p className="typography-size-sm text-foreground line-clamp-3">{result.content}</p>
       {result.highlights && result.highlights.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {result.highlights.slice(0, 3).map((highlight, i) => (
             <span
               key={i}
-              className="text-xs bg-accent px-1.5 py-0.5 rounded"
+              className="typography-size-xs bg-accent px-1.5 py-0.5 rounded"
             >
               {highlight}
             </span>

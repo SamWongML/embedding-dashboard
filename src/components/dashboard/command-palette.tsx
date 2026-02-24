@@ -50,8 +50,8 @@ export function CommandPalette() {
       >
         <Search className="size-(--icon-sm)" />
         <span className="flex-1 text-left">Search...</span>
-        <kbd className="pointer-events-none hidden h-(--search-kbd-height) select-none items-center gap-(--dropdown-gap) rounded border bg-muted px-(--dropdown-item-padding-y) font-mono text-[10px] font-medium opacity-100 sm:flex">
-          <span className="text-xs">⌘</span>K
+        <kbd className="pointer-events-none hidden h-(--search-kbd-height) select-none items-center gap-(--dropdown-gap) rounded border bg-muted px-(--dropdown-item-padding-y) typography-family-mono [font-size:var(--search-kbd-font-size)] [line-height:var(--search-kbd-line-height)] [font-weight:var(--search-kbd-font-weight)] opacity-100 sm:flex">
+          <span>⌘</span>K
         </kbd>
       </Button>
       {hasMounted ? (

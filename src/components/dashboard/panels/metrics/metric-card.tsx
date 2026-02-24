@@ -27,17 +27,17 @@ export function MetricCard({ metric, className }: MetricCardProps) {
   return (
     <Card className={cn(className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
           {metric.label}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-2xl font-bold">
+            <div className="typography-size-2xl typography-weight-bold">
               {formatValue(metric.value)}
             </div>
-            <div className={cn('flex items-center gap-1 text-xs', trendColor)}>
+            <div className={cn('flex items-center gap-1 typography-size-xs', trendColor)}>
               <TrendIcon className="h-3 w-3" />
               <span>{Math.abs(metric.change)}%</span>
             </div>

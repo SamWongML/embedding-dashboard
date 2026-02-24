@@ -1,15 +1,9 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { Providers } from '@/components/providers'
+import { geistMono, geistSans } from '@/lib/design/fonts'
 import { isTheme, THEME_COOKIE_NAME, THEME_STORAGE_KEY, type Theme } from '@/lib/preferences/theme'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
 
 export const metadata: Metadata = {
   title: {
@@ -39,7 +33,11 @@ export default async function RootLayout({
   const initialTheme: Theme = isTheme(cookieTheme) ? cookieTheme : 'system'
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -67,7 +65,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} min-h-screen antialiased`}>
+      <body className="min-h-screen antialiased">
         <Providers initialTheme={initialTheme}>{children}</Providers>
       </body>
     </html>

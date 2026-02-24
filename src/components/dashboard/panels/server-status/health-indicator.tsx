@@ -51,7 +51,7 @@ export function HealthIndicator({
           className={cn('relative inline-flex rounded-full h-3 w-3', config.color)}
         />
       </span>
-      <span className={cn('text-sm font-medium', config.text)}>
+      <span className={cn('typography-size-sm typography-weight-medium', config.text)}>
         {label || config.label}
       </span>
     </div>

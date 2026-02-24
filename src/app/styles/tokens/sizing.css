@@ -1,0 +1,28 @@
+@theme inline {
+  /* ===== OPACITY SCALE ===== */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.9;
+  --opacity-muted: 0.7;
+  --opacity-overlay: 0.5;
+  --opacity-subtle: 0.05;
+
+  /* ===== ICON SIZES ===== */
+  --icon-xs: 0.75rem;
+  --icon-sm: 1rem;
+  --icon-md: 1.25rem;
+  --icon-lg: 1.5rem;
+  --icon-xl: 2rem;
+
+  /* Border Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* ===== FOCUS RING TOKENS ===== */
+  --ring-width: 3px;
+  --ring-offset: 2px;
+}

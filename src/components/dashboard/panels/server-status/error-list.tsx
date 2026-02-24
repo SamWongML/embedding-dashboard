@@ -36,24 +36,15 @@ export function ErrorList({ errors, className }: ErrorListProps) {
     })
   }
 
-  const formatTimeAgo = (timestamp: string) => {
-    const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000)
-    if (seconds < 60) return `${seconds}s ago`
-    const minutes = Math.floor(seconds / 60)
-    if (minutes < 60) return `${minutes}m ago`
-    const hours = Math.floor(minutes / 60)
-    return `${hours}h ago`
-  }
-
   return (
     <Card className={cn(className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">Recent Logs</CardTitle>
+        <CardTitle className="typography-size-sm typography-weight-medium">Recent Logs</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <ScrollArea className="h-[300px]">
           {errors.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+            <div className="flex items-center justify-center h-full text-muted-foreground typography-size-sm">
               No recent errors
             </div>
           ) : (
@@ -64,18 +55,18 @@ export function ErrorList({ errors, className }: ErrorListProps) {
                   <div key={error.id} className="px-(--list-item-padding-x) py-(--list-item-padding-y) hover:bg-muted/50 transition-colors">
                     <div className="flex items-center justify-between gap-(--list-item-gap) mb-0.5">
                       <div className="flex items-center gap-(--list-item-gap)">
-                        <Badge variant={config.variant} className="text-xs">
+                        <Badge variant={config.variant} className="typography-size-xs">
                           {config.label}
                         </Badge>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="typography-size-xs text-muted-foreground">
                           {error.source}
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {formatTimeAgo(error.timestamp)}
+                      <span className="typography-size-xs text-muted-foreground whitespace-nowrap">
+                        {formatTime(error.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm text-foreground line-clamp-2">
+                    <p className="typography-size-sm text-foreground line-clamp-2">
                       {error.message}
                     </p>
                   </div>

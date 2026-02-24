@@ -36,14 +36,14 @@ export function NodeDetailsSheet({
         onAnimationEnd={onAnimationEnd}
       >
         <SheetHeader className="border-0 p-6 text-left">
-          <SheetTitle className="text-lg font-semibold">Node Details</SheetTitle>
+          <SheetTitle className="typography-size-lg typography-weight-semibold">Node Details</SheetTitle>
         </SheetHeader>
         {nodeDetail ? (
           <div className="px-6 py-4 space-y-8">
             {/* Label Section */}
             <SheetSection>
               <SheetSectionHeader>Label</SheetSectionHeader>
-              <p className="text-lg font-semibold text-foreground">
+              <p className="typography-size-lg typography-weight-semibold text-foreground">
                 {nodeDetail.node.label}
               </p>
             </SheetSection>
@@ -60,7 +60,7 @@ export function NodeDetailsSheet({
             <SheetSection>
               <SheetSectionHeader>Properties</SheetSectionHeader>
               <div className="bg-muted/30 rounded-lg border border-border/40 p-4">
-                <pre className="text-xs font-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
+                <pre className="typography-size-xs typography-family-mono text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">
                   {JSON.stringify(nodeDetail.node.properties, null, 2)}
                 </pre>
               </div>
@@ -81,13 +81,13 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm leading-5 transition-colors hover:bg-muted/40"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 typography-size-sm leading-5 transition-colors hover:bg-muted/40"
                       >
                         <Badge variant="gray-subtle" className="shrink-0">
                           {edge.type}
                         </Badge>
                         <span className="text-muted-foreground shrink-0">→</span>
-                        <span className="font-medium truncate">
+                        <span className="typography-weight-medium truncate">
                           {targetNode?.label || edge.target}
                         </span>
                       </div>
@@ -101,9 +101,9 @@ export function NodeDetailsSheet({
                     return (
                       <div
                         key={edge.id}
-                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 text-sm leading-5 transition-colors hover:bg-muted/40"
+                        className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 p-3 typography-size-sm leading-5 transition-colors hover:bg-muted/40"
                       >
-                        <span className="font-medium truncate">
+                        <span className="typography-weight-medium truncate">
                           {sourceNode?.label || edge.source}
                         </span>
                         <span className="text-muted-foreground shrink-0">→</span>
