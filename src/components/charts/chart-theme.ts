@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { readTypographyPxVar } from '@/lib/design/typography-runtime'
 
 export type ChartTone =
-  | 'accent'        // chart-1 (Blue)
+  | 'accent'        // chart-1 (Indigo)
   | 'accentSoft'    // Light blue
   | 'accentDim'     // Dark blue
   | 'teal'          // chart-2
@@ -35,27 +35,27 @@ export const chartToneToColorVar: Record<ChartTone, string> = {
 // Source of truth: src/app/globals.css (--chart-1, --chart-2, --chart-3, etc.)
 export const chartColors = {
   light: {
-    accent: 'oklch(58% 0.14 250)',      // Blue
-    accentSoft: 'oklch(70% 0.08 250)',
-    accentDim: 'oklch(48% 0.10 250)',
+    accent: 'oklch(55% 0.14 277)',      // Indigo
+    accentSoft: 'oklch(70% 0.08 277)',
+    accentDim: 'oklch(48% 0.10 277)',
     teal: 'oklch(60% 0.12 175)',        // Teal
     amber: 'oklch(66% 0.13 80)',        // Amber
     green: 'oklch(58% 0.12 150)',
     coral: 'oklch(63% 0.12 15)',
-    muted: 'oklch(52% 0.005 240)',
+    muted: 'oklch(52% 0.005 260)',
     success: 'oklch(55% 0.18 155)',
     warning: 'oklch(70% 0.18 80)',
     error: 'oklch(58% 0.22 25)',
   },
   dark: {
-    accent: 'oklch(68% 0.14 250)',      // Blue
-    accentSoft: 'oklch(78% 0.08 250)',
-    accentDim: 'oklch(58% 0.10 250)',
+    accent: 'oklch(68% 0.14 277)',      // Indigo
+    accentSoft: 'oklch(78% 0.08 277)',
+    accentDim: 'oklch(58% 0.10 277)',
     teal: 'oklch(68% 0.12 175)',        // Teal
     amber: 'oklch(75% 0.13 80)',        // Amber
     green: 'oklch(68% 0.12 155)',
     coral: 'oklch(70% 0.13 20)',
-    muted: 'oklch(65% 0.003 240)',
+    muted: 'oklch(60% 0.008 270)',
     success: 'oklch(65% 0.18 155)',
     warning: 'oklch(76% 0.16 80)',
     error: 'oklch(68% 0.20 25)',
@@ -135,14 +135,14 @@ export function getGraphLabelFontSizePx() {
 // Direct graph colors for D3/SVG rendering (CSS variables don't resolve in D3)
 export const graphColors = {
   light: {
-    link: 'oklch(86% 0.003 240 / 30%)',
-    label: 'oklch(52% 0.005 240)',
+    link: 'oklch(86% 0.003 260 / 30%)',
+    label: 'oklch(52% 0.005 260)',
     nodeStroke: 'oklch(100% 0 0)',
   },
   dark: {
-    link: 'oklch(35% 0.005 240 / 25%)',
-    label: 'oklch(65% 0.003 240)',
-    nodeStroke: 'oklch(10% 0.005 240)',
+    link: 'oklch(100% 0 0 / 0.06)',
+    label: 'oklch(60% 0.008 270)',
+    nodeStroke: 'oklch(9% 0.003 265)',
   },
 } as const
 
