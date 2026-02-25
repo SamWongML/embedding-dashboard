@@ -9,7 +9,6 @@ import {
   HelpCircle,
   Keyboard,
   LogOut,
-  Plus,
   Settings,
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -214,12 +213,6 @@ function AccountMenuContent({
           </span>
         </DropdownMenuItem>
       ))}
-      <DropdownMenuItem asChild>
-        <Link href="/settings?tab=workspace">
-          <Plus className="size-(--icon-sm)" />
-          Create workspace
-        </Link>
-      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>
         <Link href="/settings">

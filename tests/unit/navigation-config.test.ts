@@ -9,6 +9,8 @@ describe('navigation config', () => {
   it('has unique href values', () => {
     const hrefs = navigationItems.map((item) => item.href)
     expect(new Set(hrefs).size).toBe(hrefs.length)
+    expect(hrefs).toContain('/admin/workspace')
+    expect(hrefs).not.toContain('/settings')
   })
 
   it('groups all items by section without dropping entries', () => {

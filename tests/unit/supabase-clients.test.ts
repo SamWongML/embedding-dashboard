@@ -87,8 +87,8 @@ describe('supabase clients', () => {
     const request = { cookies: { get: vi.fn(() => ({ value: 'cookie' })) } }
     const response = { cookies: { set: vi.fn() } }
     const client = createSupabaseMiddlewareClient(
-      request as Parameters<typeof createSupabaseMiddlewareClient>[0],
-      response as Parameters<typeof createSupabaseMiddlewareClient>[1]
+      request as unknown as Parameters<typeof createSupabaseMiddlewareClient>[0],
+      response as unknown as Parameters<typeof createSupabaseMiddlewareClient>[1]
     )
 
     expect(client).toEqual({ id: 'middleware' })

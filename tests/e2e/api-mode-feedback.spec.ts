@@ -54,5 +54,17 @@ test.describe('API Mode Feedback', () => {
       page.getByText('Sign out all devices is not wired to backend APIs yet.')
     ).toBeVisible()
   })
-})
 
+  test('shows warning for non-wired workspace admin actions', async ({ page }) => {
+    await page.goto('/admin/workspace')
+
+    await page.getByRole('button', { name: 'New workspace' }).click()
+    await page.getByLabel('Name').fill('Platform')
+    await page.getByLabel('Slug').fill('platform')
+    await page.getByRole('button', { name: 'Create workspace' }).click()
+
+    await expect(
+      page.getByText('Create workspace is not wired to backend APIs yet.')
+    ).toBeVisible()
+  })
+})

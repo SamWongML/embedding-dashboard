@@ -26,6 +26,12 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+To preview protected admin pages locally with demo data:
+
+```bash
+NEXT_PUBLIC_DATA_MODE=demo pnpm dev
+```
+
 ## API Mode with Local Simulation
 
 Run strict API mode (no mocks):
@@ -72,6 +78,10 @@ pnpm test:e2e
 - `NEXT_PUBLIC_DATA_MODE` (`api` default, or `demo` for explicit mock dataset mode)
 - `NEXT_PUBLIC_DEV_API_SCENARIO` (`off`, `success`, `error`, or `slow`; only used in development)
 - `NEXT_PUBLIC_SUPABASE_URL` (used for Supabase client and image remote host allow-list)
+- `ADMIN_AUTHZ_LOCAL_BYPASS` (`true` or `false`; optional local override for protected admin pages, ignored in production)
+- `ADMIN_AUTHZ_LOCAL_BYPASS_FORCE` (`true` or `false`; hard override for protected admin pages in non-production)
+
+In development, protected admin pages (for example `/admin/workspace`) allow local access by default when `NEXT_PUBLIC_DATA_MODE=demo`. In production, bypass is always disabled.
 
 ## Local Supabase (Optional)
 

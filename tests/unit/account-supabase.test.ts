@@ -103,8 +103,8 @@ describe('supabase account helpers', () => {
     })
 
     const snapshot = await getAccountSnapshotSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
 
     expect(snapshot.user.id).toBe('user-1')
@@ -144,8 +144,8 @@ describe('supabase account helpers', () => {
     })
 
     const snapshot = await getAccountSnapshotSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
 
     expect(snapshot.workspaces[0].id).toBe('ws-2')
@@ -185,8 +185,8 @@ describe('supabase account helpers', () => {
     })
 
     const snapshot = await getAccountSnapshotSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
     expect(snapshot.user.authUserId).toBe('auth-user-1')
   })
@@ -224,8 +224,8 @@ describe('supabase account helpers', () => {
     })
 
     const snapshot = await getAccountSnapshotSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
     expect(snapshot.user.id).toBe('user-8')
   })
@@ -251,8 +251,8 @@ describe('supabase account helpers', () => {
 
     await expect(
       setActiveWorkspaceSupabase(
-        supabase as SnapshotSupabaseClient,
-        authUser as SnapshotAuthUser,
+        supabase as unknown as SnapshotSupabaseClient,
+        authUser as unknown as SnapshotAuthUser,
         'ws-1'
       )
     ).resolves.toBeUndefined()
@@ -277,8 +277,8 @@ describe('supabase account helpers', () => {
 
     await expect(
       setActiveWorkspaceSupabase(
-        supabase as SnapshotSupabaseClient,
-        authUser as SnapshotAuthUser,
+        supabase as unknown as SnapshotSupabaseClient,
+        authUser as unknown as SnapshotAuthUser,
         'ws-missing'
       )
     ).rejects.toThrow('Forbidden')
@@ -309,8 +309,8 @@ describe('supabase account helpers', () => {
     })
 
     const result = await getPreferencesSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
     expect(result?.theme).toBe('dark')
   })
@@ -342,8 +342,8 @@ describe('supabase account helpers', () => {
     })
 
     const result = await upsertPreferencesSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser,
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser,
       {
         theme: 'light',
         active_workspace_id: 'ws-1',
@@ -395,8 +395,8 @@ describe('supabase account helpers', () => {
     })
 
     const snapshot = await getAccountSnapshotSupabase(
-      supabase as SnapshotSupabaseClient,
-      authUser as SnapshotAuthUser
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser
     )
 
     expect(snapshot.workspaces).toHaveLength(1)

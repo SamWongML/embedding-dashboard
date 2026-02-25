@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 const setActiveWorkspace = vi.fn()
@@ -75,5 +75,16 @@ describe('AccountMenu responsive trigger behavior', () => {
     expect(collapsedTriggerClassName).toContain('size-(--account-trigger-hit-size-collapsed)')
     expect(collapsedTriggerClassName).toContain('rounded-(--button-radius-circle)')
     expect(collapsedTriggerClassName).not.toContain('w-full')
+  })
+
+  it('does not render create workspace action in account popup', async () => {
+    render(<AccountMenu collapsed={false} viewportMode="extended" />)
+
+    await screen.findByText('Avery Chen')
+    const trigger = screen.getByRole('button', { name: /Open account menu/i })
+    fireEvent.pointerDown(trigger)
+    fireEvent.click(trigger)
+
+    expect(screen.queryByRole('menuitem', { name: 'Create workspace' })).not.toBeInTheDocument()
   })
 })

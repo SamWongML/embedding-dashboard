@@ -7,14 +7,12 @@ import AccountTab from './tabs/account-tab'
 import NotificationsTab from './tabs/notifications-tab'
 import PreferencesTab from './tabs/preferences-tab'
 import SecurityTab from './tabs/security-tab'
-import WorkspaceTab from './tabs/workspace-tab'
 
 const tabs = [
   { value: 'account', label: 'Account' },
   { value: 'preferences', label: 'Preferences' },
   { value: 'notifications', label: 'Notifications' },
   { value: 'security', label: 'Security & Access' },
-  { value: 'workspace', label: 'Workspace' },
 ] as const
 
 type SettingsTabValue = (typeof tabs)[number]['value']
@@ -36,10 +34,6 @@ const tabDomIds: Record<SettingsTabValue, { trigger: string; content: string }> 
     trigger: 'settings-tab-trigger-security',
     content: 'settings-tab-content-security',
   },
-  workspace: {
-    trigger: 'settings-tab-trigger-workspace',
-    content: 'settings-tab-content-workspace',
-  },
 }
 
 function isSettingsTabValue(value: string): value is SettingsTabValue {
@@ -58,8 +52,7 @@ function renderSettingsTabContent(value: SettingsTabValue) {
   if (value === 'account') return <AccountTab />
   if (value === 'preferences') return <PreferencesTab />
   if (value === 'notifications') return <NotificationsTab />
-  if (value === 'security') return <SecurityTab />
-  return <WorkspaceTab />
+  return <SecurityTab />
 }
 
 export default function SettingsClient() {
@@ -136,13 +129,6 @@ export default function SettingsClient() {
           aria-labelledby={tabDomIds.security.trigger}
         >
           {renderSettingsTabContent('security')}
-        </TabsContent>
-        <TabsContent
-          value="workspace"
-          id={tabDomIds.workspace.content}
-          aria-labelledby={tabDomIds.workspace.trigger}
-        >
-          {renderSettingsTabContent('workspace')}
         </TabsContent>
       </div>
     </Tabs>

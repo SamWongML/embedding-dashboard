@@ -6,12 +6,12 @@ test.describe('Dashboard Navigation', () => {
   })
 
   test('shows server status page by default', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Server Status' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Metrics & Traces' })).toBeVisible()
   })
 
   test('navigates to metrics page', async ({ page }) => {
-    await page.getByRole('link', { name: 'Metrics' }).click()
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await page.getByRole('link', { name: 'Usage Analytics' }).click()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
   })
 
   test('navigates to text embedding page', async ({ page }) => {
@@ -38,6 +38,19 @@ test.describe('Dashboard Navigation', () => {
     await page.getByRole('link', { name: 'Users' }).click()
     await expect(page.getByRole('heading', { name: 'User Management' })).toBeVisible()
   })
+
+  test('navigates to workspace admin page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Workspace' }).click()
+    await expect(page.getByRole('heading', { name: 'Workspace Administration' })).toBeVisible()
+  })
+
+  test('redirects deprecated settings workspace tab to workspace admin page', async ({
+    page,
+  }) => {
+    await page.goto('/settings?tab=workspace')
+    await expect(page).toHaveURL('/admin/workspace')
+    await expect(page.getByRole('heading', { name: 'Workspace Administration' })).toBeVisible()
+  })
 })
 
 test.describe('Command Menu', () => {
@@ -50,9 +63,9 @@ test.describe('Command Menu', () => {
   test('navigates via command menu', async ({ page }) => {
     await page.goto('/')
     await page.keyboard.press('Meta+k')
-    await page.getByPlaceholder('Type a command or search...').fill('metrics')
+    await page.getByPlaceholder('Type a command or search...').fill('usage')
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
   })
 })
 
@@ -101,8 +114,8 @@ test.describe('Sidebar mobile behavior', () => {
     const sidebarDialog = page.getByRole('dialog', { name: 'Sidebar' })
     await expect(sidebarDialog).toBeVisible()
 
-    await page.getByRole('link', { name: 'Metrics' }).click()
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await page.getByRole('link', { name: 'Usage Analytics' }).click()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
     await expect(sidebarDialog).toBeHidden()
   })
 })

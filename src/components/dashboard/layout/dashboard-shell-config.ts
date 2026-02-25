@@ -34,6 +34,9 @@ const DASHBOARD_SHELL_ROUTE_CONFIG: Record<string, DashboardShellRouteConfig> =
 		"/users": {
 			title: "User Management",
 		},
+		"/admin/workspace": {
+			title: "Workspace Administration",
+		},
 		"/settings": {
 			title: "Settings",
 			className: "settings-typography",

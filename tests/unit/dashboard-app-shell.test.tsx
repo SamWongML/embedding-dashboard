@@ -54,6 +54,15 @@ describe("DashboardAppShell", () => {
     expect(shellRoot).toHaveClass("settings-typography")
   })
 
+  it("renders workspace administration title for admin workspace route", () => {
+    pathname = "/admin/workspace"
+    renderDashboardAppShell(<div>Workspace content</div>)
+
+    expect(
+      screen.getByRole("heading", { name: "Workspace Administration" })
+    ).toBeInTheDocument()
+  })
+
   it("uses a fallback shell title for unknown routes", () => {
     pathname = "/unknown-path"
     renderDashboardAppShell(<div>Unknown route content</div>)
@@ -63,4 +72,3 @@ describe("DashboardAppShell", () => {
     ).toBeInTheDocument()
   })
 })
-

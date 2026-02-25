@@ -2,12 +2,12 @@ import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
 	BarChart3,
+	Building2,
 	Database,
 	FileText,
 	GitBranch,
 	Image,
 	Search,
-	Settings,
 	Users,
 } from "lucide-react";
 
@@ -15,8 +15,7 @@ export type NavigationSection =
 	| "Monitoring"
 	| "Services"
 	| "Data"
-	| "Admin"
-	| "Workspace";
+	| "Admin";
 
 export interface NavigationItem {
 	href: string;
@@ -77,18 +76,18 @@ export const navigationItems: readonly NavigationItem[] = [
 		icon: GitBranch,
 	},
 	{
+		href: "/admin/workspace",
+		label: "Workspace",
+		section: "Admin",
+		keywords: ["workspace", "knowledge base", "access control", "admin"],
+		icon: Building2,
+	},
+	{
 		href: "/users",
 		label: "Users",
 		section: "Admin",
 		keywords: ["admin", "permissions", "access"],
 		icon: Users,
-	},
-	{
-		href: "/settings",
-		label: "Settings",
-		section: "Workspace",
-		keywords: ["preferences", "theme", "security", "workspace"],
-		icon: Settings,
 	},
 ];
 

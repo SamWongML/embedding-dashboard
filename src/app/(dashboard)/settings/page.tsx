@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import SettingsClient from './settings-client'
 
 function SettingsClientFallback() {
@@ -9,7 +10,17 @@ function SettingsClientFallback() {
   )
 }
 
-export default function SettingsPage() {
+interface SettingsPageProps {
+  searchParams?: Promise<{ tab?: string }>
+}
+
+export default async function SettingsPage({ searchParams }: SettingsPageProps) {
+  const params = (await searchParams) ?? {}
+
+  if (params.tab === 'workspace') {
+    redirect('/admin/workspace')
+  }
+
   return (
     <Suspense fallback={<SettingsClientFallback />}>
       <SettingsClient />
