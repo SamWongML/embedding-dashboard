@@ -543,19 +543,34 @@ function buildHourlyTrends(baseDate: Date, seed: number): EmbeddingTrend[] {
 function buildSearchAnalytics(baseDate: Date, seed: number): SearchAnalytics[] {
   const random = createSeededRandom(seed + 58)
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-  return Array.from({ length: 168 }, (_, index) => {
+  const analytics = Array.from({ length: 168 }, (_, index) => {
     const currentDate = new Date(baseDate.getTime() - (167 - index) * HOUR_MS)
     const hour = currentDate.getUTCHours()
+    const dayIndex = currentDate.getUTCDay()
     const day = dayLabels[currentDate.getUTCDay()] ?? 'Sun'
-    const rushHour = hour >= 14 && hour <= 19 ? 1.22 : 0.88
+    const isWeekend = dayIndex === 0 || dayIndex === 6
+    const baseRequestsPerHour = isWeekend ? 960 : 1180
+    const timeOfDayBoost = hour >= 13 && hour <= 20
+      ? 320
+      : hour >= 7 && hour <= 12 || hour >= 21 && hour <= 23
+        ? 140
+        : -180
+    const jitter = Math.floor(random() * 241) - 120
+    const count = Math.max(620, baseRequestsPerHour + timeOfDayBoost + jitter)
 
     return {
       hour,
       day,
-      count: Math.floor((120 + random() * 360) * rushHour),
+      count,
     }
   })
+
+  const latestPoint = analytics.at(-1)
+  if (latestPoint) {
+    latestPoint.count = 1000
+  }
+
+  return analytics
 }
 
 function buildMetricCards(
@@ -636,30 +651,119 @@ function buildServiceUsage(): ServiceUsage[] {
   ]
 }
 
-function buildErrorLogs(baseDate: Date): ErrorLog[] {
-  return [
-    {
-      id: 'error-1',
-      timestamp: toIsoWithOffset(baseDate, -13 * MINUTE_MS),
-      level: 'warning',
-      message: 'Spike in retrieval latency for /api/search (p95 exceeded 95ms).',
-      source: 'search-gateway',
-    },
-    {
-      id: 'error-2',
-      timestamp: toIsoWithOffset(baseDate, -52 * MINUTE_MS),
-      level: 'error',
-      message: 'Embedding worker restarted after temporary model timeout.',
-      source: 'embedding-worker',
-    },
-    {
-      id: 'error-3',
-      timestamp: toIsoWithOffset(baseDate, -95 * MINUTE_MS),
-      level: 'info',
-      message: 'Rate limiter adjusted for product workspace import job.',
-      source: 'rate-limiter',
-    },
-  ]
+function startOfUtcHour(date: Date) {
+  return new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    0,
+    0,
+    0
+  ))
+}
+
+function buildErrorLogs(
+  baseDate: Date,
+  searchAnalytics: SearchAnalytics[],
+  seed: number
+): ErrorLog[] {
+  const random = createSeededRandom(seed + 91)
+  const targetHourlyErrorRates = [
+    1.6,
+    0.5,
+    1.4,
+    0.7,
+    1.8,
+    0.6,
+    1.2,
+    0.9,
+    1.5,
+    0.4,
+    1.3,
+    0.8,
+    1.7,
+    0.6,
+    1.1,
+    0.9,
+    1.4,
+    0.5,
+    1.2,
+    0.8,
+    1.6,
+    0.7,
+    1.0,
+    0.1,
+  ] as const
+  const messageByLevel = {
+    error: [
+      'Embedding worker retried after model timeout.',
+      'Search gateway returned upstream 503 and recovered.',
+      'Vector index query failed and fell back to cached result.',
+      'Cache write failed for hot-key embedding payload.',
+    ],
+    warning: [
+      'Latency threshold exceeded for /api/search.',
+      'Background reindex queue depth exceeded warning threshold.',
+      'Rate limiter burst protection activated for workspace import jobs.',
+      'Partial response served while shard warmed up.',
+    ],
+    info: [
+      'Automatic recovery completed for transient service pressure.',
+      'Worker pool autoscaled to stabilize request latency.',
+      'Retry budget adjusted after elevated traffic.',
+      'Circuit breaker reopened after healthy downstream checks.',
+    ],
+  } satisfies Record<ErrorLog['level'], string[]>
+  const sourceByLevel = {
+    error: ['embedding-worker', 'search-gateway', 'vector-index', 'cache-service'],
+    warning: ['search-gateway', 'queue-monitor', 'rate-limiter', 'scheduler'],
+    info: ['autoscaler', 'orchestrator', 'rate-limiter', 'health-monitor'],
+  } satisfies Record<ErrorLog['level'], string[]>
+
+  const recentAnalytics = searchAnalytics.slice(-24)
+  const anchorHourStart = startOfUtcHour(baseDate)
+  const errors: ErrorLog[] = []
+
+  recentAnalytics.forEach((analyticsPoint, index) => {
+    const targetRate = targetHourlyErrorRates[index] ?? 1
+    const errorCount = Math.max(0, Math.round((analyticsPoint.count * targetRate) / 100))
+    const hourOffset = recentAnalytics.length - 1 - index
+    const hourStart = new Date(anchorHourStart.getTime() - hourOffset * HOUR_MS)
+
+    for (let eventIndex = 0; eventIndex < errorCount; eventIndex += 1) {
+      const levelRoll = random()
+      const level: ErrorLog['level'] = levelRoll < 0.62
+        ? 'error'
+        : levelRoll < 0.88
+          ? 'warning'
+          : 'info'
+      const messages = messageByLevel[level]
+      const sources = sourceByLevel[level]
+      const minuteOffset = hourOffset === 0
+        ? 0
+        : Math.floor(((eventIndex + 1) * 60) / (errorCount + 1))
+      const secondOffset = hourOffset === 0
+        ? eventIndex
+        : Math.floor(random() * 60)
+      const timestamp = new Date(
+        hourStart.getTime() + minuteOffset * MINUTE_MS + secondOffset * 1000
+      )
+
+      errors.push({
+        id: `error-${String(errors.length + 1).padStart(4, '0')}`,
+        timestamp: timestamp.toISOString(),
+        level,
+        message: messages[Math.floor(random() * messages.length)] ?? messages[0] ?? 'System event logged.',
+        source: sources[Math.floor(random() * sources.length)] ?? sources[0] ?? 'system',
+      })
+    }
+  })
+
+  return errors.sort(
+    (left, right) =>
+      new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime()
+  )
 }
 
 function buildGraphData(records: EmbeddingRecord[], groups: UserGroup[]): GraphData {
@@ -876,7 +980,7 @@ export function createDemoDataset(
     timestamp: context.now,
   }
   const serviceUsage = buildServiceUsage()
-  const errorLogs = buildErrorLogs(baseDate)
+  const errorLogs = buildErrorLogs(baseDate, searchAnalytics, seed)
   const graphData = buildGraphData(records, userGroups)
   const textEmbeddingModels = buildEmbeddingModels()
   const imageEmbeddingModels = buildImageEmbeddingModels()
