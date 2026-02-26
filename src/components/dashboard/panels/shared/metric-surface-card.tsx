@@ -47,8 +47,13 @@ export function MetricSurfaceCard({
   metaClassName,
 }: MetricSurfaceCardProps) {
   return (
-    <Card className={cn('h-full min-h-[var(--metric-card-min-height)]', className)}>
-      <CardHeader className="flex flex-row items-start justify-between pb-2">
+    <Card
+      className={cn(
+        'h-full min-h-[var(--metric-card-min-height)] [--card-padding:var(--metric-card-padding)]',
+        className
+      )}
+    >
+      <CardHeader className="flex flex-row items-start justify-between pb-(--metric-card-header-padding-bottom)">
         <CardTitle
           className={cn(
             '[font-size:var(--metric-card-title-size)] typography-weight-medium text-muted-foreground',
@@ -69,8 +74,8 @@ export function MetricSurfaceCard({
           contentClassName
         )}
       >
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <div className="flex min-w-0 items-baseline gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-(--space-xs)">
+          <div className="flex min-w-0 items-baseline gap-(--space-sm)">
             {valueDisplay ?? (
               <AnimatedMetricValue
                 value={value ?? ''}

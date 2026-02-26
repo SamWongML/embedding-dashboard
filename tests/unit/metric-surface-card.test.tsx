@@ -40,6 +40,10 @@ describe('MetricSurfaceCard', () => {
     expect(card).not.toBeNull()
     expect(card).toHaveClass('h-full')
     expect(card?.className).toContain('min-h-[var(--metric-card-min-height)]')
+    expect(card?.className).toContain('[--card-padding:var(--metric-card-padding)]')
+
+    const header = screen.getByText('Total Requests').closest('[data-slot="card-header"]')
+    expect(header?.className).toContain('pb-(--metric-card-header-padding-bottom)')
 
     expect(screen.getByTestId('animated-metric-value')).toBeInTheDocument()
     expect(screen.getByTestId('metric-icon')).toBeInTheDocument()

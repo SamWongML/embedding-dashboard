@@ -54,7 +54,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-(--metric-card-section-gap)', className)}>
       {/* Period Selector */}
       <div className="flex justify-end">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
@@ -67,15 +67,18 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid auto-rows-fr gap-(--metric-card-grid-gap) [grid-template-columns:repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))]">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="h-full min-h-[var(--metric-card-min-height)]">
-              <CardHeader className="pb-2">
+            <Card
+              key={i}
+              className="h-full min-h-[var(--metric-card-min-height)] [--card-padding:var(--metric-card-padding)]"
+            >
+              <CardHeader className="pb-(--metric-card-header-padding-bottom)">
                 <div className="h-4 w-24 bg-muted rounded animate-pulse" />
               </CardHeader>
-              <CardContent>
-                <div className="h-8 w-16 bg-muted rounded animate-pulse mb-2" />
+              <CardContent className="space-y-(--space-sm)">
+                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
                 <div className="h-4 w-12 bg-muted rounded animate-pulse" />
               </CardContent>
             </Card>

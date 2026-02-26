@@ -19,14 +19,24 @@ describe('metric panel unification', () => {
     expect(overviewCardSource).toContain('MetricSurfaceCard')
   })
 
-  it('uses auto-rows-fr in metric overview grids for consistent card heights', () => {
+  it('uses tokenized adaptive metric grid contracts in overview sections', () => {
     const metricsPanelSource = load('src/components/dashboard/panels/metrics/metrics-panel.tsx')
     const serverPanelSource = load('src/components/dashboard/panels/server-status/server-status-panel.tsx')
     const workspacePanelSource = load('src/components/dashboard/panels/workspace/workspace-panel.tsx')
 
-    expect(metricsPanelSource).toContain('grid auto-rows-fr')
-    expect(serverPanelSource).toContain('grid auto-rows-fr')
-    expect(workspacePanelSource).toContain('grid auto-rows-fr')
+    const sources = [metricsPanelSource, serverPanelSource, workspacePanelSource]
+    const gridContract = [
+      'grid auto-rows-fr',
+      'gap-(--metric-card-grid-gap)',
+      'repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))',
+    ]
+
+    sources.forEach((source) => {
+      gridContract.forEach((contractSnippet) => {
+        expect(source).toContain(contractSnippet)
+      })
+      expect(source).toContain('space-y-(--metric-card-section-gap)')
+    })
   })
 
   it('wires the agreed animation policy by panel', () => {
@@ -39,4 +49,3 @@ describe('metric panel unification', () => {
     expect(workspacePanelSource).toContain('animationMode="on-mount"')
   })
 })
-

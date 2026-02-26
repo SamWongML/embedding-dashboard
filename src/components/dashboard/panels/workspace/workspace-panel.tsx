@@ -200,7 +200,7 @@ export function WorkspacePanel() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-(--metric-card-section-gap)">
       {actionWarning ? (
         <div aria-live="polite">
           <ActionWarningState
@@ -224,7 +224,7 @@ export function WorkspacePanel() {
         </div>
       ) : null}
 
-      <div className="grid auto-rows-fr gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid auto-rows-fr gap-(--metric-card-grid-gap) [grid-template-columns:repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))]">
         <OverviewMetricCard
           title="Active Workspaces"
           value={data.overview.activeWorkspaces}

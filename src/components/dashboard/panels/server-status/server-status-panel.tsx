@@ -71,9 +71,9 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-(--metric-card-section-gap)', className)}>
       {/* Status Overview */}
-      <div className="grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid auto-rows-fr gap-(--metric-card-grid-gap) [grid-template-columns:repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))]">
         <MetricSurfaceCard
           title="System Status"
           icon={<Activity />}
