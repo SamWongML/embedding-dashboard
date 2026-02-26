@@ -68,7 +68,7 @@ describe("DashboardAppShell", () => {
     renderDashboardAppShell(<div>Unknown route content</div>)
 
     expect(
-      screen.getByRole("heading", { name: "Dashboard" })
+      screen.getByRole("heading", { name: "Knowledge Base Studio" })
     ).toBeInTheDocument()
   })
 })

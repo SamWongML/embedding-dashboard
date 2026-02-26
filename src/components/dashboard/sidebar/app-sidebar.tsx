@@ -39,8 +39,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <Layers className="size-4" />
       </div>
       <div className="grid flex-1 text-left typography-size-sm leading-tight">
-        <span className="truncate typography-weight-semibold">Embeddings</span>
-        <span className="truncate typography-size-xs">Dashboard</span>
+        <span className="truncate typography-weight-semibold">Knowledge Base</span>
+        <span className="truncate typography-size-xs">Studio</span>
       </div>
     </>
   )
@@ -58,7 +58,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   )
 
   const renderBrandAsHomeLink = () => (
-    <SidebarMenuButton asChild size="lg" tooltip="Embedding Dashboard">
+    <SidebarMenuButton asChild size="lg" tooltip="Knowledge Base Studio">
       <Link href="/" onClick={closeMobileSidebarOnNavigate}>
         {brandContent}
       </Link>

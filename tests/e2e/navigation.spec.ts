@@ -101,7 +101,7 @@ test.describe('Sidebar mobile behavior', () => {
     const sidebarDialog = page.getByRole('dialog', { name: 'Sidebar' })
     await expect(sidebarDialog).toBeVisible()
 
-    await page.getByRole('link', { name: 'Embeddings Dashboard' }).click()
+    await page.getByRole('link', { name: 'Knowledge Base Studio' }).click()
     await expect(page).toHaveURL('/')
     // Dev note: ignore bottom-right Next.js dev badge overlap in localhost.
     await expect(sidebarDialog).toBeHidden()

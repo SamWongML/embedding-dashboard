@@ -23,7 +23,7 @@ describe("resolveDashboardShellRouteConfig", () => {
 
   it("returns the default config for unknown routes", () => {
     expect(resolveDashboardShellRouteConfig("/unknown/path").title).toBe(
-      "Dashboard"
+      "Knowledge Base Studio"
     )
   })
 })

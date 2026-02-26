@@ -1,6 +1,6 @@
-# Embedding Dashboard
+# Knowledge Base Studio
 
-Next.js App Router dashboard for monitoring embedding services, search, records, graph, and user/workspace administration.
+Next.js App Router studio for monitoring embedding services, search, records, graph, and user/workspace administration.
 
 ## Stack
 

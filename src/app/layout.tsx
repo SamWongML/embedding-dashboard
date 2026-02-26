@@ -7,11 +7,19 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Embedding Dashboard',
-    template: '%s | Embedding Dashboard',
+    default: 'Knowledge Base Studio',
+    template: '%s | Knowledge Base Studio',
   },
-  description: 'Centralized embedding system dashboard with server monitoring, metrics, and search capabilities',
-  keywords: ['embeddings', 'dashboard', 'monitoring', 'search', 'analytics'],
+  description:
+    'Knowledge Base Studio for managing embeddings, monitoring system health, and exploring search and analytics workflows',
+  keywords: [
+    'knowledge base',
+    'studio',
+    'embeddings',
+    'monitoring',
+    'search',
+    'analytics',
+  ],
 }
 
 export const viewport: Viewport = {

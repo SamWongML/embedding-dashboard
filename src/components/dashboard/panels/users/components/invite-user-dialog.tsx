@@ -76,7 +76,7 @@ export function InviteUserDialog({
         <DialogHeader>
           <DialogTitle>Invite User</DialogTitle>
           <DialogDescription>
-            Send an invitation to add a new user to the dashboard.
+            Send an invitation to add a new user to Knowledge Base Studio.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

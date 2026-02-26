@@ -5,7 +5,7 @@ export interface DashboardShellRouteConfig {
 }
 
 const DEFAULT_DASHBOARD_SHELL_ROUTE_CONFIG: DashboardShellRouteConfig = {
-	title: "Dashboard",
+	title: "Knowledge Base Studio",
 };
 
 const DASHBOARD_SHELL_ROUTE_CONFIG: Record<string, DashboardShellRouteConfig> =

@@ -70,7 +70,7 @@ export default function PreferencesTab() {
         <CardHeader>
           <CardTitle>Theme</CardTitle>
           <CardDescription>
-            Choose your preferred appearance across the dashboard.
+            Choose your preferred appearance across Knowledge Base Studio.
           </CardDescription>
         </CardHeader>
         <CardContent>
