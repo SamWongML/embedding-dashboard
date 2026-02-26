@@ -1,8 +1,14 @@
 'use client'
 
+import { useMemo } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from '@/lib/utils'
 import { ChartTooltipContent } from './chart-tooltip-content'
+import {
+  buildDurationAxisFormatter,
+  buildTimeTickFormatter,
+  formatBackendTimeToHourMinute,
+} from './axis-formatters'
 import {
   chartAnimationDurationMs,
   chartAnimationEasing,
@@ -21,13 +27,36 @@ interface LatencyChartProps {
 }
 
 export function LatencyChart({ data, className }: LatencyChartProps) {
-  const chartData = data.map((point) => ({
-    time: new Date(point.timestamp).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    latency: point.value,
-  }))
+  const chartData = useMemo(
+    () =>
+      data
+        .map((point) => ({
+          rawTimestamp: point.timestamp,
+          timestamp: Date.parse(point.timestamp),
+          latency: point.value,
+        }))
+        .filter((point) => Number.isFinite(point.timestamp)),
+    [data]
+  )
+  const [minTimestamp, maxTimestamp] = useMemo(() => {
+    if (!chartData.length) return [Number.NaN, Number.NaN] as const
+
+    const timestamps = chartData.map((point) => point.timestamp)
+    return [Math.min(...timestamps), Math.max(...timestamps)] as const
+  }, [chartData])
+  const xTickFormatter = useMemo(
+    () =>
+      buildTimeTickFormatter({
+        minTs: minTimestamp,
+        maxTs: maxTimestamp,
+        locale: 'en-US',
+      }),
+    [maxTimestamp, minTimestamp]
+  )
+  const durationFormatter = useMemo(
+    () => buildDurationAxisFormatter(chartData.map((point) => point.latency), 'en-US'),
+    [chartData]
+  )
 
   return (
     <div className={cn('w-full h-[200px]', className)}>
@@ -39,29 +68,38 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
-            dataKey="time"
+            dataKey="timestamp"
+            type="number"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
+            tickCount={6}
             {...chartAxisDefaults}
-            interval="preserveStartEnd"
+            tickFormatter={(value) => xTickFormatter(Number(value))}
           />
           <YAxis
             {...chartAxisDefaults}
-            tickFormatter={(value) => `${value}ms`}
-            width={45}
+            tickFormatter={(value) => durationFormatter.formatTick(Number(value))}
+            width="auto"
           />
           <Tooltip
             cursor={chartTooltipCursor}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
-                const datum = payload[0]?.payload as { time: string } | undefined
+                const datum = payload[0]?.payload as { rawTimestamp?: string } | undefined
                 if (!datum) return null
 
                 return (
                   <ChartTooltipContent
-                    label={datum.time}
+                    label={datum.rawTimestamp
+                      ? formatBackendTimeToHourMinute(datum.rawTimestamp, {
+                        locale: 'en-US',
+                        timeZone: 'UTC',
+                      })
+                      : undefined}
                     rows={[
                       {
                         label: 'Latency',
-                        value: `${payload[0].value}ms`,
+                        value: durationFormatter.formatTooltip(Number(payload[0].value)),
                       },
                     ]}
                   />

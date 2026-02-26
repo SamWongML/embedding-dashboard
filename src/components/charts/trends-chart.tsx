@@ -15,10 +15,7 @@ import { cn } from '@/lib/utils'
 import type { EmbeddingTrend } from '@/lib/schemas/metrics'
 import { useTheme } from '@/components/providers/theme-provider'
 import { ChartTooltipContent } from './chart-tooltip-content'
-import {
-  formatTrendDateLabel,
-  normalizeEmbeddingTrends,
-} from './trends-chart-utils'
+import { normalizeEmbeddingTrends } from './trends-chart-utils'
 import {
   chartAnimationDurationMs,
   chartAnimationEasing,
@@ -32,6 +29,11 @@ import {
   getChartColor,
   type ChartTone,
 } from './chart-theme'
+import {
+  buildCountAxisFormatter,
+  buildTimeTickFormatter,
+  formatBackendTimeToHourMinute,
+} from './axis-formatters'
 
 interface TrendsChartProps {
   data: EmbeddingTrend[]
@@ -57,8 +59,35 @@ const trendSeriesConfig = [
   },
 ] as const
 
-export function TrendsChart({ data, className, period }: TrendsChartProps) {
-  const chartData = useMemo(() => normalizeEmbeddingTrends(data), [data])
+export function TrendsChart({ data, className }: TrendsChartProps) {
+  const normalizedChartData = useMemo(() => normalizeEmbeddingTrends(data), [data])
+  const chartData = useMemo(
+    () => normalizedChartData.filter((point) => Number.isFinite(point.timestamp)),
+    [normalizedChartData]
+  )
+  const [minTimestamp, maxTimestamp] = useMemo(() => {
+    if (!chartData.length) return [Number.NaN, Number.NaN] as const
+
+    const timestamps = chartData.map((point) => point.timestamp)
+    return [Math.min(...timestamps), Math.max(...timestamps)] as const
+  }, [chartData])
+  const xTickFormatter = useMemo(
+    () =>
+      buildTimeTickFormatter({
+        minTs: minTimestamp,
+        maxTs: maxTimestamp,
+        locale: 'en-US',
+        timeZone: 'UTC',
+      }),
+    [maxTimestamp, minTimestamp]
+  )
+  const countFormatter = useMemo(() => {
+    const allSeriesValues = chartData.flatMap((point) =>
+      trendSeriesConfig.map((series) => point[series.dataKey])
+    )
+
+    return buildCountAxisFormatter(allSeriesValues, 'en-US')
+  }, [chartData])
   const { resolvedTheme } = useTheme()
 
   // Get resolved colors for SVG rendering
@@ -79,23 +108,27 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
-            dataKey="date"
+            dataKey="timestamp"
+            type="number"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
+            tickCount={6}
             {...chartAxisDefaults}
-            interval={period === '24h' ? 2 : 'preserveStartEnd'}
-            tickFormatter={(value) => formatTrendDateLabel(String(value), 'en-US', period)}
+            tickFormatter={(value) => xTickFormatter(Number(value))}
           />
           <YAxis
             {...chartAxisDefaults}
-            tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-            width={40}
+            tickFormatter={(value) => countFormatter.formatTick(Number(value))}
+            width="auto"
           />
           <Tooltip
             cursor={chartTooltipCursor}
-            content={({ active, payload, label }) => {
+            content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 const payloadByDataKey = new Map(
                   payload.map((entry) => [String(entry.dataKey), entry])
                 )
+                const datum = payload[0]?.payload as { date?: string } | undefined
 
                 const rows = trendSeries.flatMap((series) => {
                   const entry = payloadByDataKey.get(series.dataKey)
@@ -118,7 +151,12 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
 
                 return (
                   <ChartTooltipContent
-                    label={label ? formatTrendDateLabel(String(label), 'en-US', period) : undefined}
+                    label={datum?.date
+                      ? formatBackendTimeToHourMinute(datum.date, {
+                        locale: 'en-US',
+                        timeZone: 'UTC',
+                      })
+                      : undefined}
                     rows={rows}
                   />
                 )

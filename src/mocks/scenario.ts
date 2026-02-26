@@ -42,6 +42,7 @@ import type {
 } from '@/lib/types/account'
 
 const MINUTE_MS = 60_000
+const HALF_HOUR_MS = 30 * MINUTE_MS
 const HOUR_MS = 60 * MINUTE_MS
 const DAY_MS = 24 * HOUR_MS
 
@@ -620,7 +621,7 @@ function buildMetricCards(
 function buildLatencyResponse(baseDate: Date, seed: number): LatencyResponse {
   const random = createSeededRandom(seed + 77)
   const history: LatencyDataPoint[] = Array.from({ length: 60 }, (_, index) => {
-    const timestamp = toIsoWithOffset(baseDate, -(59 - index) * MINUTE_MS)
+    const timestamp = toIsoWithOffset(baseDate, -(59 - index) * HALF_HOUR_MS)
     const spike = index % 17 === 0 ? 35 : 0
     const value = Math.floor(29 + random() * 36 + spike)
     return { timestamp, value }

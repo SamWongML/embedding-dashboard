@@ -72,4 +72,17 @@ describe('chart consistency', () => {
     expect(trendsSource).not.toContain('gradientId')
     expect(trendsSource).not.toContain('fill="url(#')
   })
+  it('uses dynamic axis formatters in primary line charts', () => {
+    const latencySource = loadChartFile('latency-chart.tsx')
+    const trendsSource = loadChartFile('trends-chart.tsx')
+
+    expect(trendsSource).toContain('buildCountAxisFormatter')
+    expect(trendsSource).toContain('buildTimeTickFormatter')
+    expect(trendsSource).not.toContain('value / 1000')
+
+    expect(latencySource).toContain('buildDurationAxisFormatter')
+    expect(latencySource).toContain('buildTimeTickFormatter')
+    expect(latencySource).not.toContain('`${value}ms`')
+    expect(latencySource).not.toContain('toLocaleTimeString')
+  })
 })
