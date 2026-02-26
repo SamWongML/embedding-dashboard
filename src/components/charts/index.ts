@@ -9,6 +9,7 @@ export {
   chartTooltipCursor,
   chartAnimationDurationMs,
   chartAnimationEasing,
+  chartLineType,
   chartToneToColorVar,
   colorByChartTone,
   graphNodeToneByType,

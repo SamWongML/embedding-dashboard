@@ -72,4 +72,22 @@ test.describe('Dark mode chart interactions', () => {
       )
     ).toHaveCount(0)
   })
+
+  test('primary line charts do not render area fill paths', async ({ page }) => {
+    await gotoWithDarkMode(page, '/')
+    await expect(page.getByRole('heading', { name: 'Server Status' })).toBeVisible()
+
+    const latencyRegion = await hoverChartSurfaceByHeading(page, 'Latency Over Time')
+    await expect(
+      latencyRegion.locator('.recharts-area, .recharts-area-area, .recharts-area-curve')
+    ).toHaveCount(0)
+
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+
+    const trendsRegion = await hoverChartSurfaceByHeading(page, 'Embedding Trends')
+    await expect(
+      trendsRegion.locator('.recharts-area, .recharts-area-area, .recharts-area-curve')
+    ).toHaveCount(0)
+  })
 })

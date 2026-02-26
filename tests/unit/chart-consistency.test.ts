@@ -49,8 +49,27 @@ describe('chart consistency', () => {
     const trendsSource = loadChartFile('trends-chart.tsx')
 
     expect(trendsSource).toContain('normalizeEmbeddingTrends')
-    expect(trendsSource).toContain('type="monotoneX"')
-    expect(trendsSource).toContain('isAnimationActive={shouldAnimate}')
+    expect(trendsSource).toContain('type={chartLineType}')
+    expect(trendsSource).toContain('isAnimationActive={true}')
     expect(trendsSource).toContain('activeDot={{')
+  })
+
+  it('renders primary time-series charts as line-only without area gradients', () => {
+    const latencySource = loadChartFile('latency-chart.tsx')
+    const trendsSource = loadChartFile('trends-chart.tsx')
+
+    expect(latencySource).toContain('<LineChart')
+    expect(latencySource).toContain('<Line')
+    expect(latencySource).not.toContain('<AreaChart')
+    expect(latencySource).not.toContain('<Area')
+    expect(latencySource).not.toContain('latencyGradient')
+    expect(latencySource).not.toContain('fill="url(#')
+
+    expect(trendsSource).toContain('<LineChart')
+    expect(trendsSource).toContain('<Line')
+    expect(trendsSource).not.toContain('<AreaChart')
+    expect(trendsSource).not.toContain('<Area')
+    expect(trendsSource).not.toContain('gradientId')
+    expect(trendsSource).not.toContain('fill="url(#')
   })
 })

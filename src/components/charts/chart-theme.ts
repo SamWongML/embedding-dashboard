@@ -90,6 +90,7 @@ export const chartBarFill = 'var(--chart-accent)'
 export const chartTooltipCursor = false
 
 export const chartStrokeWidth = { area: 1.5, line: 1.5, sparkline: 1.5 } as const
+export const chartLineType = 'monotoneX' as const
 export const chartFillOpacity = { area: 0.10 } as const
 export const chartDotConfig = { default: false, active: { r: 4, strokeWidth: 2 } } as const
 export const chartGridConfig = { strokeDasharray: '3 3', horizontal: true, vertical: false } as const

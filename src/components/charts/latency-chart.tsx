@@ -1,6 +1,6 @@
 'use client'
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from '@/lib/utils'
 import { ChartTooltipContent } from './chart-tooltip-content'
 import {
@@ -8,9 +8,9 @@ import {
   chartAnimationEasing,
   chartAxisDefaults,
   chartDotConfig,
-  chartFillOpacity,
   chartGridConfig,
   chartGridStroke,
+  chartLineType,
   chartStrokeWidth,
   chartTooltipCursor,
 } from './chart-theme'
@@ -32,17 +32,11 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
   return (
     <div className={cn('w-full h-[200px]', className)}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
+        <LineChart
           accessibilityLayer
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
-          <defs>
-            <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--chart-accent)" stopOpacity={chartFillOpacity.area} />
-              <stop offset="100%" stopColor="var(--chart-accent)" stopOpacity={0} />
-            </linearGradient>
-          </defs>
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             dataKey="time"
@@ -76,12 +70,12 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
               return null
             }}
           />
-          <Area
-            type="monotone"
+          <Line
+            type={chartLineType}
             dataKey="latency"
             stroke="var(--chart-accent)"
-            strokeWidth={chartStrokeWidth.area}
-            fill="url(#latencyGradient)"
+            strokeWidth={chartStrokeWidth.line}
+            isAnimationActive={true}
             animationDuration={chartAnimationDurationMs}
             animationEasing={chartAnimationEasing}
             dot={chartDotConfig.default}
@@ -92,7 +86,7 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
               strokeWidth: chartDotConfig.active.strokeWidth,
             }}
           />
-        </AreaChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   )

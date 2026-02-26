@@ -2,10 +2,10 @@
 
 import { useMemo } from 'react'
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -24,9 +24,9 @@ import {
   chartAnimationEasing,
   chartAxisDefaults,
   chartDotConfig,
-  chartFillOpacity,
   chartGridConfig,
   chartGridStroke,
+  chartLineType,
   chartStrokeWidth,
   chartTooltipCursor,
   getChartColor,
@@ -44,19 +44,16 @@ const trendSeriesConfig = [
     dataKey: 'Text Embeddings',
     label: 'Text Embeddings',
     tone: 'accent' as ChartTone,      // Blue (chart-1)
-    gradientId: 'trendTextGradient',
   },
   {
     dataKey: 'Image Embeddings',
     label: 'Image Embeddings',
     tone: 'teal' as ChartTone,        // Teal (chart-2)
-    gradientId: 'trendImageGradient',
   },
   {
     dataKey: 'Searches',
     label: 'Searches',
     tone: 'amber' as ChartTone,       // Amber (chart-3)
-    gradientId: 'trendSearchGradient',
   },
 ] as const
 
@@ -75,19 +72,11 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
   return (
     <div className={cn('w-full h-[300px]', className)}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
+        <LineChart
           accessibilityLayer
           data={chartData}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
         >
-          <defs>
-            {trendSeries.map((series) => (
-              <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={series.color} stopOpacity={chartFillOpacity.area} />
-                <stop offset="100%" stopColor={series.color} stopOpacity={0} />
-              </linearGradient>
-            ))}
-          </defs>
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
             dataKey="date"
@@ -147,14 +136,13 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
             )}
           />
           {trendSeries.map((series) => (
-            <Area
+            <Line
               key={series.dataKey}
-              type="monotoneX"
+              type={chartLineType}
               dataKey={series.dataKey}
               name={series.label}
               stroke={series.color}
-              strokeWidth={chartStrokeWidth.area}
-              fill={`url(#${series.gradientId})`}
+              strokeWidth={chartStrokeWidth.line}
               isAnimationActive={true}
               animationDuration={chartAnimationDurationMs}
               animationEasing={chartAnimationEasing}
@@ -167,7 +155,7 @@ export function TrendsChart({ data, className, period }: TrendsChartProps) {
               }}
             />
           ))}
-        </AreaChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   )
