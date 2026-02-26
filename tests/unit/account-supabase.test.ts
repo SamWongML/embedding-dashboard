@@ -14,22 +14,26 @@ function createSupabaseStub(queues: Record<string, Record<string, unknown[]>>) {
     const queue = queues[table]?.[op] ?? []
     return queue.shift()
   }
+  const writes: Array<{ table: string; op: 'insert' | 'update' | 'upsert'; payload: unknown }> = []
 
   const createBuilder = (table: string) => {
     let op = 'select'
 
     const builder = {
       select: () => builder,
-      insert: () => {
+      insert: (payload?: unknown) => {
         op = 'insert'
+        writes.push({ table, op: 'insert', payload })
         return builder
       },
-      update: () => {
+      update: (payload?: unknown) => {
         op = 'update'
+        writes.push({ table, op: 'update', payload })
         return builder
       },
-      upsert: () => {
+      upsert: (payload?: unknown) => {
         op = 'upsert'
+        writes.push({ table, op: 'upsert', payload })
         return builder
       },
       eq: () => builder,
@@ -55,6 +59,7 @@ function createSupabaseStub(queues: Record<string, Record<string, unknown[]>>) {
 
   return {
     from: (table: string) => createBuilder(table),
+    __writes: writes,
   }
 }
 
@@ -91,6 +96,7 @@ describe('supabase account helpers', () => {
     ]
     const preferences = {
       theme: 'system',
+      service_mode: 'simple',
       locale: null,
       timezone: null,
       active_workspace_id: 'ws-1',
@@ -140,7 +146,10 @@ describe('supabase account helpers', () => {
       users: { select: [userRow] },
       workspace_members: { select: [[]], insert: [member] },
       workspaces: { insert: [workspace] },
-      preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-2' }] },
+      preferences: {
+        select: [null],
+        insert: [{ theme: 'system', service_mode: 'simple', active_workspace_id: 'ws-2' }],
+      },
     })
 
     const snapshot = await getAccountSnapshotSupabase(
@@ -150,6 +159,12 @@ describe('supabase account helpers', () => {
 
     expect(snapshot.workspaces[0].id).toBe('ws-2')
     expect(snapshot.activeWorkspaceId).toBe('ws-2')
+    const preferenceInsertWrite = supabase.__writes.find(
+      (write) => write.table === 'preferences' && write.op === 'insert'
+    )
+    expect(preferenceInsertWrite?.payload).toMatchObject({
+      service_mode: 'simple',
+    })
   })
 
   it('updates user when found by email', async () => {
@@ -181,7 +196,10 @@ describe('supabase account helpers', () => {
     const supabase = createSupabaseStub({
       users: { select: [null, existingByEmail], update: [updated] },
       workspace_members: { select: [memberships] },
-      preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-3' }] },
+      preferences: {
+        select: [null],
+        insert: [{ theme: 'system', service_mode: 'simple', active_workspace_id: 'ws-3' }],
+      },
     })
 
     const snapshot = await getAccountSnapshotSupabase(
@@ -220,7 +238,10 @@ describe('supabase account helpers', () => {
     const supabase = createSupabaseStub({
       users: { select: [null, null], insert: [inserted] },
       workspace_members: { select: [memberships] },
-      preferences: { select: [null], insert: [{ theme: 'system', active_workspace_id: 'ws-8' }] },
+      preferences: {
+        select: [null],
+        insert: [{ theme: 'system', service_mode: 'simple', active_workspace_id: 'ws-8' }],
+      },
     })
 
     const snapshot = await getAccountSnapshotSupabase(
@@ -298,6 +319,7 @@ describe('supabase account helpers', () => {
 
     const preferences = {
       theme: 'dark',
+      service_mode: 'technical',
       locale: 'en',
       timezone: 'UTC',
       active_workspace_id: 'ws-1',
@@ -313,6 +335,7 @@ describe('supabase account helpers', () => {
       authUser as unknown as SnapshotAuthUser
     )
     expect(result?.theme).toBe('dark')
+    expect(result?.service_mode).toBe('technical')
   })
 
   it('upserts preferences', async () => {
@@ -333,6 +356,7 @@ describe('supabase account helpers', () => {
         upsert: [
           {
             theme: 'light',
+            service_mode: 'simple',
             locale: null,
             timezone: null,
             active_workspace_id: 'ws-1',
@@ -346,11 +370,68 @@ describe('supabase account helpers', () => {
       authUser as unknown as SnapshotAuthUser,
       {
         theme: 'light',
+        service_mode: 'simple',
         active_workspace_id: 'ws-1',
       }
     )
 
     expect(result.theme).toBe('light')
+    expect(result.service_mode).toBe('simple')
+  })
+
+  it('preserves existing preference fields on partial upsert payloads', async () => {
+    const userRow = {
+      id: 'user-10',
+      name: 'Test User',
+      email: 'test@example.com',
+      avatar_url: null,
+      auth_provider: 'supabase',
+      auth_user_id: 'auth-user-1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-02T00:00:00Z',
+    }
+
+    const existingPreferences = {
+      theme: 'dark',
+      service_mode: 'simple',
+      locale: 'en',
+      timezone: 'UTC',
+      active_workspace_id: 'ws-1',
+    }
+
+    const supabase = createSupabaseStub({
+      users: { select: [userRow] },
+      preferences: {
+        select: [existingPreferences],
+        upsert: [{ ...existingPreferences, service_mode: 'technical' }],
+      },
+    })
+
+    const result = await upsertPreferencesSupabase(
+      supabase as unknown as SnapshotSupabaseClient,
+      authUser as unknown as SnapshotAuthUser,
+      {
+        service_mode: 'technical',
+      }
+    )
+
+    expect(result).toMatchObject({
+      theme: 'dark',
+      service_mode: 'technical',
+      locale: 'en',
+      timezone: 'UTC',
+      active_workspace_id: 'ws-1',
+    })
+    const preferenceUpsertWrite = supabase.__writes.find(
+      (write) => write.table === 'preferences' && write.op === 'upsert'
+    )
+    expect(preferenceUpsertWrite?.payload).toMatchObject({
+      theme: 'dark',
+      service_mode: 'technical',
+      locale: 'en',
+      timezone: 'UTC',
+      active_workspace_id: 'ws-1',
+    })
   })
 
   it('filters out memberships with null workspaces', async () => {
@@ -383,6 +464,7 @@ describe('supabase account helpers', () => {
     ]
     const preferences = {
       theme: 'system',
+      service_mode: 'simple',
       locale: null,
       timezone: null,
       active_workspace_id: 'ws-1',

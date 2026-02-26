@@ -8,7 +8,6 @@ import * as z from 'zod'
 import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
 import {
   Select,
@@ -29,6 +28,7 @@ import {
 import { Loader2, Send, Copy, Check, Upload, Image as ImageIcon, X } from 'lucide-react'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { toActionErrorMessage } from '@/lib/api'
+import { useServiceMode } from '@/components/providers/service-mode-provider'
 import {
   useImageEmbeddingModels,
   useCreateImageEmbedding,
@@ -70,7 +70,7 @@ interface ImageEmbeddingPanelProps {
 }
 
 export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
-  const [mode, setMode] = useState<'simple' | 'technical'>('simple')
+  const { serviceMode } = useServiceMode()
   const [result, setResult] = useState<ImageEmbeddingResponse | null>(null)
   const [actionWarning, setActionWarning] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -142,20 +142,14 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
 
   return (
     <div className={cn('space-y-6', className)}>
-      <Tabs value={mode} onValueChange={(v) => setMode(v as 'simple' | 'technical')}>
-        <TabsList>
-          <TabsTrigger value="simple">Simple</TabsTrigger>
-          <TabsTrigger value="technical">Technical</TabsTrigger>
-        </TabsList>
-
-        <div className="grid gap-6 lg:grid-cols-2 mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <div className="grid gap-6 lg:grid-cols-2 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   {/* Image Source */}
                   <div className="space-y-4">
                     <FormField
@@ -250,7 +244,7 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                   )}
 
                   {/* Technical Options */}
-                  {mode === 'technical' && (
+                  {serviceMode === 'technical' && (
                     <>
                       <FormField
                         control={form.control}
@@ -330,71 +324,70 @@ export function ImageEmbeddingPanel({ className }: ImageEmbeddingPanelProps) {
                       }}
                     />
                   ) : null}
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
-              {result && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="h-8"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-success" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent>
-              {result ? (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 typography-size-sm">
-                    <div>
-                      <p className="text-muted-foreground">Model</p>
-                      <p className="typography-weight-medium">{result.result.model}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Resolution</p>
-                      <p className="typography-weight-medium">{result.result.resolution}px</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Dimensions</p>
-                      <p className="typography-weight-medium">{result.result.vector.length}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Processing Time</p>
-                      <p className="typography-weight-medium">
-                        {result.processingTime.toFixed(0)}ms
-                      </p>
-                    </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
+            {result && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopy}
+                className="h-8"
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-success" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent>
+            {result ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 typography-size-sm">
+                  <div>
+                    <p className="text-muted-foreground">Model</p>
+                    <p className="typography-weight-medium">{result.result.model}</p>
                   </div>
                   <div>
-                    <p className="typography-size-sm text-muted-foreground mb-2">
-                      Vector Preview
+                    <p className="text-muted-foreground">Resolution</p>
+                    <p className="typography-weight-medium">{result.result.resolution}px</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Dimensions</p>
+                    <p className="typography-weight-medium">{result.result.vector.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Processing Time</p>
+                    <p className="typography-weight-medium">
+                      {result.processingTime.toFixed(0)}ms
                     </p>
-                    <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
-                      [{result.result.vector.slice(0, 8).map(v => v.toFixed(6)).join(', ')}
-                      , ...]
-                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
-                  Results will appear here
+                <div>
+                  <p className="typography-size-sm text-muted-foreground mb-2">
+                    Vector Preview
+                  </p>
+                  <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
+                    [{result.result.vector.slice(0, 8).map(v => v.toFixed(6)).join(', ')}
+                    , ...]
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </Tabs>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
+                Results will appear here
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

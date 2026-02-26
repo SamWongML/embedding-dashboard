@@ -44,6 +44,7 @@ create table if not exists preferences (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references users(id) on delete cascade,
   theme text not null default 'system',
+  service_mode text not null default 'simple' check (service_mode in ('simple', 'technical')),
   locale text,
   timezone text,
   active_workspace_id uuid references workspaces(id) on delete set null,

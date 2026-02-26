@@ -1,4 +1,5 @@
 import type { AccountSnapshot, WorkspaceSummary } from '@/lib/types/account'
+import type { ServiceMode } from '@/lib/preferences/service-mode'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 
 export type SupabaseServerClient = Awaited<ReturnType<typeof getSupabaseServerClient>>
@@ -8,9 +9,18 @@ export type SupabaseAuthUser = NonNullable<
 
 export interface PreferencePayload {
   theme?: 'light' | 'dark' | 'system'
+  service_mode?: ServiceMode
   locale?: string | null
   timezone?: string | null
   active_workspace_id?: string | null
+}
+
+interface PreferenceRow {
+  theme: 'light' | 'dark' | 'system'
+  service_mode: ServiceMode
+  locale: string | null
+  timezone: string | null
+  active_workspace_id: string | null
 }
 
 interface WorkspaceMembershipRow {
@@ -162,9 +172,9 @@ async function ensurePreferences(
 ) {
   const { data: preferences } = await supabase
     .from('preferences')
-    .select('theme, locale, timezone, active_workspace_id')
+    .select('theme, service_mode, locale, timezone, active_workspace_id')
     .eq('user_id', userId)
-    .maybeSingle()
+    .maybeSingle<PreferenceRow>()
 
   if (preferences) {
     if (!preferences.active_workspace_id) {
@@ -184,9 +194,10 @@ async function ensurePreferences(
     .insert({
       user_id: userId,
       theme: 'system',
+      service_mode: 'simple',
       active_workspace_id: activeWorkspaceId,
     })
-    .select('theme, locale, timezone, active_workspace_id')
+    .select('theme, service_mode, locale, timezone, active_workspace_id')
     .single()
 
   return inserted
@@ -283,9 +294,9 @@ export async function getPreferencesSupabase(
 
   const { data: preferences } = await supabase
     .from('preferences')
-    .select('theme, locale, timezone, active_workspace_id')
+    .select('theme, service_mode, locale, timezone, active_workspace_id')
     .eq('user_id', userRow.id)
-    .maybeSingle()
+    .maybeSingle<PreferenceRow>()
 
   return preferences
 }
@@ -296,21 +307,31 @@ export async function upsertPreferencesSupabase(
   payload: PreferencePayload
 ) {
   const userRow = await ensureUserRow(supabase, authUser)
+  const { data: currentPreferences } = await supabase
+    .from('preferences')
+    .select('theme, service_mode, locale, timezone, active_workspace_id')
+    .eq('user_id', userRow.id)
+    .maybeSingle<PreferenceRow>()
 
   const { data: preferences, error } = await supabase
     .from('preferences')
     .upsert(
       {
         user_id: userRow.id,
-        theme: payload.theme ?? 'system',
-        locale: payload.locale ?? null,
-        timezone: payload.timezone ?? null,
-        active_workspace_id: payload.active_workspace_id ?? null,
+        theme: payload.theme ?? currentPreferences?.theme ?? 'system',
+        service_mode: payload.service_mode ?? currentPreferences?.service_mode ?? 'simple',
+        locale: payload.locale !== undefined ? payload.locale : (currentPreferences?.locale ?? null),
+        timezone:
+          payload.timezone !== undefined ? payload.timezone : (currentPreferences?.timezone ?? null),
+        active_workspace_id:
+          payload.active_workspace_id !== undefined
+            ? payload.active_workspace_id
+            : (currentPreferences?.active_workspace_id ?? null),
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id' }
     )
-    .select('theme, locale, timezone, active_workspace_id')
+    .select('theme, service_mode, locale, timezone, active_workspace_id')
     .single()
 
   if (error) {

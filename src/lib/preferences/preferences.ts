@@ -1,14 +1,16 @@
-export async function saveThemePreference(theme: 'light' | 'dark' | 'system') {
+import type { ServiceMode } from '@/lib/preferences/service-mode'
+
+async function savePreferences(payload: Record<string, string | null>, fallbackMessage: string) {
   const response = await fetch('/api/preferences', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ theme }),
+    body: JSON.stringify(payload),
   })
 
   if (!response.ok) {
-    let message = 'Unable to persist theme preference.'
+    let message = fallbackMessage
 
     try {
       const payload = (await response.json()) as { error?: string; message?: string }
@@ -19,4 +21,15 @@ export async function saveThemePreference(theme: 'light' | 'dark' | 'system') {
 
     throw new Error(message)
   }
+}
+
+export async function saveThemePreference(theme: 'light' | 'dark' | 'system') {
+  await savePreferences({ theme }, 'Unable to persist theme preference.')
+}
+
+export async function saveServiceModePreference(serviceMode: ServiceMode) {
+  await savePreferences(
+    { service_mode: serviceMode },
+    'Unable to persist service mode preference.'
+  )
 }

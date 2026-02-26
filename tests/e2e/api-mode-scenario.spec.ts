@@ -25,10 +25,12 @@ test.describe('API Mode Scenarios', () => {
   })
 
   test('slow scenario shows pending state before resolving', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('embedding-dashboard-service-mode', 'technical')
+    })
     await page.goto('/search?scenario=slow')
 
     await expect(page.getByText('Simulated API: slow')).toBeVisible()
-    await page.getByRole('tab', { name: 'Technical' }).click()
     await page.getByRole('textbox', { name: 'Query' }).fill('scenario slow query')
     await page.getByRole('button', { name: 'Search', exact: true }).click()
 

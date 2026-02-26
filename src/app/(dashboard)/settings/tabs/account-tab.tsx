@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -22,8 +23,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
-import { toNoOpActionMessage } from '@/lib/api'
+import { toActionErrorMessage, toNoOpActionMessage } from '@/lib/api'
 import { useAccount } from '@/lib/hooks/use-account'
+import { useServiceMode } from '@/components/providers/service-mode-provider'
+import { saveServiceModePreference } from '@/lib/preferences/preferences'
+import { isServiceMode } from '@/lib/preferences/service-mode'
 
 function getInitials(name: string) {
   const [first, second] = name.split(' ')
@@ -33,11 +37,29 @@ function getInitials(name: string) {
 
 export default function AccountTab() {
   const { user, activeWorkspace } = useAccount()
+  const { serviceMode, setServiceMode } = useServiceMode()
   const [actionWarning, setActionWarning] = React.useState<string | null>(null)
 
   const handleNoOpAction = React.useCallback((actionLabel: string) => {
     setActionWarning(toNoOpActionMessage(actionLabel))
   }, [])
+
+  const handleServiceModeChange = React.useCallback(
+    (value: string) => {
+      if (!isServiceMode(value)) {
+        return
+      }
+
+      setActionWarning(null)
+      setServiceMode(value)
+      void saveServiceModePreference(value).catch((error) => {
+        setActionWarning(
+          toActionErrorMessage(error, 'Unable to persist service mode preference.')
+        )
+      })
+    },
+    [setServiceMode]
+  )
 
   return (
     <div className="space-y-6">
@@ -95,6 +117,50 @@ export default function AccountTab() {
             Save changes
           </Button>
         </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Service mode default</CardTitle>
+          <CardDescription>
+            Choose the default mode used by Text Embedding, Image Embedding, and Hybrid Search.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={serviceMode}
+            onValueChange={handleServiceModeChange}
+            className="grid gap-3"
+          >
+            <label
+              htmlFor="settings-account-service-mode-simple"
+              className="flex items-center gap-3 rounded-md border border-border p-3"
+            >
+              <RadioGroupItem value="simple" id="settings-account-service-mode-simple" />
+              <div>
+                <div className="typography-copy-14 typography-weight-medium">Simple</div>
+                <p className="typography-copy-13 text-muted-foreground">
+                  Focus on quick actions with fewer input options.
+                </p>
+              </div>
+            </label>
+            <label
+              htmlFor="settings-account-service-mode-technical"
+              className="flex items-center gap-3 rounded-md border border-border p-3"
+            >
+              <RadioGroupItem
+                value="technical"
+                id="settings-account-service-mode-technical"
+              />
+              <div>
+                <div className="typography-copy-14 typography-weight-medium">Technical</div>
+                <p className="typography-copy-13 text-muted-foreground">
+                  Show advanced controls like models, tuning, and weighting.
+                </p>
+              </div>
+            </label>
+          </RadioGroup>
+        </CardContent>
       </Card>
 
       <Card>

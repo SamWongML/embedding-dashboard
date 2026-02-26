@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { saveThemePreference } from '@/lib/preferences/preferences'
+import {
+  saveServiceModePreference,
+  saveThemePreference,
+} from '@/lib/preferences/preferences'
 
 describe('preferences', () => {
   const fetchMock = vi.fn()
@@ -24,6 +27,17 @@ describe('preferences', () => {
     )
   })
 
+  it('posts service mode preference', async () => {
+    fetchMock.mockResolvedValue({ ok: true })
+    await saveServiceModePreference('technical')
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/preferences',
+      expect.objectContaining({
+        method: 'POST',
+      })
+    )
+  })
+
   it('throws on network failures', async () => {
     fetchMock.mockRejectedValue(new Error('network'))
     await expect(saveThemePreference('light')).rejects.toThrow('network')
@@ -36,5 +50,14 @@ describe('preferences', () => {
     })
 
     await expect(saveThemePreference('light')).rejects.toThrow('Unauthorized')
+  })
+
+  it('throws when service mode API request fails', async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: 'Unauthorized' }),
+    })
+
+    await expect(saveServiceModePreference('simple')).rejects.toThrow('Unauthorized')
   })
 })

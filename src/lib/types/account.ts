@@ -47,6 +47,7 @@ export interface UserPreference {
   id: string
   userId: string
   theme: 'light' | 'dark' | 'system'
+  serviceMode: 'simple' | 'technical'
   locale?: string
   timezone?: string
   createdAt: string

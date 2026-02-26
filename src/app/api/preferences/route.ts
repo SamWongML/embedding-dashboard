@@ -6,6 +6,7 @@ export const runtime = 'nodejs'
 
 const defaultPreferences = {
   theme: 'system',
+  service_mode: 'simple',
   locale: null,
   timezone: null,
   active_workspace_id: null,
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
 
     const preferences = await upsertPreferencesSupabase(supabase, authData.user, {
       theme: body.theme,
+      service_mode: body.service_mode,
       locale: body.locale,
       timezone: body.timezone,
       active_workspace_id: body.active_workspace_id,
