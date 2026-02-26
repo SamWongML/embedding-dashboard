@@ -2,9 +2,7 @@
 
 import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { HealthIndicator } from './health-indicator'
 import { StatCard } from './stat-card'
-import { MetricSurfaceCard } from '@/components/dashboard/panels/shared/metric-surface-card'
 import { ErrorList } from './error-list'
 import { LatencyChart } from '@/components/charts/latency-chart'
 import { ServiceUsageChart } from '@/components/charts/service-usage-chart'
@@ -13,11 +11,11 @@ import {
   useServerLatency,
   useServiceUsage,
   useServerErrors,
-  useRealtimeLatency,
 } from '@/lib/hooks/use-server-status'
+import { useSearchAnalytics } from '@/lib/hooks/use-metrics'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
-import { Activity, Clock, Zap, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { deriveServerStatusKpis } from './server-status-kpis'
 
 interface ServerStatusPanelProps {
   className?: string
@@ -28,12 +26,12 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
   const latencyQuery = useServerLatency()
   const servicesQuery = useServiceUsage()
   const errorsQuery = useServerErrors()
-  const { latency: realtimeLatency, isConnected } = useRealtimeLatency()
+  const analyticsQuery = useSearchAnalytics('7d')
   const health = healthQuery.data
   const latency = latencyQuery.data
   const services = servicesQuery.data
   const errors = errorsQuery.data
-  const healthLoading = healthQuery.isLoading
+  const searchAnalytics = analyticsQuery.data
   const latencyLoading = latencyQuery.isLoading
   const servicesLoading = servicesQuery.isLoading
   const errorsLoading = errorsQuery.isLoading
@@ -64,52 +62,30 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
     )
   }
 
-  const formatUptime = (seconds: number) => {
-    const days = Math.floor(seconds / 86400)
-    const hours = Math.floor((seconds % 86400) / 3600)
-    return `${days}d ${hours}h`
-  }
+  const topCards = deriveServerStatusKpis({
+    latency,
+    services,
+    errors,
+    searchAnalytics,
+  })
 
   return (
     <div className={cn('space-y-(--metric-card-section-gap)', className)}>
       {/* Status Overview */}
       <div className="grid auto-rows-fr gap-(--metric-card-grid-gap) [grid-template-columns:repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))]">
-        <MetricSurfaceCard
-          title="System Status"
-          icon={<Activity />}
-          animationMode="never"
-          valueDisplay={healthLoading ? (
-            <div className="h-8 w-24 rounded bg-muted animate-pulse" />
-          ) : (
-            <HealthIndicator status={health?.status || 'healthy'} />
-          )}
-          meta={<span>v{health?.version || '1.0.0'}</span>}
-        />
-
-        <StatCard
-          title="Uptime"
-          value={healthLoading ? '...' : formatUptime(health?.uptime || 0)}
-          icon={<Clock className="h-4 w-4" />}
-          animationMode="on-mount"
-        />
-
-        <StatCard
-          title="Current Latency"
-          value={realtimeLatency ?? latency?.current ?? 0}
-          valueSuffix="ms"
-          subtitle={isConnected ? 'Real-time' : 'Polling'}
-          icon={<Zap className="h-4 w-4" />}
-          animationMode="on-mount"
-        />
-
-        <StatCard
-          title="P99 Latency"
-          value={latency?.p99 || 0}
-          valueSuffix="ms"
-          subtitle={`Avg: ${latency?.average || 0}ms`}
-          icon={<AlertCircle className="h-4 w-4" />}
-          animationMode="on-mount"
-        />
+        {topCards.map((card) => (
+          <StatCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+            valueSuffix={card.valueSuffix}
+            valueFormat={card.valueFormat}
+            change={card.change}
+            changeType={card.changeType}
+            sparkline={card.sparkline}
+            animationMode="on-mount"
+          />
+        ))}
       </div>
 
       {/* Charts Row */}
