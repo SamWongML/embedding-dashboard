@@ -1,56 +1,82 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Sparkline } from '@/components/charts/sparkline'
+import { MetricSurfaceCard } from '@/components/dashboard/panels/shared/metric-surface-card'
+import type { MetricValueAnimationMode } from '@/components/dashboard/panels/shared/animated-metric-value'
+import type { Format } from '@number-flow/react'
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StatCardProps {
   title: string
   value: string | number
-  subtitle?: string
-  icon?: React.ReactNode
-  trend?: {
-    value: number
-    isPositive: boolean
-  }
+  valueFormat?: Format
+  valueSuffix?: string
+  change: number
+  changeType: 'increase' | 'decrease' | 'neutral'
+  sparkline?: number[]
+  animationMode?: MetricValueAnimationMode
   className?: string
+}
+
+function smoothSparkline(data: number[]) {
+  if (data.length < 3) return data
+
+  return data.map((_, index) => {
+    const start = Math.max(0, index - 1)
+    const end = Math.min(data.length, index + 2)
+    const window = data.slice(start, end)
+    const sum = window.reduce((total, value) => total + value, 0)
+    return sum / window.length
+  })
 }
 
 export function StatCard({
   title,
   value,
-  subtitle,
-  icon,
-  trend,
+  valueFormat,
+  valueSuffix,
+  change,
+  changeType,
+  sparkline,
+  animationMode = 'on-mount',
   className,
 }: StatCardProps) {
+  const TrendIcon = changeType === 'increase' ? ArrowUp :
+    changeType === 'decrease' ? ArrowDown : Minus
+
+  const trendColor = changeType === 'increase' ? 'text-success' :
+    changeType === 'decrease' ? 'text-error' : 'text-muted-foreground'
+  const roundedChange = Math.abs(change).toFixed(1)
+  const sparklineData = sparkline ? smoothSparkline(sparkline) : undefined
+
   return (
-    <Card className={cn(className)}>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        {icon && (
-          <div className="text-muted-foreground">{icon}</div>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-baseline gap-2">
-          <span className="typography-size-2xl typography-weight-bold">{value}</span>
-          {trend && (
-            <span
-              className={cn(
-                'typography-size-xs typography-weight-medium',
-                trend.isPositive ? 'text-success' : 'text-error'
-              )}
-            >
-              {trend.isPositive ? '+' : ''}{trend.value}%
-            </span>
-          )}
-        </div>
-        {subtitle && (
-          <p className="typography-size-xs text-muted-foreground mt-1">{subtitle}</p>
-        )}
-      </CardContent>
-    </Card>
+    <MetricSurfaceCard
+      title={title}
+      value={value}
+      valueFormat={valueFormat}
+      valueSuffix={valueSuffix}
+      animationMode={animationMode}
+      className={cn(className)}
+      meta={(
+        <span className={cn('flex items-center gap-1 typography-weight-medium', trendColor)}>
+          <TrendIcon className="size-(--icon-xs)" />
+          <span>{roundedChange}%</span>
+        </span>
+      )}
+      rightContent={sparklineData ? (
+        <Sparkline
+          data={sparklineData}
+          className="h-10 w-20"
+          tone={
+            changeType === 'increase'
+              ? 'success'
+              : changeType === 'decrease'
+                ? 'error'
+                : 'muted'
+          }
+        />
+      ) : undefined}
+    />
   )
 }

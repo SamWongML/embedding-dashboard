@@ -35,6 +35,20 @@
   --card-title-weight: var(--font-weight-medium);
   --card-description-size: var(--font-size-xs);
 
+  /* ===== METRIC CARD TOKENS ===== */
+  --metric-card-min-height: 8.5rem;
+  --metric-card-padding: var(--card-padding-compact);
+  --metric-card-section-gap: var(--space-page);
+  --metric-card-grid-gap: var(--space-lg);
+  --metric-card-grid-min-width: 15rem;
+  --metric-card-header-padding-bottom: var(--space-sm);
+  --metric-card-title-size: var(--text-copy-13);
+  --metric-card-value-size: var(--font-size-2xl);
+  --metric-card-value-line-height: 2.25rem;
+  --metric-card-meta-size: var(--text-micro-11);
+  --metric-card-gap: var(--space-2);
+  --metric-card-icon-size: var(--icon-sm);
+
   /* ===== DIALOG TOKENS ===== */
   --dialog-padding: 1.5rem;
   --dialog-gap: 1rem;

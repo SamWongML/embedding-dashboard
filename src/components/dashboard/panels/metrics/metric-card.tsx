@@ -1,7 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkline } from '@/components/charts/sparkline'
+import { MetricSurfaceCard } from '@/components/dashboard/panels/shared/metric-surface-card'
+import type { MetricValueAnimationMode } from '@/components/dashboard/panels/shared/animated-metric-value'
+import type { Format } from '@number-flow/react'
 import { cn } from '@/lib/utils'
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react'
 import type { MetricCard as MetricCardType } from '@/lib/schemas/metrics'
@@ -9,14 +11,42 @@ import type { MetricCard as MetricCardType } from '@/lib/schemas/metrics'
 interface MetricCardProps {
   metric: MetricCardType
   className?: string
+  animationMode?: MetricValueAnimationMode
 }
 
-export function MetricCard({ metric, className }: MetricCardProps) {
-  const formatValue = (value: number) => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
-    return value.toString()
+function resolveMetricValue(value: number): {
+  value: number
+  suffix?: string
+  format?: Format
+} {
+  if (value >= 1_000_000) {
+    return {
+      value: value / 1_000_000,
+      suffix: 'M',
+      format: { minimumFractionDigits: 1, maximumFractionDigits: 1 },
+    }
   }
+
+  if (value >= 1_000) {
+    return {
+      value: value / 1_000,
+      suffix: 'K',
+      format: { minimumFractionDigits: 1, maximumFractionDigits: 1 },
+    }
+  }
+
+  return {
+    value,
+    format: { maximumFractionDigits: 0 },
+  }
+}
+
+export function MetricCard({
+  metric,
+  className,
+  animationMode = 'on-mount',
+}: MetricCardProps) {
+  const formattedValue = resolveMetricValue(metric.value)
 
   const TrendIcon = metric.changeType === 'increase' ? ArrowUp :
     metric.changeType === 'decrease' ? ArrowDown : Minus
@@ -25,38 +55,32 @@ export function MetricCard({ metric, className }: MetricCardProps) {
     metric.changeType === 'decrease' ? 'text-error' : 'text-muted-foreground'
 
   return (
-    <Card className={cn(className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
-          {metric.label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="typography-size-2xl typography-weight-bold">
-              {formatValue(metric.value)}
-            </div>
-            <div className={cn('flex items-center gap-1 typography-size-xs', trendColor)}>
-              <TrendIcon className="h-3 w-3" />
-              <span>{Math.abs(metric.change)}%</span>
-            </div>
-          </div>
-          {metric.sparkline && (
-            <Sparkline
-              data={metric.sparkline}
-              className="h-10 w-20"
-              tone={
-                metric.changeType === 'increase'
-                  ? 'success'
-                  : metric.changeType === 'decrease'
-                    ? 'error'
-                    : 'muted'
-              }
-            />
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <MetricSurfaceCard
+      title={metric.label}
+      value={formattedValue.value}
+      valueFormat={formattedValue.format}
+      valueSuffix={formattedValue.suffix}
+      animationMode={animationMode}
+      className={cn(className)}
+      meta={(
+        <span className={cn('flex items-center gap-1 typography-weight-medium', trendColor)}>
+          <TrendIcon className="size-(--icon-xs)" />
+          <span>{Math.abs(metric.change)}%</span>
+        </span>
+      )}
+      rightContent={metric.sparkline ? (
+        <Sparkline
+          data={metric.sparkline}
+          className="h-10 w-20"
+          tone={
+            metric.changeType === 'increase'
+              ? 'success'
+              : metric.changeType === 'decrease'
+                ? 'error'
+                : 'muted'
+          }
+        />
+      ) : undefined}
+    />
   )
 }
