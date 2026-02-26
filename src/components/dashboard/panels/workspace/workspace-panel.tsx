@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
+import { OverviewMetricCard } from '@/components/dashboard/panels/workspace/overview-metric-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -88,30 +89,6 @@ const DEFAULT_ACCESS_RULE_FORM = {
 
 function toTitleCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1)
-}
-
-interface OverviewCardProps {
-  title: string
-  value: string
-  subtitle: string
-  icon: React.ComponentType<{ className?: string }>
-}
-
-function OverviewCard({ title, value, subtitle, icon: Icon }: OverviewCardProps) {
-  return (
-    <Card>
-      <CardContent className="flex items-start justify-between gap-3 pt-6">
-        <div className="space-y-1">
-          <p className="typography-size-xs typography-weight-medium uppercase tracking-wider text-muted-foreground">
-            {title}
-          </p>
-          <p className="typography-heading-3">{value}</p>
-          <p className="typography-size-xs text-muted-foreground">{subtitle}</p>
-        </div>
-        <Icon className="size-4 text-muted-foreground" />
-      </CardContent>
-    </Card>
-  )
 }
 
 export function WorkspacePanel() {
@@ -247,30 +224,35 @@ export function WorkspacePanel() {
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <OverviewCard
+      <div className="grid auto-rows-fr gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <OverviewMetricCard
           title="Active Workspaces"
-          value={`${data.overview.activeWorkspaces}`}
+          value={data.overview.activeWorkspaces}
           subtitle={`${data.overview.totalWorkspaces} total`}
           icon={Building2}
+          animationMode="on-mount"
         />
-        <OverviewCard
+        <OverviewMetricCard
           title="Knowledge Bases"
-          value={`${data.overview.totalKnowledgeBases}`}
+          value={data.overview.totalKnowledgeBases}
           subtitle="Across all workspaces"
           icon={Database}
+          animationMode="on-mount"
         />
-        <OverviewCard
+        <OverviewMetricCard
           title="Access Rules"
-          value={`${data.overview.totalAccessRules}`}
+          value={data.overview.totalAccessRules}
           subtitle={`${data.groups.length} groups`}
           icon={Shield}
+          animationMode="on-mount"
         />
-        <OverviewCard
+        <OverviewMetricCard
           title="Total Vectors"
-          value={`${Math.round(data.overview.totalVectors / 1000)}K`}
+          value={Math.round(data.overview.totalVectors / 1000)}
+          valueSuffix="K"
           subtitle="Indexed vectors"
           icon={Layers}
+          animationMode="on-mount"
         />
       </div>
 

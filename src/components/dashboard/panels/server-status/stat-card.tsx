@@ -1,56 +1,53 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MetricSurfaceCard } from '@/components/dashboard/panels/shared/metric-surface-card'
+import type { MetricValueAnimationMode } from '@/components/dashboard/panels/shared/animated-metric-value'
 import { cn } from '@/lib/utils'
 
 interface StatCardProps {
   title: string
   value: string | number
+  valueSuffix?: string
   subtitle?: string
   icon?: React.ReactNode
   trend?: {
     value: number
     isPositive: boolean
   }
+  animationMode?: MetricValueAnimationMode
   className?: string
 }
 
 export function StatCard({
   title,
   value,
+  valueSuffix,
   subtitle,
   icon,
   trend,
+  animationMode = 'on-mount',
   className,
 }: StatCardProps) {
   return (
-    <Card className={cn(className)}>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        {icon && (
-          <div className="text-muted-foreground">{icon}</div>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-baseline gap-2">
-          <span className="typography-size-2xl typography-weight-bold">{value}</span>
-          {trend && (
-            <span
-              className={cn(
-                'typography-size-xs typography-weight-medium',
-                trend.isPositive ? 'text-success' : 'text-error'
-              )}
-            >
-              {trend.isPositive ? '+' : ''}{trend.value}%
-            </span>
+    <MetricSurfaceCard
+      title={title}
+      value={value}
+      valueSuffix={valueSuffix}
+      icon={icon}
+      animationMode={animationMode}
+      className={cn(className)}
+      valueAdornment={trend ? (
+        <span
+          className={cn(
+            'typography-weight-medium',
+            trend.isPositive ? 'text-success' : 'text-error'
           )}
-        </div>
-        {subtitle && (
-          <p className="typography-size-xs text-muted-foreground mt-1">{subtitle}</p>
-        )}
-      </CardContent>
-    </Card>
+        >
+          {trend.isPositive ? '+' : ''}
+          {trend.value}%
+        </span>
+      ) : undefined}
+      meta={subtitle ? <span>{subtitle}</span> : undefined}
+    />
   )
 }

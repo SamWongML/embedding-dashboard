@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { HealthIndicator } from './health-indicator'
 import { StatCard } from './stat-card'
+import { MetricSurfaceCard } from '@/components/dashboard/panels/shared/metric-surface-card'
 import { ErrorList } from './error-list'
 import { LatencyChart } from '@/components/charts/latency-chart'
 import { ServiceUsageChart } from '@/components/charts/service-usage-chart'
@@ -72,44 +73,42 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
   return (
     <div className={cn('space-y-6', className)}>
       {/* Status Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="typography-size-sm typography-weight-medium text-muted-foreground">
-              System Status
-            </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {healthLoading ? (
-              <div className="h-8 w-24 bg-muted rounded animate-pulse" />
-            ) : (
-              <HealthIndicator status={health?.status || 'healthy'} />
-            )}
-            <p className="typography-size-xs text-muted-foreground mt-1">
-              v{health?.version || '1.0.0'}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <MetricSurfaceCard
+          title="System Status"
+          icon={<Activity />}
+          animationMode="never"
+          valueDisplay={healthLoading ? (
+            <div className="h-8 w-24 rounded bg-muted animate-pulse" />
+          ) : (
+            <HealthIndicator status={health?.status || 'healthy'} />
+          )}
+          meta={<span>v{health?.version || '1.0.0'}</span>}
+        />
 
         <StatCard
           title="Uptime"
           value={healthLoading ? '...' : formatUptime(health?.uptime || 0)}
           icon={<Clock className="h-4 w-4" />}
+          animationMode="on-mount"
         />
 
         <StatCard
           title="Current Latency"
-          value={`${realtimeLatency ?? latency?.current ?? 0}ms`}
+          value={realtimeLatency ?? latency?.current ?? 0}
+          valueSuffix="ms"
           subtitle={isConnected ? 'Real-time' : 'Polling'}
           icon={<Zap className="h-4 w-4" />}
+          animationMode="on-mount"
         />
 
         <StatCard
           title="P99 Latency"
-          value={`${latency?.p99 || 0}ms`}
+          value={latency?.p99 || 0}
+          valueSuffix="ms"
           subtitle={`Avg: ${latency?.average || 0}ms`}
           icon={<AlertCircle className="h-4 w-4" />}
+          animationMode="on-mount"
         />
       </div>
 

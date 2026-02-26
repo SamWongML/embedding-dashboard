@@ -67,10 +67,10 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="h-full min-h-[var(--metric-card-min-height)]">
               <CardHeader className="pb-2">
                 <div className="h-4 w-24 bg-muted rounded animate-pulse" />
               </CardHeader>
@@ -82,7 +82,11 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
           ))
         ) : (
           data?.cards.map((metric) => (
-            <MetricCard key={metric.label} metric={metric} />
+            <MetricCard
+              key={metric.label}
+              metric={metric}
+              animationMode="always"
+            />
           ))
         )}
       </div>
