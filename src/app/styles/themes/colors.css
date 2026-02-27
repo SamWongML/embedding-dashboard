@@ -99,6 +99,14 @@
   --chart-grid: oklch(86% 0.003 260 / 30%);
   --chart-track: oklch(96% 0.003 260);
 
+  /* Activity heatmap palette (higher-contrast indigo ramp) */
+  --heatmap-level-0: oklch(96.5% 0.005 265);
+  --heatmap-level-1: oklch(90.5% 0.04 274);
+  --heatmap-level-2: oklch(81.5% 0.08 274);
+  --heatmap-level-3: oklch(71.5% 0.12 274);
+  --heatmap-level-4: oklch(61.5% 0.165 274);
+  --heatmap-cell-border: oklch(82% 0.02 268 / 70%);
+
   /* Status Colors - Geist palette */
   --success: oklch(55% 0.18 155);
   --success-foreground: oklch(100% 0 0);
@@ -188,6 +196,14 @@
   --chart-axis: oklch(60% 0.008 270);
   --chart-grid: oklch(100% 0 0 / 0.06);
   --chart-track: oklch(22% 0.005 265);
+
+  /* Activity heatmap palette (dark mode) */
+  --heatmap-level-0: oklch(20.5% 0.01 265);
+  --heatmap-level-1: oklch(32% 0.045 274);
+  --heatmap-level-2: oklch(45.5% 0.08 274);
+  --heatmap-level-3: oklch(58.5% 0.115 274);
+  --heatmap-level-4: oklch(71% 0.15 274);
+  --heatmap-cell-border: oklch(100% 0 0 / 0.14);
 
   /* Status Colors - Geist dark mode */
   --success: oklch(65% 0.18 155);

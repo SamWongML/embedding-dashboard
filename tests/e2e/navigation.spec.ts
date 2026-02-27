@@ -105,7 +105,49 @@ test.describe('Usage Analytics header layout', () => {
       'true'
     )
     await expect(page.getByText('Embedding Trends')).toBeVisible()
+    await expect(page.getByText('Activity Heatmap')).toBeVisible()
+    await expect(page.locator('[data-slot="activity-heatmap-cell"]').first()).toBeVisible()
     await expect(page.getByText('Most Accessed Embeddings')).toBeVisible()
+  })
+
+  test('positions activity heatmap to the right of embedding trends on desktop', async ({
+    page,
+  }) => {
+    await page.goto('/metrics')
+    await expect(page.locator('[data-slot="activity-heatmap-cell"]').first()).toBeVisible()
+
+    const trendsHeading = page.getByText('Embedding Trends', { exact: true }).first()
+    const heatmapHeading = page.getByText('Activity Heatmap', { exact: true }).first()
+
+    await expect(trendsHeading).toBeVisible()
+    await expect(heatmapHeading).toBeVisible()
+
+    const trendsBox = await trendsHeading.boundingBox()
+    const heatmapBox = await heatmapHeading.boundingBox()
+    expect(trendsBox).not.toBeNull()
+    expect(heatmapBox).not.toBeNull()
+    if (!trendsBox || !heatmapBox) {
+      return
+    }
+
+    expect(Math.abs(heatmapBox.y - trendsBox.y)).toBeLessThanOrEqual(8)
+    expect(heatmapBox.x).toBeGreaterThan(trendsBox.x + trendsBox.width * 0.55)
+
+    const heatmapCard = heatmapHeading.locator('xpath=ancestor::*[@data-slot="card"][1]')
+    const heatmapContent = heatmapCard.locator('[data-slot="card-content"]').first()
+    const heatmapGrid = heatmapCard.locator('[data-slot="activity-heatmap-grid"]').first()
+
+    await expect(heatmapGrid).toBeVisible()
+
+    const heatmapContentBox = await heatmapContent.boundingBox()
+    const heatmapGridBox = await heatmapGrid.boundingBox()
+    expect(heatmapContentBox).not.toBeNull()
+    expect(heatmapGridBox).not.toBeNull()
+    if (!heatmapContentBox || !heatmapGridBox) {
+      return
+    }
+
+    expect(heatmapGridBox.width / heatmapContentBox.width).toBeGreaterThanOrEqual(0.85)
   })
 })
 
@@ -211,5 +253,24 @@ test.describe('Usage Analytics mobile heading layout', () => {
     }
 
     expect(tabsBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height)
+  })
+
+  test('stacks activity heatmap below embedding trends on mobile', async ({ page }) => {
+    await page.goto('/metrics')
+
+    const trendsHeading = page.getByText('Embedding Trends', { exact: true }).first()
+    const heatmapHeading = page.getByText('Activity Heatmap', { exact: true }).first()
+    await expect(trendsHeading).toBeVisible()
+    await expect(heatmapHeading).toBeVisible()
+
+    const trendsBox = await trendsHeading.boundingBox()
+    const heatmapBox = await heatmapHeading.boundingBox()
+    expect(trendsBox).not.toBeNull()
+    expect(heatmapBox).not.toBeNull()
+    if (!trendsBox || !heatmapBox) {
+      return
+    }
+
+    expect(heatmapBox.y).toBeGreaterThanOrEqual(trendsBox.y + trendsBox.height)
   })
 })

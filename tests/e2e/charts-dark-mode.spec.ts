@@ -23,6 +23,63 @@ async function gotoWithDarkMode(page: Page, path: string) {
   await expect(page.locator('html')).toHaveClass(/dark/)
 }
 
+function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const analyticsCount = period === '24h' ? 24 : 168
+  const trendCount = period === '24h' ? 24 : period === '7d' ? 7 : 30
+
+  return {
+    cards: [
+      { label: 'Total Embeddings', value: 1240000, change: 11.7, changeType: 'increase' as const },
+      { label: 'Searches Today', value: 52100, change: -1.9, changeType: 'decrease' as const },
+      { label: 'Avg Latency', value: 43, change: 0.3, changeType: 'neutral' as const },
+      { label: 'Active Users', value: 347, change: 7.6, changeType: 'increase' as const },
+    ],
+    topHits: [
+      { id: 'top-hit-1', name: 'Semantic Search', count: 18440, type: 'Text' },
+      { id: 'top-hit-2', name: 'Image Similarity', count: 6820, type: 'Image' },
+    ],
+    topUsers: [
+      {
+        id: 'user-1',
+        name: 'Avery Chen',
+        email: 'avery@embedding.dev',
+        requestCount: 21000,
+        lastActive: '2026-02-07T11:42:00.000Z',
+      },
+    ],
+    trends: Array.from({ length: trendCount }, (_, index) => ({
+      date: period === '24h'
+        ? `2026-02-07T${String(index).padStart(2, '0')}:00:00.000Z`
+        : `2026-02-${String(index + 1).padStart(2, '0')}`,
+      textEmbeddings: 2800 + index * 40,
+      imageEmbeddings: 920 + index * 12,
+      searches: 4200 + index * 75,
+    })),
+    searchAnalytics: Array.from({ length: analyticsCount }, (_, index) => ({
+      hour: index % 24,
+      day: dayLabels[Math.floor(index / 24) % dayLabels.length] ?? 'Sun',
+      count: index % 29 === 0 ? 0 : 780 + (index % 24) * 26 + (index % 5) * 13,
+    })),
+  }
+}
+
+async function mockMetricsOverview(page: Page) {
+  await page.route('**/metrics/overview?period=*', async (route) => {
+    const requestUrl = new URL(route.request().url())
+    const period = requestUrl.searchParams.get('period')
+    const normalizedPeriod = period === '24h' || period === '7d' || period === '30d'
+      ? period
+      : '24h'
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(buildMockMetricsOverview(normalizedPeriod)),
+    })
+  })
+}
+
 async function hoverChartSurfaceByHeading(page: Page, heading: string): Promise<Locator> {
   const headingText = page.getByText(heading, { exact: true }).first()
   await expect(headingText).toBeVisible()
@@ -194,7 +251,7 @@ test.describe('Dark mode chart interactions', () => {
 
   test('top hits bar hover avoids bright tooltip cursor overlays', async ({ page }) => {
     await gotoWithDarkMode(page, '/metrics')
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
     await hoverChartSurfaceByHeading(page, 'Most Accessed Embeddings')
 
@@ -203,7 +260,7 @@ test.describe('Dark mode chart interactions', () => {
 
   test('embedding trends hover avoids bright white active dots', async ({ page }) => {
     await gotoWithDarkMode(page, '/metrics')
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
     const chartRegion = await hoverChartSurfaceByHeading(page, 'Embedding Trends')
     await expect(
@@ -211,6 +268,83 @@ test.describe('Dark mode chart interactions', () => {
         'circle[fill="white"], circle[fill="#fff"], circle[fill="#ffffff"], circle[fill="rgb(255, 255, 255)"]'
       )
     ).toHaveCount(0)
+  })
+
+  test('activity heatmap cells avoid bright white fills in dark mode', async ({ page }) => {
+    await mockMetricsOverview(page)
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+    const cells = page.locator('[data-slot="activity-heatmap-cell"]')
+    await expect(cells.first()).toBeVisible()
+
+    const colors = await cells.evaluateAll((nodes) =>
+      nodes.map((node) => window.getComputedStyle(node).backgroundColor)
+    )
+
+    expect(colors.length).toBeGreaterThan(0)
+    colors.forEach((color) => {
+      expect(color).not.toBe('rgb(255, 255, 255)')
+      expect(color).not.toBe('rgba(255, 255, 255, 1)')
+    })
+  })
+
+  test('activity heatmap maintains readable low/high levels and keyboard focus affordance', async ({
+    page,
+  }) => {
+    await mockMetricsOverview(page)
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+    const levelValues = await page.locator('[data-slot="activity-heatmap-cell"]').evaluateAll((nodes) =>
+      nodes
+        .map((node) => Number.parseInt(node.getAttribute('data-level') ?? '0', 10))
+        .filter((level) => Number.isFinite(level))
+    )
+    expect(levelValues.length).toBeGreaterThan(0)
+
+    const uniqueLevels = new Set(levelValues)
+    expect(uniqueLevels.size).toBeGreaterThanOrEqual(2)
+
+    const minLevel = Math.min(...levelValues)
+    const maxLevel = Math.max(...levelValues)
+    const minLevelCell = page.locator(`[data-slot="activity-heatmap-cell"][data-level="${minLevel}"]`).first()
+    const maxLevelCell = page.locator(`[data-slot="activity-heatmap-cell"][data-level="${maxLevel}"]`).first()
+    await expect(minLevelCell).toBeVisible()
+    await expect(maxLevelCell).toBeVisible()
+
+    const minLevelColor = await minLevelCell.evaluate((node) => window.getComputedStyle(node).backgroundColor)
+    const maxLevelColor = await maxLevelCell.evaluate((node) => window.getComputedStyle(node).backgroundColor)
+    expect(minLevelColor).not.toBe(maxLevelColor)
+
+    const palette = await page.evaluate(() => {
+      const rootStyles = window.getComputedStyle(document.documentElement)
+      const level0 = rootStyles.getPropertyValue('--heatmap-level-0').trim()
+      const level4 = rootStyles.getPropertyValue('--heatmap-level-4').trim()
+      return { level0, level4 }
+    })
+
+    expect(palette.level0).not.toBe(palette.level4)
+
+    const focusCell = page.locator('[data-slot="activity-heatmap-cell"]').last()
+    const focusClassName = await focusCell.getAttribute('class')
+    expect(focusClassName ?? '').toContain('focus-visible:ring-2')
+    expect(focusClassName ?? '').toContain('focus-visible:ring-ring')
+  })
+
+  test('activity heatmap hover and focus show readable detail tooltip', async ({ page }) => {
+    await mockMetricsOverview(page)
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+    const targetCell = page.locator('[data-slot="activity-heatmap-cell"]').nth(8)
+    await expect(targetCell).toBeVisible()
+
+    await targetCell.hover()
+    await expect(page.locator('[data-slot="tooltip-content"]').filter({ hasText: 'requests' }).first()).toBeVisible()
+
+    await targetCell.focus()
+    await expect(page.locator('[data-slot="tooltip-content"]').filter({ hasText: 'UTC' }).first()).toBeVisible()
   })
 
   test('primary line charts do not render area fill paths', async ({ page }) => {
@@ -223,7 +357,7 @@ test.describe('Dark mode chart interactions', () => {
     ).toHaveCount(0)
 
     await gotoWithDarkMode(page, '/metrics')
-    await expect(page.getByRole('heading', { name: 'Metrics' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
     const trendsRegion = await hoverChartSurfaceByHeading(page, 'Embedding Trends')
     await expect(

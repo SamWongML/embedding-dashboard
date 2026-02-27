@@ -7,6 +7,7 @@ import { MetricCard } from './metric-card'
 import { TopUsersTable } from './top-users-table'
 import { TrendsChart } from '@/components/charts/trends-chart'
 import { TopHitsChart } from '@/components/charts/top-hits-chart'
+import { ActivityHeatmap } from '@/components/charts/activity-heatmap'
 import {
   MonitoringMetricCardsGrid,
   MonitoringMetricCardsSkeleton,
@@ -99,21 +100,38 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         )}
       </div>
 
-      {/* Trends Chart */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="typography-size-base typography-weight-medium">
-            Embedding Trends
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isInitialLoading ? (
-            <div className="h-[300px] bg-muted rounded animate-pulse" />
-          ) : (
-            <TrendsChart data={data?.trends || []} period={period} />
-          )}
-        </CardContent>
-      </Card>
+      {/* Trends + Activity */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)]">
+        <Card className="h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="typography-size-base typography-weight-medium">
+              Embedding Trends
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isInitialLoading ? (
+              <div className="h-[300px] bg-muted rounded animate-pulse" />
+            ) : (
+              <TrendsChart data={data?.trends || []} period={period} />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="typography-size-base typography-weight-medium">
+              Activity Heatmap
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-1">
+            {isInitialLoading ? (
+              <div className="h-[300px] w-full rounded bg-muted animate-pulse" />
+            ) : (
+              <ActivityHeatmap data={data?.searchAnalytics || []} period={period} className="h-full" />
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Bottom Row */}
       <div className="grid gap-4 lg:grid-cols-2">
