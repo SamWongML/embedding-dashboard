@@ -17,6 +17,8 @@ import {
   chartAxisDefaults,
   chartBarFill,
   chartBarRadius,
+  chartContainerHeights,
+  chartMargins,
   chartGridConfig,
   chartGridStroke,
   chartTooltipCursor,
@@ -42,13 +44,13 @@ export function ServiceUsageChart({ data, className }: ServiceUsageChartProps) {
   }))
 
   return (
-    <div className={cn('w-full h-[200px]', className)}>
+    <div className={cn('w-full', chartContainerHeights.compact, className)}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           accessibilityLayer
           data={chartData}
           layout="vertical"
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={chartMargins.barDefault}
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis

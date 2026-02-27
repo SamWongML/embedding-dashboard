@@ -5,6 +5,12 @@ import type {
   LatencyResponse,
   ServiceUsage,
 } from '@/lib/schemas/server-status'
+import {
+  countErrorsBetween,
+  HOUR_MS,
+  resolveReferenceDate,
+  startOfUtcHour,
+} from './server-status-chart-series'
 
 type ChangeType = 'increase' | 'decrease' | 'neutral'
 
@@ -24,8 +30,6 @@ interface DeriveServerStatusKpisInput {
   errors?: ErrorLog[]
   searchAnalytics?: SearchAnalytics[]
 }
-
-const HOUR_MS = 60 * 60 * 1000
 
 function clampNumber(value: number) {
   return Number.isFinite(value) ? value : 0
@@ -90,62 +94,12 @@ function toInverseSemanticSeries(values: number[]) {
   return values.map((value) => -value)
 }
 
-function startOfHour(date: Date) {
-  return new Date(Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    0,
-    0,
-    0
-  ))
-}
-
-function resolveReferenceDate(latency?: LatencyResponse, errors?: ErrorLog[]) {
-  const history = latency?.history ?? []
-  for (let index = history.length - 1; index >= 0; index -= 1) {
-    const timestamp = history[index]?.timestamp
-    if (!timestamp) continue
-    const parsed = new Date(timestamp)
-    if (!Number.isNaN(parsed.getTime())) {
-      return parsed
-    }
-  }
-
-  let maxTime = -Infinity
-  for (const error of errors ?? []) {
-    const parsed = new Date(error.timestamp).getTime()
-    if (Number.isFinite(parsed) && parsed > maxTime) {
-      maxTime = parsed
-    }
-  }
-  if (Number.isFinite(maxTime)) {
-    return new Date(maxTime)
-  }
-
-  return new Date()
-}
-
-function countErrorsBetween(errors: ErrorLog[], startInclusive: Date, endExclusive: Date) {
-  const start = startInclusive.getTime()
-  const end = endExclusive.getTime()
-
-  return errors.reduce((count, error) => {
-    const timestamp = new Date(error.timestamp).getTime()
-    if (!Number.isFinite(timestamp)) {
-      return count
-    }
-    return timestamp >= start && timestamp < end ? count + 1 : count
-  }, 0)
-}
-
 function resolveHourlyErrorRates(
   errors: ErrorLog[],
   analytics: SearchAnalytics[],
   referenceDate: Date
 ) {
-  const anchorHourStart = startOfHour(referenceDate)
+  const anchorHourStart = startOfUtcHour(referenceDate)
 
   return analytics.map((analyticsPoint, index) => {
     const hourOffset = analytics.length - 1 - index

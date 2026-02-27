@@ -6,6 +6,8 @@ export const queryKeys = {
     latency: () => [...queryKeys.serverStatus.all, 'latency'] as const,
     errors: () => [...queryKeys.serverStatus.all, 'errors'] as const,
     services: () => [...queryKeys.serverStatus.all, 'services'] as const,
+    traces: (filters: object) => [...queryKeys.serverStatus.all, 'traces', filters] as const,
+    traceSpans: (traceId: string) => [...queryKeys.serverStatus.all, 'trace-spans', traceId] as const,
   },
 
   // Metrics

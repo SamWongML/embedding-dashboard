@@ -1,5 +1,35 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
-import { readTypographyPxVar } from '@/lib/design/typography-runtime'
+import {
+  parseCssLengthToPx,
+  readCssLengthVar,
+  readTypographyPxVar,
+} from '@/lib/design/typography-runtime'
+
+describe('parseCssLengthToPx', () => {
+  it('parses px, rem and unitless values', () => {
+    expect(parseCssLengthToPx('12px', 16)).toBe(12)
+    expect(parseCssLengthToPx('1.25rem', 16)).toBe(20)
+    expect(parseCssLengthToPx('8', 16)).toBe(8)
+  })
+
+  it('returns null for unsupported units', () => {
+    expect(parseCssLengthToPx('10%', 16)).toBeNull()
+  })
+})
+
+describe('readCssLengthVar', () => {
+  it('reads a generic css variable and falls back when missing', () => {
+    const mockGetComputedStyle = vi.fn(() => ({
+      getPropertyValue: (prop: string) => (prop === '--layout-size' ? '18px' : ''),
+      fontSize: '16px',
+    })) as unknown as typeof window.getComputedStyle
+
+    globalThis.window.getComputedStyle = mockGetComputedStyle
+
+    expect(readCssLengthVar('--layout-size', 10)).toBe(18)
+    expect(readCssLengthVar('--layout-missing', 10)).toBe(10)
+  })
+})
 
 describe('readTypographyPxVar', () => {
   let originalWindow: typeof globalThis.window
@@ -117,7 +147,7 @@ describe('readTypographyPxVar', () => {
     const result = readTypographyPxVar('--typography-size-base', 16)
     expect(result).toBe(16)
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'Failed to read typography variable --typography-size-base:',
+      'Failed to read CSS length variable --typography-size-base:',
       expect.any(Error)
     )
 

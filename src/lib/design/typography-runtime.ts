@@ -10,7 +10,7 @@ function resolveRemBasePx(styles: CSSStyleDeclaration): number {
   return fontSize ?? REM_FALLBACK_PX
 }
 
-function parseCssLengthToPx(value: string, remBasePx: number): number | null {
+export function parseCssLengthToPx(value: string, remBasePx: number): number | null {
   const normalized = value.trim()
   if (!normalized) return null
 
@@ -30,7 +30,7 @@ function parseCssLengthToPx(value: string, remBasePx: number): number | null {
   return null
 }
 
-export function readTypographyPxVar(token: `--${string}`, fallbackPx: number): number {
+export function readCssLengthVar(token: `--${string}`, fallbackPx: number): number {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return fallbackPx
   }
@@ -41,7 +41,11 @@ export function readTypographyPxVar(token: `--${string}`, fallbackPx: number): n
     const remBasePx = resolveRemBasePx(rootStyles)
     return parseCssLengthToPx(tokenValue, remBasePx) ?? fallbackPx
   } catch (error) {
-    console.warn(`Failed to read typography variable ${token}:`, error)
+    console.warn(`Failed to read CSS length variable ${token}:`, error)
     return fallbackPx
   }
+}
+
+export function readTypographyPxVar(token: `--${string}`, fallbackPx: number): number {
+  return readCssLengthVar(token, fallbackPx)
 }

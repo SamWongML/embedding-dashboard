@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { readTypographyPxVar } from '@/lib/design/typography-runtime'
+import { readCssLengthVar, readTypographyPxVar } from '@/lib/design/typography-runtime'
 
 export type ChartTone =
   | 'accent'        // chart-1 (Indigo)
@@ -15,7 +15,7 @@ export type ChartTone =
   | 'error'
 
 export const chartToneToColorVar: Record<ChartTone, string> = {
-  accent: 'var(--chart-1)',
+  accent: 'var(--chart-accent)',
   accentSoft: 'var(--chart-accent-soft)',
   accentDim: 'var(--chart-accent-dim)',
   teal: 'var(--chart-2)',
@@ -29,10 +29,10 @@ export const chartToneToColorVar: Record<ChartTone, string> = {
 }
 
 // Direct color values for SVG/Canvas rendering (Recharts compatibility)
-// IMPORTANT: These values must stay in sync with globals.css chart variables.
+// IMPORTANT: These values must stay in sync with the runtime chart CSS variables.
 // CSS custom properties don't work reliably in SVG elements rendered by Recharts,
 // so we duplicate the values here for direct use in charts.
-// Source of truth: src/app/globals.css (--chart-1, --chart-2, --chart-3, etc.)
+// Source of truth: src/app/styles/themes/colors.css (--chart-1, --chart-2, --chart-3, etc.)
 export const chartColors = {
   light: {
     accent: 'oklch(55% 0.14 277)',      // Indigo
@@ -69,6 +69,129 @@ export function getChartColor(tone: ChartTone, theme: 'light' | 'dark'): string 
 export function colorByChartTone(tone: ChartTone): string {
   return chartToneToColorVar[tone]
 }
+
+type ChartMargin = {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
+type ChartMarginTokenSet = {
+  top: `--${string}`
+  right: `--${string}`
+  bottom: `--${string}`
+  left: `--${string}`
+}
+
+function resolveChartMargin(tokens: ChartMarginTokenSet, fallback: ChartMargin): ChartMargin {
+  return {
+    top: readCssLengthVar(tokens.top, fallback.top),
+    right: readCssLengthVar(tokens.right, fallback.right),
+    bottom: readCssLengthVar(tokens.bottom, fallback.bottom),
+    left: readCssLengthVar(tokens.left, fallback.left),
+  }
+}
+
+export const chartContainerHeights = {
+  compact: 'h-(--chart-height-compact)',
+  standard: 'h-(--chart-height-standard)',
+  tall: 'h-(--chart-height-tall)',
+} as const
+
+export const chartMargins = {
+  lineDefault: resolveChartMargin(
+    {
+      top: '--chart-margin-line-top',
+      right: '--chart-margin-line-right',
+      bottom: '--chart-margin-line-bottom',
+      left: '--chart-margin-line-left',
+    },
+    { top: 10, right: 10, bottom: 0, left: 0 }
+  ),
+  lineWideRight: {
+    ...resolveChartMargin(
+      {
+        top: '--chart-margin-line-top',
+        right: '--chart-margin-line-right',
+        bottom: '--chart-margin-line-bottom',
+        left: '--chart-margin-line-left',
+      },
+      { top: 10, right: 10, bottom: 0, left: 0 }
+    ),
+    right: readCssLengthVar('--chart-margin-line-wide-right', 20),
+  },
+  barDefault: resolveChartMargin(
+    {
+      top: '--chart-margin-bar-top',
+      right: '--chart-margin-bar-right',
+      bottom: '--chart-margin-bar-bottom',
+      left: '--chart-margin-bar-left',
+    },
+    { top: 10, right: 10, bottom: 0, left: 0 }
+  ),
+  barTightTop: {
+    ...resolveChartMargin(
+      {
+        top: '--chart-margin-bar-top',
+        right: '--chart-margin-bar-right',
+        bottom: '--chart-margin-bar-bottom',
+        left: '--chart-margin-bar-left',
+      },
+      { top: 10, right: 10, bottom: 0, left: 0 }
+    ),
+    top: readCssLengthVar('--chart-margin-bar-tight-top', 0),
+  },
+  composedDefault: resolveChartMargin(
+    {
+      top: '--chart-margin-composed-top',
+      right: '--chart-margin-composed-right',
+      bottom: '--chart-margin-composed-bottom',
+      left: '--chart-margin-composed-left',
+    },
+    { top: 10, right: 8, bottom: 0, left: 0 }
+  ),
+} as const
+
+type ChartLegendPreset = {
+  verticalAlign: 'top' | 'middle' | 'bottom'
+  align?: 'left' | 'center' | 'right'
+  height: number
+  iconType: 'circle'
+  iconSize: number
+}
+
+export const chartLegendPresets = {
+  compactRight: {
+    verticalAlign: 'top',
+    align: 'right',
+    height: readCssLengthVar('--chart-legend-height-compact', 24),
+    iconType: 'circle',
+    iconSize: readCssLengthVar('--chart-legend-icon-size-compact', 6),
+  },
+  defaultRight: {
+    verticalAlign: 'top',
+    align: 'right',
+    height: readCssLengthVar('--chart-legend-height-default', 24),
+    iconType: 'circle',
+    iconSize: readCssLengthVar('--chart-legend-icon-size-default', 7),
+  },
+  roomyTop: {
+    verticalAlign: 'top',
+    height: readCssLengthVar('--chart-legend-height-roomy', 36),
+    iconType: 'circle',
+    iconSize: readCssLengthVar('--chart-legend-icon-size-compact', 6),
+  },
+} as const satisfies Record<string, ChartLegendPreset>
+
+export const chartLegendLabelClassName = 'typography-copy-13 text-muted-foreground'
+
+export const chartTooltipLayout = {
+  paddingX: readCssLengthVar('--chart-tooltip-padding-x', 10),
+  paddingY: readCssLengthVar('--chart-tooltip-padding-y', 8),
+  rowGap: readCssLengthVar('--chart-tooltip-row-gap', 6),
+  indicatorSize: readCssLengthVar('--chart-tooltip-indicator-size', 6),
+} as const
 
 export const chartAxisTick = {
   fontSize: readTypographyPxVar('--chart-axis-tick-size', 11),

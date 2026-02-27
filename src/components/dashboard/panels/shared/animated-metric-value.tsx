@@ -5,7 +5,7 @@ import NumberFlow, { useCanAnimate } from '@number-flow/react'
 import type { Format } from '@number-flow/react'
 import { cn } from '@/lib/utils'
 
-export type MetricValueAnimationMode = 'on-mount' | 'always' | 'never'
+export type MetricValueAnimationMode = 'on-mount' | 'on-change' | 'always' | 'never'
 
 export interface AnimatedMetricValueProps {
   value: number | string
@@ -45,13 +45,36 @@ export function AnimatedMetricValue({
   const numericValue = isFiniteNumber(value)
   const shouldUseAnimatedPath = numericValue && canAnimate && animationMode !== 'never'
 
-  const [displayValue, setDisplayValue] = React.useState<number | string>(() =>
-    shouldUseAnimatedPath ? 0 : value
-  )
-  const [animated, setAnimated] = React.useState<boolean>(shouldUseAnimatedPath)
+  const [displayValue, setDisplayValue] = React.useState<number | string>(() => {
+    if (
+      shouldUseAnimatedPath &&
+      (animationMode === 'on-mount' || animationMode === 'always')
+    ) {
+      return 0
+    }
+
+    return value
+  })
+  const [animated, setAnimated] = React.useState<boolean>(() => {
+    if (!shouldUseAnimatedPath) {
+      return false
+    }
+
+    return animationMode !== 'on-change'
+  })
   const hasStartedMountAnimationRef = React.useRef(false)
+  const hasInitializedOnChangeRef = React.useRef(false)
+  const previousAnimationModeRef = React.useRef<MetricValueAnimationMode>(animationMode)
 
   React.useEffect(() => {
+    const hasAnimationModeChanged = previousAnimationModeRef.current !== animationMode
+
+    if (hasAnimationModeChanged) {
+      hasStartedMountAnimationRef.current = false
+      hasInitializedOnChangeRef.current = false
+      previousAnimationModeRef.current = animationMode
+    }
+
     if (!numericValue) {
       setDisplayValue(value)
       setAnimated(false)
@@ -64,6 +87,19 @@ export function AnimatedMetricValue({
       return
     }
 
+    if (animationMode === 'on-change') {
+      if (!hasInitializedOnChangeRef.current) {
+        setDisplayValue(value)
+        setAnimated(false)
+        hasInitializedOnChangeRef.current = true
+        return
+      }
+
+      setAnimated(true)
+      setDisplayValue(value)
+      return
+    }
+
     if (animationMode === 'always') {
       setAnimated(true)
       if (hasStartedMountAnimationRef.current) {
@@ -71,6 +107,7 @@ export function AnimatedMetricValue({
         return
       }
 
+      setDisplayValue(0)
       const mountAnimationTimeoutId = window.setTimeout(() => {
         setDisplayValue(value)
         hasStartedMountAnimationRef.current = true
@@ -87,6 +124,7 @@ export function AnimatedMetricValue({
     }
 
     setAnimated(true)
+    setDisplayValue(0)
     const mountAnimationTimeoutId = window.setTimeout(() => {
       setDisplayValue(value)
       hasStartedMountAnimationRef.current = true

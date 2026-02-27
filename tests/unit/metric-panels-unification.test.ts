@@ -19,22 +19,32 @@ describe('metric panel unification', () => {
     expect(overviewCardSource).toContain('MetricSurfaceCard')
   })
 
-  it('uses tokenized adaptive metric grid contracts in overview sections', () => {
+  it('uses shared monitoring metric loading primitives and tokenized grid contracts', () => {
     const metricsPanelSource = load('src/components/dashboard/panels/metrics/metrics-panel.tsx')
     const serverPanelSource = load('src/components/dashboard/panels/server-status/server-status-panel.tsx')
+    const monitoringLoadingSource = load(
+      'src/components/dashboard/panels/shared/monitoring-metric-cards-loading.tsx'
+    )
     const workspacePanelSource = load('src/components/dashboard/panels/workspace/workspace-panel.tsx')
 
-    const sources = [metricsPanelSource, serverPanelSource, workspacePanelSource]
+    expect(metricsPanelSource).toContain('MonitoringMetricCardsGrid')
+    expect(metricsPanelSource).toContain('MonitoringMetricCardsSkeleton')
+    expect(serverPanelSource).toContain('MonitoringMetricCardsGrid')
+    expect(serverPanelSource).toContain('MonitoringMetricCardsSkeleton')
+
+    const sectionSources = [metricsPanelSource, serverPanelSource, workspacePanelSource]
     const gridContract = [
       'grid auto-rows-fr',
       'gap-(--metric-card-grid-gap)',
       'repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))',
     ]
 
-    sources.forEach((source) => {
-      gridContract.forEach((contractSnippet) => {
-        expect(source).toContain(contractSnippet)
-      })
+    gridContract.forEach((contractSnippet) => {
+      expect(monitoringLoadingSource).toContain(contractSnippet)
+      expect(workspacePanelSource).toContain(contractSnippet)
+    })
+
+    sectionSources.forEach((source) => {
       expect(source).toContain('space-y-(--metric-card-section-gap)')
     })
   })
@@ -44,8 +54,8 @@ describe('metric panel unification', () => {
     const serverPanelSource = load('src/components/dashboard/panels/server-status/server-status-panel.tsx')
     const workspacePanelSource = load('src/components/dashboard/panels/workspace/workspace-panel.tsx')
 
-    expect(metricsPanelSource).toContain('animationMode="always"')
-    expect(serverPanelSource).toContain('animationMode="on-mount"')
+    expect(metricsPanelSource).toContain('animationMode="on-change"')
+    expect(serverPanelSource).toContain('animationMode="on-change"')
     expect(workspacePanelSource).toContain('animationMode="on-mount"')
   })
 })

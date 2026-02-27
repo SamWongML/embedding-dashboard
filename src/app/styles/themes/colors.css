@@ -18,10 +18,6 @@
   --leading-micro-10: 0.875rem;
   --weight-micro-10: var(--font-weight-medium);
 
-  --page-title-size: var(--font-size-md);
-  --page-title-line-height: 1.75rem;
-  --page-title-weight: var(--font-weight-semibold);
-
   --tabs-trigger-font-size: var(--text-copy-14);
   --tabs-trigger-line-height: var(--leading-copy-14);
   --tabs-trigger-font-weight: var(--font-weight-medium);

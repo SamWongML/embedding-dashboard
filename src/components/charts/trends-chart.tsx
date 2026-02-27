@@ -20,7 +20,11 @@ import {
   chartAnimationDurationMs,
   chartAnimationEasing,
   chartAxisDefaults,
+  chartContainerHeights,
   chartDotConfig,
+  chartLegendLabelClassName,
+  chartLegendPresets,
+  chartMargins,
   chartGridConfig,
   chartGridStroke,
   chartLineType,
@@ -50,12 +54,12 @@ const trendSeriesConfig = [
   {
     dataKey: 'Image Embeddings',
     label: 'Image Embeddings',
-    tone: 'teal' as ChartTone,        // Teal (chart-2)
+    tone: 'accentSoft' as ChartTone,  // Accent soft
   },
   {
     dataKey: 'Searches',
     label: 'Searches',
-    tone: 'amber' as ChartTone,       // Amber (chart-3)
+    tone: 'accentDim' as ChartTone,   // Accent dim
   },
 ] as const
 
@@ -99,12 +103,12 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
   }, [resolvedTheme])
 
   return (
-    <div className={cn('w-full h-[300px]', className)}>
+    <div className={cn('w-full', chartContainerHeights.tall, className)}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           accessibilityLayer
           data={chartData}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={chartMargins.lineDefault}
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
@@ -165,12 +169,9 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
             }}
           />
           <Legend
-            verticalAlign="top"
-            height={36}
-            iconType="circle"
-            iconSize={6}
+            {...chartLegendPresets.roomyTop}
             formatter={(value) => (
-              <span className="typography-micro-11 text-muted-foreground">{value}</span>
+              <span className={chartLegendLabelClassName}>{value}</span>
             )}
           />
           {trendSeries.map((series) => (

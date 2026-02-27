@@ -8,8 +8,14 @@ import type {
   HealthCheck,
   LatencyResponse,
   ServiceUsage,
+  TraceSpansResponse,
+  TraceSummary,
 } from '@/lib/schemas/server-status'
-import { getServerStatusRepository } from '@/lib/repositories/server-status'
+import {
+  defaultTraceFilters,
+  getServerStatusRepository,
+  type TraceFilters,
+} from '@/lib/repositories/server-status'
 
 const serverStatusRepository = getServerStatusRepository()
 
@@ -42,6 +48,28 @@ export function useServerErrors() {
     queryKey: queryKeys.serverStatus.errors(),
     queryFn: () => serverStatusRepository.getErrorLogs(),
     refetchInterval: 10000,
+  })
+}
+
+export function useRecentTraces(filters: Partial<TraceFilters> = {}) {
+  const resolvedFilters: TraceFilters = {
+    ...defaultTraceFilters,
+    ...filters,
+  }
+
+  return useQuery<TraceSummary[]>({
+    queryKey: queryKeys.serverStatus.traces(resolvedFilters),
+    queryFn: () => serverStatusRepository.getRecentTraces(resolvedFilters),
+    refetchInterval: 10000,
+  })
+}
+
+export function useTraceSpans(traceId: string | null) {
+  return useQuery<TraceSpansResponse>({
+    queryKey: queryKeys.serverStatus.traceSpans(traceId ?? ''),
+    queryFn: () => serverStatusRepository.getTraceSpans(traceId ?? ''),
+    enabled: Boolean(traceId),
+    staleTime: 30000,
   })
 }
 

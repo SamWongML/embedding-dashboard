@@ -69,14 +69,81 @@ test.describe('Command Menu', () => {
   })
 })
 
+test.describe('Usage Analytics header layout', () => {
+  test('keeps title and interval selector on one row at desktop widths', async ({
+    page,
+  }) => {
+    await page.goto('/metrics')
+
+    const heading = page.getByRole('heading', { name: 'Usage Analytics' })
+    const intervalTabs = page.locator(
+      '[data-slot="page-heading-actions"] [data-slot="tabs-list"]'
+    )
+
+    await expect(heading).toHaveCount(1)
+    await expect(heading).toBeVisible()
+    await expect(intervalTabs).toBeVisible()
+
+    const headingBox = await heading.boundingBox()
+    const tabsBox = await intervalTabs.boundingBox()
+    expect(headingBox).not.toBeNull()
+    expect(tabsBox).not.toBeNull()
+    if (!headingBox || !tabsBox) {
+      return
+    }
+
+    expect(Math.abs(tabsBox.y - headingBox.y)).toBeLessThanOrEqual(2)
+  })
+
+  test('switches periods and refreshes analytics content', async ({ page }) => {
+    await page.goto('/metrics')
+
+    await page.getByRole('tab', { name: '7d' }).click()
+
+    await expect(page.getByRole('tab', { name: '7d' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    await expect(page.getByText('Embedding Trends')).toBeVisible()
+    await expect(page.getByText('Most Accessed Embeddings')).toBeVisible()
+  })
+})
+
+test.describe('Page heading anchor', () => {
+  test.use({ viewport: { width: 1280, height: 900 } })
+
+  test('keeps page title anchored consistently across routes', async ({ page }) => {
+    await page.goto('/metrics')
+    const metricsHeading = page.getByRole('heading', { name: 'Usage Analytics' })
+    await expect(metricsHeading).toBeVisible()
+    const metricsBox = await metricsHeading.boundingBox()
+    expect(metricsBox).not.toBeNull()
+    if (!metricsBox) {
+      return
+    }
+
+    await page.goto('/records')
+    const recordsHeading = page.getByRole('heading', { name: 'Embedding Records' })
+    await expect(recordsHeading).toBeVisible()
+    const recordsBox = await recordsHeading.boundingBox()
+    expect(recordsBox).not.toBeNull()
+    if (!recordsBox) {
+      return
+    }
+
+    expect(Math.abs(metricsBox.x - recordsBox.x)).toBeLessThanOrEqual(1)
+    expect(Math.abs(metricsBox.y - recordsBox.y)).toBeLessThanOrEqual(1)
+  })
+})
+
 test.describe('Sidebar', () => {
+  test.use({ viewport: { width: 1024, height: 900 } })
+
   test('collapses and expands', async ({ page }) => {
     await page.goto('/')
 
-    // Find and click collapse button
-    const collapseButton = page
-      .getByRole('main')
-      .getByRole('button', { name: 'Toggle Sidebar' })
+    // In medium viewport mode the sidebar logo acts as the collapse/expand control.
+    const collapseButton = page.getByRole('button', { name: /Toggle sidebar/i })
     await collapseButton.click()
 
     // Sidebar state should collapse.
@@ -117,5 +184,32 @@ test.describe('Sidebar mobile behavior', () => {
     await page.getByRole('link', { name: 'Usage Analytics' }).click()
     await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
     await expect(sidebarDialog).toBeHidden()
+  })
+})
+
+test.describe('Usage Analytics mobile heading layout', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('stacks interval selector below the title on narrow screens', async ({
+    page,
+  }) => {
+    await page.goto('/metrics')
+
+    const heading = page.getByRole('heading', { name: 'Usage Analytics' })
+    const intervalTabs = page.locator(
+      '[data-slot="page-heading-actions"] [data-slot="tabs-list"]'
+    )
+    await expect(heading).toBeVisible()
+    await expect(intervalTabs).toBeVisible()
+
+    const headingBox = await heading.boundingBox()
+    const tabsBox = await intervalTabs.boundingBox()
+    expect(headingBox).not.toBeNull()
+    expect(tabsBox).not.toBeNull()
+    if (!headingBox || !tabsBox) {
+      return
+    }
+
+    expect(tabsBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height)
   })
 })

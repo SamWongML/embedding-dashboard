@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   healthCheckSchema,
   serviceStatusSchema,
+  traceSpansResponseSchema,
+  traceSummarySchema,
 } from '@/lib/schemas/server-status'
 import { textEmbeddingRequestSchema } from '@/lib/schemas/text-embedding'
 import { searchRequestSchema } from '@/lib/schemas/search'
@@ -51,6 +53,97 @@ describe('Server Status Schemas', () => {
 
       expect(parsed.uptime).toBe(123)
       expect(parsed.timestamp).toBe('2024-01-01T00:00:00Z')
+    })
+  })
+
+  describe('trace schemas', () => {
+    it('validates trace summary payload', () => {
+      const parsed = traceSummarySchema.parse({
+        id: 'tr-a8f3c2',
+        traceId: 'tr-a8f3c2',
+        timestamp: '2026-02-27T10:00:00.000Z',
+        status: 'ok',
+        method: 'POST',
+        route: '/embed/text',
+        service: 'Embedding Service',
+        durationMs: 234,
+        spanCount: 7,
+      })
+
+      expect(parsed.traceId).toBe('tr-a8f3c2')
+      expect(parsed.durationMs).toBe(234)
+    })
+
+    it('rejects malformed trace summary payload', () => {
+      expect(() =>
+        traceSummarySchema.parse({
+          id: 'tr-invalid',
+          traceId: 'tr-invalid',
+          timestamp: 'not-a-date',
+          status: 'ok',
+          method: 'GET',
+          route: '/graph/query',
+          service: 'Graph Engine',
+          durationMs: -1,
+          spanCount: 4,
+        })
+      ).toThrow()
+    })
+
+    it('validates trace spans response payload', () => {
+      const parsed = traceSpansResponseSchema.parse({
+        traceId: 'tr-a8f3c2',
+        traceDurationMs: 234,
+        spans: [
+          {
+            id: 'tr-a8f3c2-span-01',
+            traceId: 'tr-a8f3c2',
+            name: 'API Gateway',
+            service: 'API Gateway',
+            status: 'ok',
+            category: 'http',
+            startMs: 0,
+            durationMs: 234,
+            depth: 0,
+          },
+          {
+            id: 'tr-a8f3c2-span-02',
+            traceId: 'tr-a8f3c2',
+            name: 'Vector Store Write',
+            service: 'Vector Store',
+            status: 'error',
+            category: 'db',
+            startMs: 180,
+            durationMs: 40,
+            depth: 2,
+          },
+        ],
+      })
+
+      expect(parsed.spans).toHaveLength(2)
+      expect(parsed.spans[1]?.status).toBe('error')
+    })
+
+    it('rejects negative span timing values', () => {
+      expect(() =>
+        traceSpansResponseSchema.parse({
+          traceId: 'tr-a8f3c2',
+          traceDurationMs: 234,
+          spans: [
+            {
+              id: 'tr-a8f3c2-span-01',
+              traceId: 'tr-a8f3c2',
+              name: 'API Gateway',
+              service: 'API Gateway',
+              status: 'ok',
+              category: 'http',
+              startMs: -1,
+              durationMs: 50,
+              depth: 0,
+            },
+          ],
+        })
+      ).toThrow()
     })
   })
 })

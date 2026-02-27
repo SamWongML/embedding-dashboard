@@ -11,10 +11,6 @@
 
   /* Settings-only compact typography scope */
   .settings-typography {
-    --page-title-size: var(--text-copy-16);
-    --page-title-line-height: var(--leading-copy-16);
-    --page-title-weight: var(--font-weight-semibold);
-
     --tabs-trigger-font-size: var(--text-copy-14);
     --tabs-trigger-line-height: var(--leading-copy-14);
     --tabs-trigger-font-weight: var(--font-weight-medium);

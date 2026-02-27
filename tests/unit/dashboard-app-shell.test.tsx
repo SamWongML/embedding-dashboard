@@ -29,26 +29,28 @@ describe("DashboardAppShell", () => {
   })
 
   it("renders the route title and keeps shell structure stable", () => {
-    renderDashboardAppShell(<div>Panel content</div>)
+    const { container } = renderDashboardAppShell(<div>Panel content</div>)
 
-    expect(
-      screen.getByRole("heading", { name: "Embedding Records" })
-    ).toBeInTheDocument()
+    const heading = screen.getByRole("heading", { name: "Embedding Records" })
+    expect(heading).toBeInTheDocument()
     expect(screen.getByText("Panel content")).toBeInTheDocument()
 
-    const header = screen
-      .getByRole("heading", { name: "Embedding Records" })
-      .closest("header")
-    expect(header).not.toBeNull()
-    expect(header?.nextElementSibling).not.toBeNull()
+    const topbar = container.querySelector("header")
+    expect(topbar).not.toBeNull()
+    expect(topbar?.nextElementSibling).not.toBeNull()
+    expect(heading.closest("header")).toBeNull()
+
+    const headingRow = heading.closest('[data-slot="page-heading-row"]')
+    expect(headingRow).not.toBeNull()
   })
 
   it("applies settings shell classes from route config", () => {
     pathname = "/settings"
-    renderDashboardAppShell(<div>Settings content</div>)
+    const { container } = renderDashboardAppShell(<div>Settings content</div>)
 
-    const heading = screen.getByRole("heading", { name: "Settings" })
-    const shellRoot = heading.closest("header")?.parentElement
+    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument()
+    const shellRoot = container.querySelector('[data-slot="page-heading-row"]')
+      ?.closest("div.settings-typography")
 
     expect(shellRoot).not.toBeNull()
     expect(shellRoot).toHaveClass("settings-typography")

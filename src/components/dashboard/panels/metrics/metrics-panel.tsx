@@ -1,14 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MetricCard } from './metric-card'
 import { TopUsersTable } from './top-users-table'
 import { TrendsChart } from '@/components/charts/trends-chart'
 import { TopHitsChart } from '@/components/charts/top-hits-chart'
+import {
+  MonitoringMetricCardsGrid,
+  MonitoringMetricCardsSkeleton,
+} from '@/components/dashboard/panels/shared/monitoring-metric-cards-loading'
 import { useMetricsOverview } from '@/lib/hooks/use-metrics'
 import { QueryErrorState } from '@/components/dashboard/panels/shared/query-error-state'
+import { useDashboardPageHeaderActions } from '@/components/dashboard/layout/dashboard-page-header-context'
 import { cn } from '@/lib/utils'
 
 interface MetricsPanelProps {
@@ -19,13 +24,35 @@ type Period = '24h' | '7d' | '30d'
 
 export function MetricsPanel({ className }: MetricsPanelProps) {
   const [period, setPeriod] = useState<Period>('24h')
+  const pageHeaderActions = useMemo(
+    () => (
+      <Tabs
+        value={period}
+        onValueChange={(value) => setPeriod(value as Period)}
+        aria-label="Usage analytics time interval"
+        className="w-full sm:w-auto"
+      >
+        <TabsList aria-label="Usage analytics time interval" className="w-full sm:w-auto">
+          <TabsTrigger value="24h">24h</TabsTrigger>
+          <TabsTrigger value="7d">7d</TabsTrigger>
+          <TabsTrigger value="30d">30d</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    ),
+    [period]
+  )
+
+  useDashboardPageHeaderActions(pageHeaderActions)
+
   const {
     data,
-    isLoading,
+    isPending,
     isError,
     error,
     refetch,
   } = useMetricsOverview(period)
+  const isInitialLoading = isPending && !data
+  const isMetricCardsInitialLoading = isInitialLoading
 
   if (isError) {
     const errorMessage = error instanceof Error ? error.message : 'Unable to fetch metrics from API.'
@@ -40,7 +67,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
     )
   }
 
-  if (!isLoading && !data) {
+  if (!isInitialLoading && !data) {
     return (
       <Card>
         <CardHeader className="pb-2">
@@ -55,42 +82,20 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
 
   return (
     <div className={cn('space-y-(--metric-card-section-gap)', className)}>
-      {/* Period Selector */}
-      <div className="flex justify-end">
-        <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
-          <TabsList>
-            <TabsTrigger value="24h">24h</TabsTrigger>
-            <TabsTrigger value="7d">7d</TabsTrigger>
-            <TabsTrigger value="30d">30d</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
       {/* Metric Cards */}
-      <div className="grid auto-rows-fr gap-(--metric-card-grid-gap) [grid-template-columns:repeat(auto-fit,minmax(var(--metric-card-grid-min-width),1fr))]">
-        {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <Card
-              key={i}
-              className="h-full min-h-[var(--metric-card-min-height)] [--card-padding:var(--metric-card-padding)]"
-            >
-              <CardHeader className="pb-(--metric-card-header-padding-bottom)">
-                <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-              </CardHeader>
-              <CardContent className="space-y-(--space-sm)">
-                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
-                <div className="h-4 w-12 bg-muted rounded animate-pulse" />
-              </CardContent>
-            </Card>
-          ))
+      <div aria-busy={isMetricCardsInitialLoading}>
+        {isMetricCardsInitialLoading ? (
+          <MonitoringMetricCardsSkeleton count={4} />
         ) : (
-          data?.cards.map((metric) => (
-            <MetricCard
-              key={metric.label}
-              metric={metric}
-              animationMode="always"
-            />
-          ))
+          <MonitoringMetricCardsGrid>
+            {data?.cards.map((metric) => (
+              <MetricCard
+                key={metric.label}
+                metric={metric}
+                animationMode="on-change"
+              />
+            ))}
+          </MonitoringMetricCardsGrid>
         )}
       </div>
 
@@ -102,7 +107,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {isInitialLoading ? (
             <div className="h-[300px] bg-muted rounded animate-pulse" />
           ) : (
             <TrendsChart data={data?.trends || []} period={period} />
@@ -119,7 +124,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isInitialLoading ? (
               <div className="h-[200px] bg-muted rounded animate-pulse" />
             ) : (
               <TopHitsChart data={data?.topHits || []} />
@@ -127,7 +132,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
           </CardContent>
         </Card>
 
-        {isLoading ? (
+        {isInitialLoading ? (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="typography-size-base typography-weight-medium">Top Users</CardTitle>

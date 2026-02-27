@@ -3,6 +3,7 @@ import {
   buildCountAxisFormatter,
   buildDurationAxisFormatter,
   buildTimeTickFormatter,
+  buildUtcHourMinuteTickFormatter,
   formatBackendTimeToHourMinute,
 } from '@/components/charts/axis-formatters'
 
@@ -115,6 +116,26 @@ describe('axis-formatters', () => {
 
       expect(formatter(Number.NaN)).toBe('')
       expect(invalidDomainFormatter(Date.UTC(2026, 0, 1))).toBe('')
+    })
+  })
+
+  describe('buildUtcHourMinuteTickFormatter', () => {
+    it('formats timestamps as fixed-width UTC hour and minute labels', () => {
+      const formatter = buildUtcHourMinuteTickFormatter({
+        locale: 'en-US',
+        timeZone: 'UTC',
+      })
+
+      expect(formatter(Date.UTC(2026, 1, 26, 19, 5, 0, 0))).toBe('19:05')
+    })
+
+    it('formats midnight as 00:00', () => {
+      const formatter = buildUtcHourMinuteTickFormatter({
+        locale: 'en-US',
+        timeZone: 'UTC',
+      })
+
+      expect(formatter(Date.UTC(2026, 1, 27, 0, 0, 0, 0))).toBe('00:00')
     })
   })
 

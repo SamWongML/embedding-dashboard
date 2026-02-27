@@ -1,8 +1,11 @@
 import type { ReactNode } from "react"
 import { CommandPalette } from "@/components/dashboard/command-palette"
 import { DevSimulationIndicator } from "@/components/dashboard/layout/dev-simulation-indicator"
+import {
+  DashboardPageHeaderProvider,
+  useDashboardPageHeaderState,
+} from "@/components/dashboard/layout/dashboard-page-header-context"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 interface DashboardPageShellProps {
@@ -21,25 +24,62 @@ export function DashboardPageShell({
   className,
 }: DashboardPageShellProps) {
   return (
+    <DashboardPageHeaderProvider>
+      <DashboardPageShellContent
+        title={title}
+        actions={actions}
+        showCommandPalette={showCommandPalette}
+        className={className}
+      >
+        {children}
+      </DashboardPageShellContent>
+    </DashboardPageHeaderProvider>
+  )
+}
+
+function DashboardPageShellContent({
+  title,
+  actions,
+  showCommandPalette,
+  children,
+  className,
+}: DashboardPageShellProps) {
+  const { actions: pageHeaderActions } = useDashboardPageHeaderState()
+  const hasPageHeaderActions = pageHeaderActions !== null
+
+  return (
     <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col", className)}>
-      <header className="sticky top-0 z-(--z-sticky) flex h-(--header-height) shrink-0 items-center justify-between border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex min-w-0 items-center gap-(--form-item-gap)">
-          <SidebarTrigger className="-ml-1 md:hidden xl:inline-flex" />
-          <Separator
-            orientation="vertical"
-            className="mr-[calc(var(--form-item-gap)-1px)] md:hidden xl:block data-[orientation=vertical]:h-4"
-          />
-          <h1 className="truncate [font-size:var(--page-title-size)] [line-height:var(--page-title-line-height)] [font-weight:var(--page-title-weight)]">
-            {title}
-          </h1>
-        </div>
-        <div className="flex items-center gap-(--form-item-gap)">
+      <header className="sticky top-0 z-(--z-sticky) flex h-(--header-height) shrink-0 items-center border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <SidebarTrigger className="-ml-1 md:hidden" />
+        <div className="ml-auto flex min-w-0 items-center gap-(--form-item-gap)">
           <DevSimulationIndicator />
           {showCommandPalette ? <CommandPalette /> : null}
           {actions}
         </div>
       </header>
-      <div className="min-h-0 min-w-0 flex-1 p-6">{children}</div>
+      <div className="min-h-0 min-w-0 flex-1 p-6">
+        <div
+          data-slot="page-heading-row"
+          className="mb-(--space-page) flex flex-nowrap items-center justify-between gap-(--page-heading-row-gap)"
+        >
+          <h1 className="flex-1 min-w-0 truncate [font-size:var(--page-title-size)] [line-height:var(--page-title-line-height)] [font-weight:var(--page-title-weight)]">
+            {title}
+          </h1>
+          <div
+            data-slot="page-heading-actions"
+            aria-hidden={!hasPageHeaderActions}
+            className={cn(
+              "flex min-h-(--page-heading-actions-min-height) w-auto shrink-0 items-center justify-end",
+              hasPageHeaderActions
+                ? "pointer-events-auto visible"
+                : "pointer-events-none invisible"
+            )}
+          >
+            {pageHeaderActions}
+          </div>
+        </div>
+        <div className="min-h-0 min-w-0">{children}</div>
+      </div>
     </div>
   )
 }

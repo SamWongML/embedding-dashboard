@@ -13,7 +13,9 @@ import {
   chartAnimationDurationMs,
   chartAnimationEasing,
   chartAxisDefaults,
+  chartContainerHeights,
   chartDotConfig,
+  chartMargins,
   chartGridConfig,
   chartGridStroke,
   chartLineType,
@@ -59,12 +61,12 @@ export function LatencyChart({ data, className }: LatencyChartProps) {
   )
 
   return (
-    <div className={cn('w-full h-[200px]', className)}>
+    <div className={cn('w-full', chartContainerHeights.compact, className)}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           accessibilityLayer
           data={chartData}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={chartMargins.lineDefault}
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis

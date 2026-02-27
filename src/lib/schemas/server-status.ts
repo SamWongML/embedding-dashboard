@@ -60,6 +60,49 @@ export const errorLogSchema = z.object({
   stackTrace: z.string().optional(),
 })
 
+export const traceStatusSchema = z.enum(['ok', 'error'])
+
+export const traceSummarySchema = z.object({
+  id: z.string().min(1),
+  traceId: z.string().min(1),
+  timestamp: z.string().datetime(),
+  status: traceStatusSchema,
+  method: z.string().min(1),
+  route: z.string().min(1),
+  service: z.string().min(1),
+  durationMs: z.number().nonnegative(),
+  spanCount: z.number().int().nonnegative(),
+})
+
+export const traceSpanCategorySchema = z.enum([
+  'http',
+  'middleware',
+  'model',
+  'db',
+  'cache',
+  'queue',
+  'serialize',
+  'other',
+])
+
+export const traceSpanSchema = z.object({
+  id: z.string().min(1),
+  traceId: z.string().min(1),
+  name: z.string().min(1),
+  service: z.string().min(1),
+  status: traceStatusSchema,
+  category: traceSpanCategorySchema,
+  startMs: z.number().nonnegative(),
+  durationMs: z.number().nonnegative(),
+  depth: z.number().int().nonnegative().default(0),
+})
+
+export const traceSpansResponseSchema = z.object({
+  traceId: z.string().min(1),
+  traceDurationMs: z.number().nonnegative(),
+  spans: z.array(traceSpanSchema),
+})
+
 export const serverStatusSchema = z.object({
   health: healthCheckSchema,
   latency: latencyResponseSchema,
@@ -73,4 +116,9 @@ export type LatencyDataPoint = z.infer<typeof latencyDataPointSchema>
 export type LatencyResponse = z.infer<typeof latencyResponseSchema>
 export type ServiceUsage = z.infer<typeof serviceUsageSchema>
 export type ErrorLog = z.infer<typeof errorLogSchema>
+export type TraceStatus = z.infer<typeof traceStatusSchema>
+export type TraceSummary = z.infer<typeof traceSummarySchema>
+export type TraceSpanCategory = z.infer<typeof traceSpanCategorySchema>
+export type TraceSpan = z.infer<typeof traceSpanSchema>
+export type TraceSpansResponse = z.infer<typeof traceSpansResponseSchema>
 export type ServerStatus = z.infer<typeof serverStatusSchema>

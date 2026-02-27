@@ -20,6 +20,11 @@ interface BackendTimeFormatParams {
   timeZone?: string
 }
 
+interface UtcHourMinuteTickFormatterParams {
+  locale?: string
+  timeZone?: string
+}
+
 const THOUSAND = 1_000
 const MILLION = 1_000_000
 const BILLION = 1_000_000_000
@@ -169,6 +174,37 @@ export function buildTimeTickFormatter({
     const date = new Date(ts)
     if (!Number.isFinite(date.getTime())) return ''
     return dateFormatter.format(date)
+  }
+}
+
+export function buildUtcHourMinuteTickFormatter({
+  locale = 'en-US',
+  timeZone = 'UTC',
+}: UtcHourMinuteTickFormatterParams = {}): (ts: number) => string {
+  const formatter = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+    timeZone,
+  })
+
+  return (ts: number): string => {
+    if (!Number.isFinite(ts)) return ''
+
+    const date = new Date(ts)
+    if (!Number.isFinite(date.getTime())) return ''
+
+    const parts = formatter.formatToParts(date)
+    const hour = parts.find((part) => part.type === 'hour')?.value
+    const minute = parts.find((part) => part.type === 'minute')?.value
+
+    if (!hour || !minute) {
+      return formatter.format(date)
+    }
+
+    const normalizedHour = hour === '24' ? '00' : hour
+    return `${normalizedHour}:${minute}`
   }
 }
 

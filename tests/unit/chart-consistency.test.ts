@@ -4,8 +4,10 @@ import { describe, expect, it } from 'vitest'
 
 const projectRoot = process.cwd()
 const chartFiles = [
+  'latency-distribution-chart.tsx',
   'service-usage-chart.tsx',
   'top-hits-chart.tsx',
+  'throughput-errors-chart.tsx',
   'latency-chart.tsx',
   'trends-chart.tsx',
   'sparkline.tsx',
@@ -32,6 +34,41 @@ describe('chart consistency', () => {
     })
   })
 
+  it('uses centralized chart heights and margin presets', () => {
+    const chartsWithContainerHeights = [
+      'latency-distribution-chart.tsx',
+      'service-usage-chart.tsx',
+      'top-hits-chart.tsx',
+      'throughput-errors-chart.tsx',
+      'latency-chart.tsx',
+      'trends-chart.tsx',
+    ] as const
+
+    chartsWithContainerHeights.forEach((fileName) => {
+      const source = loadChartFile(fileName)
+      expect(source).toContain('chartContainerHeights')
+    })
+
+    chartFiles.forEach((fileName) => {
+      const source = loadChartFile(fileName)
+      expect(source).not.toContain('margin={{')
+    })
+  })
+
+  it('uses centralized legend presets and typography tokens', () => {
+    const legendCharts = [
+      'latency-distribution-chart.tsx',
+      'throughput-errors-chart.tsx',
+      'trends-chart.tsx',
+    ] as const
+
+    legendCharts.forEach((fileName) => {
+      const source = loadChartFile(fileName)
+      expect(source).toContain('chartLegendPresets')
+      expect(source).toContain('chartLegendLabelClassName')
+    })
+  })
+
   it('uses single-accent ranking bars without active overlays', () => {
     const rankingCharts = ['top-hits-chart.tsx', 'service-usage-chart.tsx'] as const
 
@@ -55,8 +92,15 @@ describe('chart consistency', () => {
   })
 
   it('renders primary time-series charts as line-only without area gradients', () => {
+    const latencyDistributionSource = loadChartFile('latency-distribution-chart.tsx')
     const latencySource = loadChartFile('latency-chart.tsx')
     const trendsSource = loadChartFile('trends-chart.tsx')
+
+    expect(latencyDistributionSource).toContain('<LineChart')
+    expect(latencyDistributionSource).toContain('<Line')
+    expect(latencyDistributionSource).not.toContain('<AreaChart')
+    expect(latencyDistributionSource).not.toContain('<Area')
+    expect(latencyDistributionSource).not.toContain('fill="url(#')
 
     expect(latencySource).toContain('<LineChart')
     expect(latencySource).toContain('<Line')
@@ -73,12 +117,19 @@ describe('chart consistency', () => {
     expect(trendsSource).not.toContain('fill="url(#')
   })
   it('uses dynamic axis formatters in primary line charts', () => {
+    const latencyDistributionSource = loadChartFile('latency-distribution-chart.tsx')
     const latencySource = loadChartFile('latency-chart.tsx')
     const trendsSource = loadChartFile('trends-chart.tsx')
 
     expect(trendsSource).toContain('buildCountAxisFormatter')
     expect(trendsSource).toContain('buildTimeTickFormatter')
     expect(trendsSource).not.toContain('value / 1000')
+
+    expect(latencyDistributionSource).toContain('buildDurationAxisFormatter')
+    expect(latencyDistributionSource).toContain('buildUtcHourMinuteTickFormatter')
+    expect(latencyDistributionSource).toContain('buildDeterministicUtcHourTicks')
+    expect(latencyDistributionSource).not.toContain('`${value}ms`')
+    expect(latencyDistributionSource).not.toContain('tickCount={6}')
 
     expect(latencySource).toContain('buildDurationAxisFormatter')
     expect(latencySource).toContain('buildTimeTickFormatter')

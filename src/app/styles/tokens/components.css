@@ -84,8 +84,10 @@
   /* ===== HEADER TOKENS ===== */
   --header-height: 3.5rem;
   --header-padding-x: 1.5rem;
-  --page-title-size: var(--font-size-md);
-  --page-title-line-height: 1.75rem;
+  --page-heading-row-gap: var(--space-md);
+  --page-heading-actions-min-height: var(--tabs-list-height);
+  --page-title-size: var(--font-size-xl);
+  --page-title-line-height: 2rem;
   --page-title-weight: var(--font-weight-semibold);
 
   /* ===== AVATAR TOKENS ===== */
@@ -250,17 +252,49 @@
   --textarea-line-height: var(--leading-copy-14);
   --textarea-font-weight: var(--font-weight-normal);
 
-  /* ===== CHART/GRAPH TYPOGRAPHY TOKENS ===== */
-  --chart-axis-tick-size: var(--text-micro-11);
-  --chart-axis-tick-line-height: var(--leading-micro-11);
-  --chart-tooltip-label-size: var(--text-micro-11);
-  --chart-tooltip-label-line-height: var(--leading-micro-11);
-  --chart-tooltip-row-size: var(--text-micro-11);
-  --chart-tooltip-row-line-height: var(--leading-micro-11);
+  /* ===== CHART/GRAPH TOKENS (Strict Linearized) ===== */
+  --chart-height-compact: 12.5rem; /* 200px */
+  --chart-height-standard: 17.5rem; /* 280px */
+  --chart-height-tall: 18.75rem; /* 300px */
+
+  --chart-margin-line-top: var(--space-2\.5);
+  --chart-margin-line-right: var(--space-2\.5);
+  --chart-margin-line-bottom: var(--space-0);
+  --chart-margin-line-left: var(--space-0);
+  --chart-margin-line-wide-right: var(--space-5);
+
+  --chart-margin-bar-top: var(--space-2\.5);
+  --chart-margin-bar-right: var(--space-2\.5);
+  --chart-margin-bar-bottom: var(--space-0);
+  --chart-margin-bar-left: var(--space-0);
+  --chart-margin-bar-tight-top: var(--space-0);
+
+  --chart-margin-composed-top: var(--space-2\.5);
+  --chart-margin-composed-right: var(--space-2);
+  --chart-margin-composed-bottom: var(--space-0);
+  --chart-margin-composed-left: var(--space-0);
+
+  --chart-legend-height-compact: 1.5rem; /* 24px */
+  --chart-legend-height-default: 1.5rem; /* 24px */
+  --chart-legend-height-roomy: 2.25rem; /* 36px */
+  --chart-legend-icon-size-compact: 0.375rem; /* 6px */
+  --chart-legend-icon-size-default: 0.4375rem; /* 7px */
+
+  --chart-tooltip-padding-x: var(--space-2\.5);
+  --chart-tooltip-padding-y: var(--space-2);
+  --chart-tooltip-row-gap: var(--space-1\.5);
+  --chart-tooltip-indicator-size: var(--space-1\.5);
+
+  --chart-axis-tick-size: var(--text-copy-13);
+  --chart-axis-tick-line-height: var(--leading-copy-13);
+  --chart-tooltip-label-size: var(--text-copy-13);
+  --chart-tooltip-label-line-height: var(--leading-copy-13);
+  --chart-tooltip-row-size: var(--text-copy-13);
+  --chart-tooltip-row-line-height: var(--leading-copy-13);
   --chart-tooltip-row-font-weight: var(--font-weight-normal);
   --chart-tooltip-value-font-weight: var(--font-weight-medium);
-  --chart-legend-size: var(--text-micro-11);
-  --chart-legend-line-height: var(--leading-micro-11);
+  --chart-legend-size: var(--text-copy-13);
+  --chart-legend-line-height: var(--leading-copy-13);
   --graph-label-size: var(--text-micro-10);
   --graph-label-line-height: var(--leading-micro-10);
 }

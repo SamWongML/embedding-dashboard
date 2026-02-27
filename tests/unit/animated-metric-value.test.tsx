@@ -78,4 +78,16 @@ describe('AnimatedMetricValue', () => {
 
     expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '87')
   })
+
+  it('renders first value immediately in on-change mode and animates subsequent updates', () => {
+    const { rerender } = render(<AnimatedMetricValue value={42} animationMode="on-change" />)
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '42')
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-animated', 'false')
+
+    rerender(<AnimatedMetricValue value={84} animationMode="on-change" />)
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '84')
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-animated', 'true')
+  })
 })

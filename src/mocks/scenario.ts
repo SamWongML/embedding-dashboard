@@ -26,6 +26,9 @@ import type {
   LatencyDataPoint,
   LatencyResponse,
   ServiceUsage,
+  TraceSpan,
+  TraceSpansResponse,
+  TraceSummary,
 } from '@/lib/schemas/server-status'
 import type {
   EmbeddingModel,
@@ -70,6 +73,8 @@ export interface DemoScenario {
   latencyResponse: LatencyResponse
   serviceUsage: ServiceUsage[]
   errorLogs: ErrorLog[]
+  recentTraces: TraceSummary[]
+  traceSpansByTraceId: Record<string, TraceSpansResponse>
   textEmbeddingModels: EmbeddingModel[]
   imageEmbeddingModels: ImageEmbeddingModel[]
 }
@@ -767,6 +772,362 @@ function buildErrorLogs(
   )
 }
 
+interface TraceSeed {
+  traceId: string
+  method: string
+  route: string
+  service: string
+  durationMs: number
+  spanCount: number
+  status: 'ok' | 'error'
+  secondsAgo: number
+}
+
+const traceSeeds: TraceSeed[] = [
+  {
+    traceId: 'tr-a8f3c2',
+    method: 'POST',
+    route: '/embed/text',
+    service: 'Embedding Service',
+    durationMs: 234,
+    spanCount: 7,
+    status: 'ok',
+    secondsAgo: 0,
+  },
+  {
+    traceId: 'tr-b9e4d1',
+    method: 'POST',
+    route: '/embed/image',
+    service: 'Embedding Service',
+    durationMs: 1240,
+    spanCount: 12,
+    status: 'ok',
+    secondsAgo: 3,
+  },
+  {
+    traceId: 'tr-c0f5e8',
+    method: 'POST',
+    route: '/search/hybrid',
+    service: 'Search Service',
+    durationMs: 445,
+    spanCount: 9,
+    status: 'ok',
+    secondsAgo: 6,
+  },
+  {
+    traceId: 'tr-d1a6f9',
+    method: 'GET',
+    route: '/graph/query',
+    service: 'Graph Engine',
+    durationMs: 3200,
+    spanCount: 15,
+    status: 'error',
+    secondsAgo: 10,
+  },
+  {
+    traceId: 'tr-e2b7a0',
+    method: 'POST',
+    route: '/embed/batch',
+    service: 'Embedding Service',
+    durationMs: 8900,
+    spanCount: 24,
+    status: 'ok',
+    secondsAgo: 23,
+  },
+  {
+    traceId: 'tr-f3c8b1',
+    method: 'POST',
+    route: '/search/semantic',
+    service: 'Search Service',
+    durationMs: 189,
+    spanCount: 5,
+    status: 'ok',
+    secondsAgo: 28,
+  },
+  {
+    traceId: 'tr-g4d9c2',
+    method: 'GET',
+    route: '/graph/traverse',
+    service: 'Graph Engine',
+    durationMs: 567,
+    spanCount: 8,
+    status: 'ok',
+    secondsAgo: 36,
+  },
+  {
+    traceId: 'tr-h5e0d3',
+    method: 'POST',
+    route: '/embed/url',
+    service: 'Embedding Service',
+    durationMs: 4500,
+    spanCount: 18,
+    status: 'error',
+    secondsAgo: 40,
+  },
+]
+
+function buildRecentTraces(baseDate: Date): TraceSummary[] {
+  return traceSeeds
+    .map((seed) => ({
+      id: seed.traceId,
+      traceId: seed.traceId,
+      method: seed.method,
+      route: seed.route,
+      service: seed.service,
+      durationMs: seed.durationMs,
+      spanCount: seed.spanCount,
+      status: seed.status,
+      timestamp: toIsoWithOffset(baseDate, -seed.secondsAgo * 1000),
+    }))
+    .sort(
+      (left, right) =>
+        new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime()
+    )
+}
+
+function toFractionMs(total: number, ratio: number) {
+  return Math.max(0, Math.floor(total * ratio))
+}
+
+function clampSpanDuration(total: number, startMs: number, durationMs: number) {
+  const clampedStart = Math.max(0, Math.min(startMs, total))
+  const maxAllowedDuration = Math.max(1, total - clampedStart)
+  const clampedDuration = Math.max(1, Math.min(durationMs, maxAllowedDuration))
+  return {
+    startMs: clampedStart,
+    durationMs: clampedDuration,
+  }
+}
+
+interface SpanDraft {
+  name: string
+  service: string
+  status: 'ok' | 'error'
+  category: TraceSpan['category']
+  startMs: number
+  durationMs: number
+  depth?: number
+}
+
+function buildTraceSpans(trace: TraceSummary, seed: number): TraceSpansResponse {
+  const random = createSeededRandom(hashString(`${seed}:${trace.traceId}:trace-spans`))
+  const drafts: SpanDraft[] = [
+    {
+      name: 'API Gateway',
+      service: 'API Gateway',
+      status: trace.status,
+      category: 'http',
+      startMs: 0,
+      durationMs: trace.durationMs,
+      depth: 0,
+    },
+    {
+      name: 'Auth Middleware',
+      service: 'Auth Middleware',
+      status: 'ok',
+      category: 'middleware',
+      startMs: toFractionMs(trace.durationMs, 0.01),
+      durationMs: Math.max(2, toFractionMs(trace.durationMs, 0.04)),
+      depth: 1,
+    },
+    {
+      name: 'Rate Limiter',
+      service: 'Rate Limiter',
+      status: 'ok',
+      category: 'middleware',
+      startMs: toFractionMs(trace.durationMs, 0.03),
+      durationMs: Math.max(2, toFractionMs(trace.durationMs, 0.02)),
+      depth: 1,
+    },
+  ]
+
+  if (trace.route.startsWith('/embed')) {
+    drafts.push(
+      {
+        name: 'Tokenizer',
+        service: 'Embedding Service',
+        status: 'ok',
+        category: 'model',
+        startMs: toFractionMs(trace.durationMs, 0.08),
+        durationMs: Math.max(4, toFractionMs(trace.durationMs, 0.08)),
+        depth: 2,
+      },
+      {
+        name: 'Model Inference',
+        service: 'Embedding Service',
+        status: trace.status === 'error' ? 'error' : 'ok',
+        category: 'model',
+        startMs: toFractionMs(trace.durationMs, 0.14),
+        durationMs: Math.max(16, toFractionMs(trace.durationMs, 0.58)),
+        depth: 2,
+      },
+      {
+        name: 'Vector Store Write',
+        service: 'Vector Store',
+        status: trace.status === 'error' ? 'error' : 'ok',
+        category: 'db',
+        startMs: toFractionMs(trace.durationMs, 0.74),
+        durationMs: Math.max(10, toFractionMs(trace.durationMs, 0.18)),
+        depth: 2,
+      },
+      {
+        name: 'Response Serialize',
+        service: 'API Gateway',
+        status: trace.status,
+        category: 'serialize',
+        startMs: toFractionMs(trace.durationMs, 0.93),
+        durationMs: Math.max(3, toFractionMs(trace.durationMs, 0.05)),
+        depth: 1,
+      }
+    )
+  } else if (trace.route.startsWith('/search')) {
+    drafts.push(
+      {
+        name: 'Query Planner',
+        service: 'Search Service',
+        status: 'ok',
+        category: 'model',
+        startMs: toFractionMs(trace.durationMs, 0.09),
+        durationMs: Math.max(4, toFractionMs(trace.durationMs, 0.15)),
+        depth: 2,
+      },
+      {
+        name: 'BM25 Retrieval',
+        service: 'Search Index',
+        status: 'ok',
+        category: 'db',
+        startMs: toFractionMs(trace.durationMs, 0.23),
+        durationMs: Math.max(8, toFractionMs(trace.durationMs, 0.34)),
+        depth: 2,
+      },
+      {
+        name: 'Vector Similarity Search',
+        service: 'Vector Store',
+        status: 'ok',
+        category: 'db',
+        startMs: toFractionMs(trace.durationMs, 0.43),
+        durationMs: Math.max(8, toFractionMs(trace.durationMs, 0.3)),
+        depth: 2,
+      },
+      {
+        name: 'Rank Fusion',
+        service: 'Search Service',
+        status: 'ok',
+        category: 'model',
+        startMs: toFractionMs(trace.durationMs, 0.72),
+        durationMs: Math.max(4, toFractionMs(trace.durationMs, 0.2)),
+        depth: 2,
+      }
+    )
+  } else {
+    drafts.push(
+      {
+        name: 'Graph Resolver',
+        service: 'Graph Engine',
+        status: 'ok',
+        category: 'other',
+        startMs: toFractionMs(trace.durationMs, 0.12),
+        durationMs: Math.max(8, toFractionMs(trace.durationMs, 0.28)),
+        depth: 2,
+      },
+      {
+        name: 'Node Traversal',
+        service: 'Graph Store',
+        status: trace.status === 'error' ? 'error' : 'ok',
+        category: 'db',
+        startMs: toFractionMs(trace.durationMs, 0.33),
+        durationMs: Math.max(8, toFractionMs(trace.durationMs, 0.46)),
+        depth: 2,
+      },
+      {
+        name: 'Edge Projection',
+        service: 'Graph Engine',
+        status: trace.status === 'error' ? 'error' : 'ok',
+        category: 'model',
+        startMs: toFractionMs(trace.durationMs, 0.74),
+        durationMs: Math.max(6, toFractionMs(trace.durationMs, 0.18)),
+        depth: 2,
+      }
+    )
+  }
+
+  if (trace.status === 'error') {
+    drafts.push({
+      name: 'Upstream Timeout',
+      service: trace.service,
+      status: 'error',
+      category: 'other',
+      startMs: toFractionMs(trace.durationMs, 0.88),
+      durationMs: Math.max(6, toFractionMs(trace.durationMs, 0.1)),
+      depth: 2,
+    })
+  }
+
+  const fillerCandidates: Array<Pick<SpanDraft, 'name' | 'service' | 'category'>> = [
+    { name: 'Queue Dispatch', service: 'Queue Service', category: 'queue' },
+    { name: 'Cache Lookup', service: 'Cache Service', category: 'cache' },
+    { name: 'Policy Check', service: 'Policy Engine', category: 'other' },
+    { name: 'Response Marshal', service: 'Gateway', category: 'serialize' },
+  ]
+  const defaultFillerCandidate: Pick<SpanDraft, 'name' | 'service' | 'category'> = {
+    name: 'Queue Dispatch',
+    service: 'Queue Service',
+    category: 'queue',
+  }
+
+  while (drafts.length < trace.spanCount) {
+    const candidate =
+      fillerCandidates[Math.floor(random() * fillerCandidates.length)] ??
+      defaultFillerCandidate
+    const startRatio = 0.08 + random() * 0.82
+    const durationRatio = 0.01 + random() * 0.09
+    drafts.push({
+      name: candidate.name,
+      service: candidate.service,
+      status: 'ok',
+      category: candidate.category,
+      startMs: toFractionMs(trace.durationMs, startRatio),
+      durationMs: Math.max(2, toFractionMs(trace.durationMs, durationRatio)),
+      depth: 2,
+    })
+  }
+
+  const limitedDrafts = drafts.slice(0, trace.spanCount)
+  const spans: TraceSpan[] = limitedDrafts
+    .map((draft, index) => {
+      const clamped = clampSpanDuration(trace.durationMs, draft.startMs, draft.durationMs)
+      return {
+        id: `${trace.traceId}-span-${String(index + 1).padStart(2, '0')}`,
+        traceId: trace.traceId,
+        name: draft.name,
+        service: draft.service,
+        status: draft.status,
+        category: draft.category,
+        startMs: clamped.startMs,
+        durationMs: clamped.durationMs,
+        depth: draft.depth ?? 0,
+      }
+    })
+    .sort((left, right) => {
+      if (left.startMs !== right.startMs) {
+        return left.startMs - right.startMs
+      }
+      return right.durationMs - left.durationMs
+    })
+
+  return {
+    traceId: trace.traceId,
+    traceDurationMs: trace.durationMs,
+    spans,
+  }
+}
+
+function buildTraceSpansByTraceId(traces: TraceSummary[], seed: number) {
+  return Object.fromEntries(
+    traces.map((trace) => [trace.traceId, buildTraceSpans(trace, seed)])
+  )
+}
+
 function buildGraphData(records: EmbeddingRecord[], groups: UserGroup[]): GraphData {
   const documentSeeds = buildDocumentSeeds().slice(0, 8)
   const topicNames = Array.from(new Set(documentSeeds.map((item) => item.topic)))
@@ -982,6 +1343,8 @@ export function createDemoDataset(
   }
   const serviceUsage = buildServiceUsage()
   const errorLogs = buildErrorLogs(baseDate, searchAnalytics, seed)
+  const recentTraces = buildRecentTraces(baseDate)
+  const traceSpansByTraceId = buildTraceSpansByTraceId(recentTraces, seed)
   const graphData = buildGraphData(records, userGroups)
   const textEmbeddingModels = buildEmbeddingModels()
   const imageEmbeddingModels = buildImageEmbeddingModels()
@@ -1001,6 +1364,8 @@ export function createDemoDataset(
     latencyResponse,
     serviceUsage,
     errorLogs,
+    recentTraces,
+    traceSpansByTraceId,
     textEmbeddingModels,
     imageEmbeddingModels,
   }

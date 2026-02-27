@@ -17,6 +17,7 @@ export function useMetricsOverview(period: string = '24h') {
   return useQuery<MetricsOverview>({
     queryKey: queryKeys.metrics.overview(period),
     queryFn: () => metricsRepository.getOverview(period),
+    placeholderData: (previousData) => previousData,
     refetchInterval: 30000,
   })
 }
