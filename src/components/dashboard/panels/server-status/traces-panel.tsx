@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/table'
 import { ChevronRight, CircleCheck, CircleX, Search, X } from 'lucide-react'
 import { TraceWaterfall } from './trace-waterfall'
+import { TraceWaterfallLoading } from './trace-waterfall-loading'
 
 interface TracesPanelProps {
   legacyErrors: ErrorLog[]
@@ -198,6 +199,7 @@ export function TracesPanel({ legacyErrors, className }: TracesPanelProps) {
       : null
 
   const isTraceListLoading = tracesQuery.isLoading && !tracesQuery.data
+  const isWaterfallLoading = isTraceListLoading || Boolean(activeTrace && traceSpansQuery.isLoading)
   const hasTraceListFailure = tracesQuery.isError && !tracesQuery.data && !showLegacyFallback
   const searchHint = 'Try status:error, service:graph, duration:>1s, spans:>=10'
   const traceResultsLabel = `${traces.length} of ${allTraces.length} traces`
@@ -483,57 +485,55 @@ export function TracesPanel({ legacyErrors, className }: TracesPanelProps) {
             )}
             {!isMobile ? (
               <div className="border-t border-border/70 px-(--card-padding) pb-(--card-padding) pt-4">
-                {activeTrace ? (
-                  <>
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <h3
-                        ref={inspectorHeadingRef}
-                        tabIndex={-1}
-                        className="typography-size-sm typography-weight-medium"
-                      >
-                        Span Waterfall
-                      </h3>
-                      <p className="typography-size-xs typography-family-mono text-muted-foreground">
-                        {activeTrace.traceId} · {activeTrace.spanCount} spans
-                      </p>
-                    </div>
-                    {traceSpansQuery.isLoading ? (
-                      <div className="space-y-2">
-                        {Array.from({ length: 6 }).map((_, index) => (
-                          <div key={`span-skeleton-${index}`} className="grid grid-cols-[10rem_1fr] items-center gap-3">
-                            <div className="h-4 w-36 animate-pulse rounded bg-muted" />
-                            <div className="h-8 animate-pulse rounded-md bg-muted" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : traceSpansQuery.isError ? (
-                      <ActionWarningState
-                        title="Trace detail unavailable"
-                        description={
-                          traceSpansQuery.error instanceof Error
-                            ? traceSpansQuery.error.message
-                            : 'Unable to load span waterfall.'
-                        }
-                        onRetry={() => {
-                          void traceSpansQuery.refetch()
-                        }}
-                      />
-                    ) : traceSpansQuery.data ? (
-                      <TraceWaterfall
-                        trace={activeTrace}
-                        detail={traceSpansQuery.data}
-                        selectedSpanId={selectedSpanIdForActiveTrace}
-                        onSelectSpan={(spanId) =>
-                          setSelectedSpanState({ traceId: activeTrace.traceId, spanId })
-                        }
-                      />
-                    ) : null}
-                  </>
-                ) : (
-                  <p className="typography-size-sm text-muted-foreground">
-                    Select a trace to inspect span waterfall.
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3
+                    ref={inspectorHeadingRef}
+                    tabIndex={-1}
+                    className="typography-size-sm typography-weight-medium"
+                  >
+                    Span Waterfall
+                  </h3>
+                  <p className="typography-size-xs typography-family-mono text-muted-foreground">
+                    {activeTrace
+                      ? `${activeTrace.traceId} · ${activeTrace.spanCount} spans`
+                      : isTraceListLoading
+                        ? 'Loading traces…'
+                        : 'No trace selected'}
                   </p>
-                )}
+                </div>
+                <div
+                  data-slot="trace-waterfall-desktop-viewport"
+                  className="h-[24rem] overflow-auto overscroll-contain [scrollbar-gutter:stable_both-edges]"
+                >
+                  {isWaterfallLoading ? (
+                    <TraceWaterfallLoading />
+                  ) : traceSpansQuery.isError ? (
+                    <ActionWarningState
+                      title="Trace detail unavailable"
+                      description={
+                        traceSpansQuery.error instanceof Error
+                          ? traceSpansQuery.error.message
+                          : 'Unable to load span waterfall.'
+                      }
+                      onRetry={() => {
+                        void traceSpansQuery.refetch()
+                      }}
+                    />
+                  ) : activeTrace && traceSpansQuery.data ? (
+                    <TraceWaterfall
+                      trace={activeTrace}
+                      detail={traceSpansQuery.data}
+                      selectedSpanId={selectedSpanIdForActiveTrace}
+                      onSelectSpan={(spanId) =>
+                        setSelectedSpanState({ traceId: activeTrace.traceId, spanId })
+                      }
+                    />
+                  ) : (
+                    <p className="typography-size-sm text-muted-foreground">
+                      Select a trace to inspect span waterfall.
+                    </p>
+                  )}
+                </div>
               </div>
             ) : null}
           </>
@@ -563,16 +563,7 @@ export function TracesPanel({ legacyErrors, className }: TracesPanelProps) {
               }
 
               if (traceSpansQuery.isLoading) {
-                return (
-                  <div className="space-y-2">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                      <div key={`mobile-span-skeleton-${index}`} className="grid grid-cols-[7rem_1fr] items-center gap-2">
-                        <div className="h-4 animate-pulse rounded bg-muted" />
-                        <div className="h-7 animate-pulse rounded-md bg-muted" />
-                      </div>
-                    ))}
-                  </div>
-                )
+                return <TraceWaterfallLoading compact laneCount={6} />
               }
 
               if (traceSpansQuery.isError) {

@@ -55,6 +55,50 @@ test.describe('Traces Explorer', () => {
     await expect(traceRow('tr-d1a6f9')).toBeVisible()
     await expect(traceRow('tr-h5e0d3')).toBeVisible()
   })
+
+  test('keeps desktop waterfall viewport stable while delayed span detail loads', async ({ page }) => {
+    const delayedSpanRequests: string[] = []
+
+    await page.route('**/traces/*/spans', async (route) => {
+      delayedSpanRequests.push(route.request().url())
+      await new Promise((resolve) => setTimeout(resolve, 700))
+      await route.continue()
+    })
+
+    await page.goto('/')
+
+    const viewport = page.locator('[data-slot="trace-waterfall-desktop-viewport"]')
+    await expect(page.getByRole('heading', { name: 'Span Waterfall' })).toBeVisible()
+    await expect(viewport).toBeVisible()
+    await expect(page.getByRole('button', { name: 'API Gateway', exact: true })).toBeVisible()
+
+    const baseHeight = await viewport.evaluate((element) =>
+      Math.round((element as HTMLElement).getBoundingClientRect().height)
+    )
+
+    await page.getByText('tr-e2b7a0').first().click()
+    const loading = viewport.locator('[data-slot="trace-waterfall-loading"]')
+    await page.waitForTimeout(50)
+
+    let loadingHeight = baseHeight
+    if (delayedSpanRequests.length > 0) {
+      await expect(loading).toBeVisible()
+      loadingHeight = await viewport.evaluate((element) =>
+        Math.round((element as HTMLElement).getBoundingClientRect().height)
+      )
+    }
+
+    await expect(loading).toHaveCount(0)
+    await expect(page.getByText('tr-e2b7a0 · 24 spans')).toBeVisible()
+    await expect(viewport.getByRole('button', { name: 'API Gateway', exact: true })).toBeVisible()
+
+    const finalHeight = await viewport.evaluate((element) =>
+      Math.round((element as HTMLElement).getBoundingClientRect().height)
+    )
+
+    expect(loadingHeight).toBe(baseHeight)
+    expect(finalHeight).toBe(baseHeight)
+  })
 })
 
 test.describe('Traces Explorer Mobile', () => {

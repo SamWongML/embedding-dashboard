@@ -108,6 +108,31 @@ describe('TracesPanel', () => {
     })
   })
 
+  it('renders a stable waterfall skeleton during initial trace list load', () => {
+    vi.mocked(useRecentTraces).mockReturnValue({
+      data: undefined,
+      error: null,
+      isError: false,
+      isLoading: true,
+      refetch: vi.fn(),
+    } as never)
+
+    vi.mocked(useTraceSpans).mockReturnValue({
+      data: undefined,
+      error: null,
+      isError: false,
+      isLoading: false,
+      refetch: vi.fn(),
+    } as never)
+
+    render(<TracesPanel legacyErrors={legacyErrorsFixture} />)
+
+    expect(screen.getByRole('heading', { name: 'Span Waterfall' })).toBeInTheDocument()
+    expect(document.querySelector('[data-slot="trace-waterfall-desktop-viewport"]')).not.toBeNull()
+    expect(document.querySelector('[data-slot="trace-waterfall-loading"]')).not.toBeNull()
+    expect(screen.queryByText('Select a trace to inspect span waterfall.')).not.toBeInTheDocument()
+  })
+
   it('supports keyboard row navigation on filtered traces', async () => {
     render(<TracesPanel legacyErrors={legacyErrorsFixture} />)
 
@@ -166,6 +191,39 @@ describe('TracesPanel', () => {
 
     await waitFor(() => {
       expect(useTraceSpans).toHaveBeenLastCalledWith('tr-d1a6f9')
+    })
+  })
+
+  it('shows loading skeleton in the desktop waterfall viewport for uncached trace detail', async () => {
+    vi.mocked(useTraceSpans).mockImplementation((traceId: string | null) => {
+      if (traceId === 'tr-d1a6f9') {
+        return {
+          data: undefined,
+          error: null,
+          isError: false,
+          isLoading: true,
+          refetch: vi.fn(),
+        } as never
+      }
+
+      return {
+        data: spansFixture,
+        error: null,
+        isError: false,
+        isLoading: false,
+        refetch: vi.fn(),
+      } as never
+    })
+
+    render(<TracesPanel legacyErrors={legacyErrorsFixture} />)
+
+    fireEvent.click(screen.getByText('tr-d1a6f9'))
+
+    await waitFor(() => {
+      expect(useTraceSpans).toHaveBeenLastCalledWith('tr-d1a6f9')
+      const viewport = document.querySelector('[data-slot="trace-waterfall-desktop-viewport"]')
+      expect(viewport).not.toBeNull()
+      expect(viewport?.querySelector('[data-slot="trace-waterfall-loading"]')).not.toBeNull()
     })
   })
 })
