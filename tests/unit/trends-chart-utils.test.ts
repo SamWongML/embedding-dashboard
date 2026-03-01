@@ -47,6 +47,10 @@ describe('trends-chart-utils', () => {
     expect(formatTrendDateLabel('2026-02-07')).toBe('Feb 7')
   })
 
+  it('formats 24h timestamps in fixed UTC HH:mm format', () => {
+    expect(formatTrendDateLabel('2026-02-07T09:00:00.000Z', 'en-US', '24h')).toBe('09:00')
+  })
+
   it('returns the original label when date parsing fails', () => {
     expect(formatTrendDateLabel('not-a-date')).toBe('not-a-date')
   })

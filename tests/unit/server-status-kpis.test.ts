@@ -4,7 +4,7 @@ import type { SearchAnalytics } from '@/lib/schemas/metrics'
 import type {
   ErrorLog,
   LatencyResponse,
-  ServiceUsage,
+  TraceSummary,
 } from '@/lib/schemas/server-status'
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
@@ -44,8 +44,24 @@ function buildLatencyResponse(historyValues: number[], endIso: string, average: 
   }
 }
 
+function buildRecentTraces(count: number, startIso = '2026-02-07T12:00:00.000Z'): TraceSummary[] {
+  const start = new Date(startIso)
+
+  return Array.from({ length: count }, (_, index) => ({
+    id: `trace-${index + 1}`,
+    traceId: `trace-id-${index + 1}`,
+    timestamp: new Date(start.getTime() + index * 1000).toISOString(),
+    status: index % 5 === 0 ? 'error' : 'ok',
+    method: 'POST',
+    route: '/api/embed/text',
+    service: index % 2 === 0 ? 'api' : 'graph',
+    durationMs: 120 + index,
+    spanCount: 8 + (index % 4),
+  }))
+}
+
 describe('deriveServerStatusKpis', () => {
-  it('computes rolling 24h total requests and throughput deltas from analytics', () => {
+  it('returns cards in the expected order and computes throughput from analytics', () => {
     const counts = [
       ...Array.from({ length: 24 }, () => 100),
       ...Array.from({ length: 22 }, () => 200),
@@ -53,19 +69,18 @@ describe('deriveServerStatusKpis', () => {
       300,
     ]
     const analytics = buildHourlyAnalytics('2026-02-05T13:00:00.000Z', counts)
+    const traces = buildRecentTraces(37)
 
-    const cards = deriveServerStatusKpis({ searchAnalytics: analytics })
-    const totalRequests = cards.find((card) => card.title === 'Total Requests')
+    const cards = deriveServerStatusKpis({ searchAnalytics: analytics, traces })
     const throughput = cards.find((card) => card.title === 'Throughput')
+    const activeTraces = cards.find((card) => card.title === 'Active Traces')
 
-    expect(totalRequests).toBeDefined()
-    expect(totalRequests?.value).toBeCloseTo(4.85, 4)
-    expect(totalRequests?.valueSuffix).toBe('K')
-    expect(totalRequests?.change).toBeCloseTo(((4850 - 2400) / 2400) * 100, 4)
-    expect(totalRequests?.changeType).toBe('increase')
-    expect(totalRequests?.sparkline).toHaveLength(24)
-    expect(totalRequests?.sparkline?.[0]).toBe(200)
-    expect(totalRequests?.sparkline?.[23]).toBe(300)
+    expect(cards.map((card) => card.title)).toEqual([
+      'Avg Latency',
+      'Throughput',
+      'Error Rate',
+      'Active Traces',
+    ])
 
     expect(throughput).toBeDefined()
     expect(throughput?.value).toBeCloseTo(300 / 3600, 6)
@@ -74,6 +89,14 @@ describe('deriveServerStatusKpis', () => {
     expect(throughput?.sparkline).toHaveLength(24)
     expect(throughput?.sparkline?.[0]).toBeCloseTo(200 / 3600, 8)
     expect(throughput?.sparkline?.[23]).toBeCloseTo(300 / 3600, 8)
+
+    expect(activeTraces).toBeDefined()
+    expect(activeTraces?.value).toBe(350)
+    expect(activeTraces?.change).toBeCloseTo(((228 - 122) / 122) * 100, 6)
+    expect(activeTraces?.changeType).toBe('increase')
+    expect(activeTraces?.sparkline).toHaveLength(24)
+    expect(activeTraces?.sparkline?.[0]).toBe(9)
+    expect(activeTraces?.sparkline?.[23]).toBe(8)
   })
 
   it('computes avg latency delta from 24-point windows and treats lower as better', () => {
@@ -155,11 +178,7 @@ describe('deriveServerStatusKpis', () => {
     expect(errorRate?.sparkline?.[23]).toBeCloseTo(-2, 8)
   })
 
-  it('falls back when analytics or prior windows are missing', () => {
-    const services: ServiceUsage[] = [
-      { endpoint: '/a', method: 'GET', count: 1200, avgLatency: 20 },
-      { endpoint: '/b', method: 'POST', count: 800, avgLatency: 40 },
-    ]
+  it('falls back when analytics, traces, or prior windows are missing', () => {
     const latency = buildLatencyResponse(
       Array.from({ length: 10 }, () => 50),
       '2026-02-07T12:30:00.000Z',
@@ -168,21 +187,20 @@ describe('deriveServerStatusKpis', () => {
 
     const cards = deriveServerStatusKpis({
       latency,
-      services,
       errors: [],
       searchAnalytics: undefined,
+      traces: undefined,
     })
 
-    const totalRequests = cards.find((card) => card.title === 'Total Requests')
+    const activeTraces = cards.find((card) => card.title === 'Active Traces')
     const throughput = cards.find((card) => card.title === 'Throughput')
     const avgLatency = cards.find((card) => card.title === 'Avg Latency')
     const errorRate = cards.find((card) => card.title === 'Error Rate')
 
-    expect(totalRequests?.value).toBe(2)
-    expect(totalRequests?.valueSuffix).toBe('K')
-    expect(totalRequests?.change).toBe(0)
-    expect(totalRequests?.changeType).toBe('neutral')
-    expect(totalRequests?.sparkline).toBeUndefined()
+    expect(activeTraces?.value).toBe(0)
+    expect(activeTraces?.change).toBe(0)
+    expect(activeTraces?.changeType).toBe('neutral')
+    expect(activeTraces?.sparkline).toBeUndefined()
     expect(throughput?.value).toBe(0)
     expect(throughput?.change).toBe(0)
     expect(throughput?.changeType).toBe('neutral')

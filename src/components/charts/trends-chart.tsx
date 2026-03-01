@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   CartesianGrid,
   Legend,
@@ -16,6 +16,7 @@ import type { EmbeddingTrend } from '@/lib/schemas/metrics'
 import { useTheme } from '@/components/providers/theme-provider'
 import { ChartTooltipContent } from './chart-tooltip-content'
 import { normalizeEmbeddingTrends } from './trends-chart-utils'
+import { buildDeterministicUtcTimeTicks } from './time-axis-ticks'
 import {
   chartAnimationDurationMs,
   chartAnimationEasing,
@@ -36,7 +37,7 @@ import {
 import {
   buildCountAxisFormatter,
   buildTimeTickFormatter,
-  formatBackendTimeToHourMinute,
+  buildUtcHourMinuteTickFormatter,
 } from './axis-formatters'
 
 interface TrendsChartProps {
@@ -49,25 +50,37 @@ const trendSeriesConfig = [
   {
     dataKey: 'Text Embeddings',
     label: 'Text Embeddings',
-    tone: 'accent' as ChartTone,      // Blue (chart-1)
+    tone: 'accent' as ChartTone,
   },
   {
     dataKey: 'Image Embeddings',
     label: 'Image Embeddings',
-    tone: 'accentSoft' as ChartTone,  // Accent soft
+    tone: 'amber' as ChartTone,
   },
   {
     dataKey: 'Searches',
     label: 'Searches',
-    tone: 'accentDim' as ChartTone,   // Accent dim
+    tone: 'teal' as ChartTone,
   },
 ] as const
 
-export function TrendsChart({ data, className }: TrendsChartProps) {
+export function TrendsChart({ data, className, period = '24h' }: TrendsChartProps) {
+  const [chartWidth, setChartWidth] = useState<number>(Number.NaN)
+  const [isLineSeriesReady, setIsLineSeriesReady] = useState(false)
+  const [areLinesVisible, setAreLinesVisible] = useState(false)
+  const latestChartWidthRef = useRef<number>(Number.NaN)
+  const previousFrameWidthRef = useRef<number>(Number.NaN)
+  const stableWidthFrameCountRef = useRef(0)
   const normalizedChartData = useMemo(() => normalizeEmbeddingTrends(data), [data])
   const chartData = useMemo(
     () => normalizedChartData.filter((point) => Number.isFinite(point.timestamp)),
     [normalizedChartData]
+  )
+  const timestamps = useMemo(() => chartData.map((point) => point.timestamp), [chartData])
+  const tickCadence = period === '24h' ? 'hourly' : 'daily'
+  const deterministicTicks = useMemo(
+    () => buildDeterministicUtcTimeTicks(timestamps, chartWidth, tickCadence),
+    [chartWidth, tickCadence, timestamps]
   )
   const [minTimestamp, maxTimestamp] = useMemo(() => {
     if (!chartData.length) return [Number.NaN, Number.NaN] as const
@@ -76,14 +89,19 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
     return [Math.min(...timestamps), Math.max(...timestamps)] as const
   }, [chartData])
   const xTickFormatter = useMemo(
-    () =>
-      buildTimeTickFormatter({
+    () => {
+      if (period === '24h') {
+        return buildUtcHourMinuteTickFormatter({ locale: 'en-US', timeZone: 'UTC' })
+      }
+
+      return buildTimeTickFormatter({
         minTs: minTimestamp,
         maxTs: maxTimestamp,
         locale: 'en-US',
         timeZone: 'UTC',
-      }),
-    [maxTimestamp, minTimestamp]
+      })
+    },
+    [maxTimestamp, minTimestamp, period]
   )
   const countFormatter = useMemo(() => {
     const allSeriesValues = chartData.flatMap((point) =>
@@ -101,14 +119,82 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
       color: getChartColor(series.tone, resolvedTheme),
     }))
   }, [resolvedTheme])
+  const handleChartResize = useCallback((width: number) => {
+    latestChartWidthRef.current = width
+    setChartWidth((currentWidth) => (currentWidth === width ? currentWidth : width))
+  }, [])
+
+  useEffect(() => {
+    latestChartWidthRef.current = chartWidth
+  }, [chartWidth])
+
+  useEffect(() => {
+    if (isLineSeriesReady || !Number.isFinite(chartWidth)) return
+
+    let rafId: number | null = null
+    let cancelled = false
+
+    const verifyStableWidth = () => {
+      if (cancelled) return
+
+      const currentWidth = latestChartWidthRef.current
+
+      if (!Number.isFinite(currentWidth)) {
+        stableWidthFrameCountRef.current = 0
+        previousFrameWidthRef.current = Number.NaN
+        rafId = requestAnimationFrame(verifyStableWidth)
+        return
+      }
+
+      if (Object.is(previousFrameWidthRef.current, currentWidth)) {
+        stableWidthFrameCountRef.current += 1
+      } else {
+        stableWidthFrameCountRef.current = 1
+      }
+
+      previousFrameWidthRef.current = currentWidth
+
+      if (stableWidthFrameCountRef.current >= 2) {
+        setIsLineSeriesReady(true)
+        return
+      }
+
+      rafId = requestAnimationFrame(verifyStableWidth)
+    }
+
+    rafId = requestAnimationFrame(verifyStableWidth)
+
+    return () => {
+      cancelled = true
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
+  }, [chartWidth, isLineSeriesReady])
+
+  useEffect(() => {
+    if (!isLineSeriesReady || areLinesVisible) return
+
+    let firstFrameId: number | null = null
+    let secondFrameId: number | null = null
+
+    firstFrameId = requestAnimationFrame(() => {
+      secondFrameId = requestAnimationFrame(() => {
+        setAreLinesVisible(true)
+      })
+    })
+
+    return () => {
+      if (firstFrameId !== null) cancelAnimationFrame(firstFrameId)
+      if (secondFrameId !== null) cancelAnimationFrame(secondFrameId)
+    }
+  }, [areLinesVisible, isLineSeriesReady])
 
   return (
     <div className={cn('w-full', chartContainerHeights.tall, className)}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" onResize={handleChartResize}>
         <LineChart
           accessibilityLayer
           data={chartData}
-          margin={chartMargins.lineDefault}
+          margin={chartMargins.lineWideRight}
         >
           <CartesianGrid stroke={chartGridStroke} strokeDasharray={chartGridConfig.strokeDasharray} vertical={chartGridConfig.vertical} />
           <XAxis
@@ -116,7 +202,8 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
             type="number"
             scale="time"
             domain={['dataMin', 'dataMax']}
-            tickCount={6}
+            ticks={deterministicTicks}
+            interval={0}
             {...chartAxisDefaults}
             tickFormatter={(value) => xTickFormatter(Number(value))}
           />
@@ -132,7 +219,7 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
                 const payloadByDataKey = new Map(
                   payload.map((entry) => [String(entry.dataKey), entry])
                 )
-                const datum = payload[0]?.payload as { date?: string } | undefined
+                const datum = payload[0]?.payload as { timestamp?: number } | undefined
 
                 const rows = trendSeries.flatMap((series) => {
                   const entry = payloadByDataKey.get(series.dataKey)
@@ -155,11 +242,8 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
 
                 return (
                   <ChartTooltipContent
-                    label={datum?.date
-                      ? formatBackendTimeToHourMinute(datum.date, {
-                        locale: 'en-US',
-                        timeZone: 'UTC',
-                      })
+                    label={Number.isFinite(datum?.timestamp)
+                      ? xTickFormatter(Number(datum?.timestamp))
                       : undefined}
                     rows={rows}
                   />
@@ -169,18 +253,19 @@ export function TrendsChart({ data, className }: TrendsChartProps) {
             }}
           />
           <Legend
-            {...chartLegendPresets.roomyTop}
+            {...chartLegendPresets.defaultRight}
             formatter={(value) => (
               <span className={chartLegendLabelClassName}>{value}</span>
             )}
           />
-          {trendSeries.map((series) => (
+          {isLineSeriesReady && trendSeries.map((series) => (
             <Line
               key={series.dataKey}
               type={chartLineType}
               dataKey={series.dataKey}
               name={series.label}
               stroke={series.color}
+              strokeOpacity={areLinesVisible ? 1 : 0}
               strokeWidth={chartStrokeWidth.line}
               isAnimationActive={true}
               animationDuration={chartAnimationDurationMs}

@@ -3,7 +3,7 @@ import type { SearchAnalytics } from '@/lib/schemas/metrics'
 import type {
   ErrorLog,
   LatencyResponse,
-  ServiceUsage,
+  TraceSummary,
 } from '@/lib/schemas/server-status'
 import {
   countErrorsBetween,
@@ -15,7 +15,7 @@ import {
 type ChangeType = 'increase' | 'decrease' | 'neutral'
 
 export interface ServerStatusKpiCard {
-  title: 'Total Requests' | 'Avg Latency' | 'Error Rate' | 'Throughput'
+  title: 'Avg Latency' | 'Throughput' | 'Error Rate' | 'Active Traces'
   value: number
   valueSuffix?: string
   valueFormat?: Format
@@ -26,17 +26,13 @@ export interface ServerStatusKpiCard {
 
 interface DeriveServerStatusKpisInput {
   latency?: LatencyResponse
-  services?: ServiceUsage[]
   errors?: ErrorLog[]
   searchAnalytics?: SearchAnalytics[]
+  traces?: TraceSummary[]
 }
 
 function clampNumber(value: number) {
   return Number.isFinite(value) ? value : 0
-}
-
-function sumCounts(items: SearchAnalytics[]) {
-  return items.reduce((total, item) => total + item.count, 0)
 }
 
 function average(values: number[]) {
@@ -44,38 +40,15 @@ function average(values: number[]) {
   return values.reduce((total, value) => total + value, 0) / values.length
 }
 
+function sum(values: number[]) {
+  return values.reduce((total, value) => total + value, 0)
+}
+
 function percentChange(current: number, previous: number) {
   if (previous === 0 || !Number.isFinite(previous)) {
     return 0
   }
   return ((current - previous) / previous) * 100
-}
-
-function toCompactCount(value: number): {
-  value: number
-  suffix?: string
-  format?: Format
-} {
-  if (value >= 1_000_000) {
-    return {
-      value: value / 1_000_000,
-      suffix: 'M',
-      format: { maximumFractionDigits: 1 },
-    }
-  }
-
-  if (value >= 1_000) {
-    return {
-      value: value / 1_000,
-      suffix: 'K',
-      format: { maximumFractionDigits: 1 },
-    }
-  }
-
-  return {
-    value,
-    format: { maximumFractionDigits: 0 },
-  }
 }
 
 function resolveForwardChangeType(changePercent: number): ChangeType {
@@ -115,27 +88,17 @@ function resolveHourlyErrorRates(
 
 export function deriveServerStatusKpis({
   latency,
-  services,
   errors,
   searchAnalytics,
+  traces,
 }: DeriveServerStatusKpisInput): ServerStatusKpiCard[] {
   const analytics = searchAnalytics ?? []
   const logs = errors ?? []
-  const endpointUsage = services ?? []
+  const recentTraces = traces ?? []
 
   const recent24 = analytics.slice(-24)
-  const previous24 = analytics.slice(-48, -24)
   const analyticsAvailable = analytics.length > 0
   const hasCompleteRecent24 = recent24.length === 24
-
-  const totalRequestsRaw = analyticsAvailable
-    ? sumCounts(recent24)
-    : endpointUsage.reduce((total, item) => total + item.count, 0)
-  const totalRequestsPrevious = previous24.length === 24 ? sumCounts(previous24) : 0
-  const totalRequestsDelta = previous24.length === 24 && totalRequestsPrevious > 0
-    ? percentChange(totalRequestsRaw, totalRequestsPrevious)
-    : 0
-  const totalRequestsDisplay = toCompactCount(clampNumber(totalRequestsRaw))
 
   const currentHourRequests = analytics.at(-1)?.count ?? 0
   const previousHourRequests = analytics.at(-2)?.count ?? 0
@@ -172,17 +135,19 @@ export function deriveServerStatusKpis({
   const errorRateDelta = previousErrorRate > 0
     ? percentChange(currentErrorRate, previousErrorRate)
     : 0
+  const traceSpanSeries = recentTraces
+    .map((trace) => trace.spanCount)
+    .filter((value) => Number.isFinite(value))
+  const recentTraceSpanWindow = traceSpanSeries.slice(-24)
+  const previousTraceSpanWindow = traceSpanSeries.slice(-48, -24)
+  const activeTracesValue = sum(traceSpanSeries)
+  const recentTraceTotal = sum(recentTraceSpanWindow)
+  const previousTraceTotal = sum(previousTraceSpanWindow)
+  const activeTracesDelta = previousTraceTotal > 0
+    ? percentChange(recentTraceTotal, previousTraceTotal)
+    : 0
 
   return [
-    {
-      title: 'Total Requests',
-      value: totalRequestsDisplay.value,
-      valueSuffix: totalRequestsDisplay.suffix,
-      valueFormat: totalRequestsDisplay.format,
-      change: totalRequestsDelta,
-      changeType: resolveForwardChangeType(totalRequestsDelta),
-      sparkline: hasCompleteRecent24 ? recent24.map((item) => item.count) : undefined,
-    },
     {
       title: 'Avg Latency',
       value: clampNumber(latencyValue),
@@ -191,17 +156,6 @@ export function deriveServerStatusKpis({
       change: latencyDelta,
       changeType: resolveInverseChangeType(latencyDelta),
       sparkline: latencySparkline,
-    },
-    {
-      title: 'Error Rate',
-      value: clampNumber(currentErrorRate),
-      valueSuffix: '%',
-      valueFormat: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
-      change: errorRateDelta,
-      changeType: resolveInverseChangeType(errorRateDelta),
-      sparkline: hasCompleteRecent24
-        ? toInverseSemanticSeries(hourlyErrorRates.slice(-24))
-        : undefined,
     },
     {
       title: 'Throughput',
@@ -215,6 +169,25 @@ export function deriveServerStatusKpis({
       sparkline: hasCompleteRecent24
         ? recent24.map((item) => item.count / 3600)
         : undefined,
+    },
+    {
+      title: 'Error Rate',
+      value: clampNumber(currentErrorRate),
+      valueSuffix: '%',
+      valueFormat: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+      change: errorRateDelta,
+      changeType: resolveInverseChangeType(errorRateDelta),
+      sparkline: hasCompleteRecent24
+        ? toInverseSemanticSeries(hourlyErrorRates.slice(-24))
+        : undefined,
+    },
+    {
+      title: 'Active Traces',
+      value: activeTracesValue,
+      valueFormat: { maximumFractionDigits: 0 },
+      change: activeTracesDelta,
+      changeType: resolveForwardChangeType(activeTracesDelta),
+      sparkline: recentTraceSpanWindow.length >= 2 ? recentTraceSpanWindow : undefined,
     },
   ]
 }

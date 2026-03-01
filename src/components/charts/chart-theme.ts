@@ -38,8 +38,8 @@ export const chartColors = {
     accent: 'oklch(55% 0.14 277)',      // Indigo
     accentSoft: 'oklch(70% 0.08 277)',
     accentDim: 'oklch(48% 0.10 277)',
-    teal: 'oklch(60% 0.12 175)',        // Teal
-    amber: 'oklch(66% 0.13 80)',        // Amber
+    teal: 'oklch(52.08% .1251 182.93)', // Teal 900
+    amber: 'oklch(52.79% .1496 54.65)', // Amber 900
     green: 'oklch(58% 0.12 150)',
     coral: 'oklch(63% 0.12 15)',
     muted: 'oklch(52% 0.005 260)',
@@ -51,8 +51,8 @@ export const chartColors = {
     accent: 'oklch(68% 0.14 277)',      // Indigo
     accentSoft: 'oklch(78% 0.08 277)',
     accentDim: 'oklch(58% 0.10 277)',
-    teal: 'oklch(68% 0.12 175)',        // Teal
-    amber: 'oklch(75% 0.13 80)',        // Amber
+    teal: 'oklch(74.56% .1765 182.8)',  // Teal 900
+    amber: 'oklch(77.21% .1991 64.28)', // Amber 900
     green: 'oklch(68% 0.12 155)',
     coral: 'oklch(70% 0.13 20)',
     muted: 'oklch(60% 0.008 270)',

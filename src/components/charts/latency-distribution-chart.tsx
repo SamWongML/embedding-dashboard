@@ -60,12 +60,12 @@ const latencySeriesConfig = [
   {
     dataKey: 'p95',
     label: 'p95',
-    tone: 'accentSoft' as ChartTone,
+    tone: 'teal' as ChartTone,
   },
   {
     dataKey: 'p99',
     label: 'p99',
-    tone: 'error' as ChartTone,
+    tone: 'amber' as ChartTone,
   },
 ] as const
 

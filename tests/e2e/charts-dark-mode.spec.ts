@@ -43,19 +43,6 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
     cards: [
       { label: 'Total Embeddings', value: 1240000, change: 11.7, changeType: 'increase' as const },
       { label: 'Searches Today', value: 52100, change: -1.9, changeType: 'decrease' as const },
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-      { label: 'Avg Latency', value: 43, change: 0.3, changeType: 'neutral' as const },
-      { label: 'Active Users', value: 347, change: 7.6, changeType: 'increase' as const },
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
       { label: 'Active Users', value: 347, change: 7.6, changeType: 'increase' as const },
       {
         label: 'Avg Cost / Query',
@@ -66,16 +53,6 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
         changeType: 'increase' as const,
         sparkline: [0.0018, 0.0018, 0.0017, 0.0017, 0.0016, 0.0016, 0.0016],
       },
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
     ],
     topHits: [
       { id: 'top-hit-1', name: 'Semantic Search', count: 18440, type: 'Text' },
@@ -304,11 +281,11 @@ test.describe('Dark mode chart interactions', () => {
     await expect(page.locator('.recharts-tooltip-cursor')).toHaveCount(0)
   })
 
-  test('embedding trends hover avoids bright white active dots', async ({ page }) => {
+  test('operations hover avoids bright white active dots', async ({ page }) => {
     await gotoWithDarkMode(page, '/metrics')
     await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
-    const chartRegion = await hoverChartSurfaceByHeading(page, 'Embedding Trends')
+    const chartRegion = await hoverChartSurfaceByHeading(page, 'Operations')
     await expect(
       chartRegion.locator(
         'circle[fill="white"], circle[fill="#fff"], circle[fill="#ffffff"], circle[fill="rgb(255, 255, 255)"]'
@@ -413,7 +390,7 @@ test.describe('Dark mode chart interactions', () => {
     await gotoWithDarkMode(page, '/metrics')
     await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
-    const trendsRegion = await hoverChartSurfaceByHeading(page, 'Embedding Trends')
+    const trendsRegion = await hoverChartSurfaceByHeading(page, 'Operations')
     await expect(
       trendsRegion.locator('.recharts-area, .recharts-area-area, .recharts-area-curve')
     ).toHaveCount(0)
@@ -429,6 +406,21 @@ test.describe('Dark mode chart interactions', () => {
       await expect(page.getByRole('heading', { name: 'Server Status' })).toBeVisible()
 
       const labels = await readXAxisTickLabelsByHeading(page, 'Latency Distribution')
+      expect(labels.length).toBeGreaterThanOrEqual(3)
+      expect(getIntervalSet(labels).size).toBeLessThanOrEqual(1)
+    }
+  })
+
+  test('responsive time axis keeps deterministic intervals for operations', async ({ page }) => {
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+    const widthsToCheck = [920, 1000, 1400]
+    for (const width of widthsToCheck) {
+      await page.setViewportSize({ width, height: 900 })
+      await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+      const labels = await readXAxisTickLabelsByHeading(page, 'Operations')
       expect(labels.length).toBeGreaterThanOrEqual(3)
       expect(getIntervalSet(labels).size).toBeLessThanOrEqual(1)
     }

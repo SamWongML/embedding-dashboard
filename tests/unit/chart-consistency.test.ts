@@ -58,6 +58,7 @@ describe('chart consistency', () => {
   it('uses centralized legend presets and typography tokens', () => {
     const legendCharts = [
       'latency-distribution-chart.tsx',
+      'latency-chart.tsx',
       'throughput-errors-chart.tsx',
       'trends-chart.tsx',
     ] as const
@@ -66,6 +67,20 @@ describe('chart consistency', () => {
       const source = loadChartFile(fileName)
       expect(source).toContain('chartLegendPresets')
       expect(source).toContain('chartLegendLabelClassName')
+    })
+  })
+
+  it('keeps line-chart legends aligned to the right', () => {
+    const rightLegendLineCharts = [
+      'latency-distribution-chart.tsx',
+      'latency-chart.tsx',
+      'trends-chart.tsx',
+    ] as const
+
+    rightLegendLineCharts.forEach((fileName) => {
+      const source = loadChartFile(fileName)
+      expect(source).toContain('chartLegendPresets.defaultRight')
+      expect(source).not.toContain('chartLegendPresets.roomyTop')
     })
   })
 
@@ -123,6 +138,9 @@ describe('chart consistency', () => {
 
     expect(trendsSource).toContain('buildCountAxisFormatter')
     expect(trendsSource).toContain('buildTimeTickFormatter')
+    expect(trendsSource).toContain('buildUtcHourMinuteTickFormatter')
+    expect(trendsSource).toContain('buildDeterministicUtcTimeTicks')
+    expect(trendsSource).not.toContain('tickCount={6}')
     expect(trendsSource).not.toContain('value / 1000')
 
     expect(latencyDistributionSource).toContain('buildDurationAxisFormatter')

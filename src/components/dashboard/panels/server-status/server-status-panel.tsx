@@ -13,7 +13,7 @@ import {
 import {
   useServerHealth,
   useServerLatency,
-  useServiceUsage,
+  useRecentTraces,
   useServerErrors,
 } from '@/lib/hooks/use-server-status'
 import { useSearchAnalytics } from '@/lib/hooks/use-metrics'
@@ -32,40 +32,44 @@ interface ServerStatusPanelProps {
 export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
   const healthQuery = useServerHealth()
   const latencyQuery = useServerLatency()
-  const servicesQuery = useServiceUsage()
   const errorsQuery = useServerErrors()
+  const tracesQuery = useRecentTraces({
+    status: 'all',
+    service: 'all',
+    query: '',
+    limit: 100,
+  })
   const analyticsQuery = useSearchAnalytics('7d')
   const health = healthQuery.data
   const latency = latencyQuery.data
-  const services = servicesQuery.data
   const errors = errorsQuery.data
+  const traces = tracesQuery.data
   const searchAnalytics = analyticsQuery.data
   const latencyLoading = latencyQuery.isLoading
   const errorsLoading = errorsQuery.isLoading
   const analyticsLoading = analyticsQuery.isLoading
   const hasTopCardsData =
     latency !== undefined &&
-    services !== undefined &&
     errors !== undefined &&
+    traces !== undefined &&
     searchAnalytics !== undefined
   const isTopCardsInitialLoading =
     (
       latencyQuery.isPending ||
-      servicesQuery.isPending ||
       errorsQuery.isPending ||
+      tracesQuery.isPending ||
       analyticsQuery.isPending
     ) && !hasTopCardsData
 
   const hasQueryError =
     healthQuery.isError ||
     latencyQuery.isError ||
-    servicesQuery.isError ||
     errorsQuery.isError
   const topCards = deriveServerStatusKpis({
     latency,
-    services,
     errors,
     searchAnalytics,
+    traces,
   })
   const latencyDistributionData = useMemo(
     () =>
@@ -83,8 +87,8 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
     [errors, latency, searchAnalytics]
   )
 
-  if (hasQueryError && (!health || !latency || !services || !errors)) {
-    const error = healthQuery.error || latencyQuery.error || servicesQuery.error || errorsQuery.error
+  if (hasQueryError && (!health || !latency || !errors)) {
+    const error = healthQuery.error || latencyQuery.error || errorsQuery.error
     const errorMessage = error instanceof Error ? error.message : 'Unable to load server status data.'
 
     return (
@@ -95,7 +99,6 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
           void Promise.all([
             healthQuery.refetch(),
             latencyQuery.refetch(),
-            servicesQuery.refetch(),
             errorsQuery.refetch(),
           ])
         }}

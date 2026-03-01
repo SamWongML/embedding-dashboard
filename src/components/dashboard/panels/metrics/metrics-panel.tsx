@@ -130,7 +130,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         <Card className="h-full">
           <CardHeader className="pb-2">
             <CardTitle className="typography-size-base typography-weight-medium">
-              Embedding Trends
+              Operations
             </CardTitle>
             <CardDescription className="typography-size-sm text-muted-foreground">
               Text, image, and search request volume over time
