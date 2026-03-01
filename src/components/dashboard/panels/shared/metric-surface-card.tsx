@@ -14,6 +14,7 @@ export interface MetricSurfaceCardProps {
   value?: number | string
   valueDisplay?: React.ReactNode
   valueFormat?: Format
+  valuePrefix?: string
   valueSuffix?: string
   valueAdornment?: React.ReactNode
   meta?: React.ReactNode
@@ -33,6 +34,7 @@ export function MetricSurfaceCard({
   value,
   valueDisplay,
   valueFormat,
+  valuePrefix,
   valueSuffix,
   valueAdornment,
   meta,
@@ -80,6 +82,7 @@ export function MetricSurfaceCard({
               <AnimatedMetricValue
                 value={value ?? ''}
                 format={valueFormat}
+                prefix={valuePrefix}
                 suffix={valueSuffix}
                 animationMode={animationMode}
                 delayMs={animationDelayMs}

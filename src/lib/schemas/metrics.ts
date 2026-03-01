@@ -1,8 +1,16 @@
 import * as z from 'zod'
 
+const metricValueFormatSchema = z.object({
+  minimumFractionDigits: z.number().int().nonnegative().optional(),
+  maximumFractionDigits: z.number().int().nonnegative().optional(),
+})
+
 export const metricCardSchema = z.object({
   label: z.string(),
   value: z.number(),
+  valuePrefix: z.string().optional(),
+  valueSuffix: z.string().optional(),
+  valueFormat: metricValueFormatSchema.optional(),
   change: z.number(),
   changeType: z.enum(['increase', 'decrease', 'neutral']),
   sparkline: z.array(z.number()).optional(),

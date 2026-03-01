@@ -6,14 +6,22 @@ vi.mock('@/components/dashboard/panels/shared/animated-metric-value', () => {
     __esModule: true,
     AnimatedMetricValue: ({
       value,
+      prefix,
       suffix,
       className,
     }: {
       value: number | string
+      prefix?: string
       suffix?: string
       className?: string
     }) => (
-      <span data-testid="animated-metric-value" className={className}>
+      <span
+        data-testid="animated-metric-value"
+        data-prefix={prefix ?? ''}
+        data-suffix={suffix ?? ''}
+        className={className}
+      >
+        {prefix ?? ''}
         {String(value)}
         {suffix ?? ''}
       </span>
@@ -58,5 +66,11 @@ describe('MetricSurfaceCard', () => {
     expect(screen.getByText('Errors')).toBeInTheDocument()
     expect(screen.getByTestId('animated-metric-value')).toBeInTheDocument()
     expect(screen.queryByTestId('sparkline-slot')).not.toBeInTheDocument()
+  })
+
+  it('passes value prefix metadata to animated metric values', () => {
+    render(<MetricSurfaceCard title="Avg Cost / Query" value={0.0016} valuePrefix="$" />)
+
+    expect(screen.getByTestId('animated-metric-value')).toHaveAttribute('data-prefix', '$')
   })
 })

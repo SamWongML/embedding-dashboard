@@ -21,6 +21,7 @@ import {
   getDemoTopHits,
   getDemoTopUsers,
 } from '@/mocks'
+import { normalizeMetricsOverview } from '@/lib/repositories/metrics/normalize-overview'
 
 export interface MetricsRepository {
   getOverview: (period: string) => Promise<MetricsOverview>
@@ -31,7 +32,10 @@ export interface MetricsRepository {
 }
 
 const apiRepository: MetricsRepository = {
-  getOverview: (period) => fetchMetricsOverview(period),
+  getOverview: async (period) => {
+    const overview = await fetchMetricsOverview(period)
+    return normalizeMetricsOverview(overview)
+  },
   getTopHits: (period) => fetchTopHits(period),
   getTopUsers: (period) => fetchTopUsers(period),
   getEmbeddingTrends: (period) => fetchEmbeddingTrends(period),
@@ -39,7 +43,10 @@ const apiRepository: MetricsRepository = {
 }
 
 const demoRepository: MetricsRepository = {
-  getOverview: async (period) => getDemoMetricsOverview(period),
+  getOverview: async (period) => {
+    const overview = await getDemoMetricsOverview(period)
+    return normalizeMetricsOverview(overview)
+  },
   getTopHits: async () => getDemoTopHits(),
   getTopUsers: async () => getDemoTopUsers(),
   getEmbeddingTrends: async (period) => getDemoEmbeddingTrends(period),

@@ -8,11 +8,13 @@ vi.mock('@number-flow/react', () => {
     __esModule: true,
     default: ({
       value,
+      prefix,
       suffix,
       animated,
       className,
     }: {
       value: number
+      prefix?: string
       suffix?: string
       animated?: boolean
       className?: string
@@ -20,10 +22,12 @@ vi.mock('@number-flow/react', () => {
       <span
         data-testid="number-flow"
         data-value={String(value)}
+        data-prefix={prefix ?? ''}
         data-suffix={suffix ?? ''}
         data-animated={String(animated)}
         className={className}
       >
+        {prefix ?? ''}
         {String(value)}
         {suffix ?? ''}
       </span>
@@ -59,11 +63,17 @@ describe('AnimatedMetricValue', () => {
     mockCanAnimate = false
     const format = { notation: 'compact', maximumFractionDigits: 1 } as const
 
-    render(<AnimatedMetricValue value={1250} format={format} suffix="Q" />)
+    render(<AnimatedMetricValue value={1250} format={format} prefix="$" suffix="Q" />)
 
-    const expected = `${new Intl.NumberFormat(undefined, format).format(1250)}Q`
+    const expected = `$${new Intl.NumberFormat(undefined, format).format(1250)}Q`
     expect(screen.queryByTestId('number-flow')).not.toBeInTheDocument()
     expect(screen.getByText(expected)).toBeInTheDocument()
+  })
+
+  it('passes prefix through to NumberFlow in the animated path', () => {
+    render(<AnimatedMetricValue value={42} prefix="$" animationMode="always" />)
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-prefix', '$')
   })
 
   it('animates from zero on mount when delay is set', () => {

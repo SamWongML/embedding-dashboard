@@ -10,6 +10,7 @@ export type MetricValueAnimationMode = 'on-mount' | 'on-change' | 'always' | 'ne
 export interface AnimatedMetricValueProps {
   value: number | string
   format?: Format
+  prefix?: string
   suffix?: string
   animationMode?: MetricValueAnimationMode
   delayMs?: number
@@ -23,6 +24,7 @@ function isFiniteNumber(value: number | string): value is number {
 function formatStaticValue(
   value: number | string,
   format: Format | undefined,
+  prefix: string | undefined,
   suffix: string | undefined
 ) {
   if (typeof value !== 'number') {
@@ -30,12 +32,13 @@ function formatStaticValue(
   }
 
   const formattedValue = new Intl.NumberFormat(undefined, format).format(value)
-  return `${formattedValue}${suffix ?? ''}`
+  return `${prefix ?? ''}${formattedValue}${suffix ?? ''}`
 }
 
 export function AnimatedMetricValue({
   value,
   format,
+  prefix,
   suffix,
   animationMode = 'on-mount',
   delayMs = 0,
@@ -144,7 +147,7 @@ export function AnimatedMetricValue({
   if (!shouldUseAnimatedPath) {
     return (
       <span className={cn('[font-variant-numeric:tabular-nums]', className)}>
-        {formatStaticValue(value, format, suffix)}
+        {formatStaticValue(value, format, prefix, suffix)}
       </span>
     )
   }
@@ -153,6 +156,7 @@ export function AnimatedMetricValue({
     <NumberFlow
       value={displayValue as number}
       format={format}
+      prefix={prefix}
       suffix={suffix}
       animated={animated}
       respectMotionPreference

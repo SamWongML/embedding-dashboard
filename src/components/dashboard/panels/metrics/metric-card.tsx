@@ -41,12 +41,41 @@ function resolveMetricValue(value: number): {
   }
 }
 
+function resolveMetricDisplay(metric: MetricCardType): {
+  value: number
+  prefix?: string
+  suffix?: string
+  format?: Format
+} {
+  const hasExplicitDisplayMetadata = Boolean(
+    metric.valuePrefix !== undefined ||
+      metric.valueSuffix !== undefined ||
+      metric.valueFormat !== undefined
+  )
+
+  if (hasExplicitDisplayMetadata) {
+    return {
+      value: metric.value,
+      prefix: metric.valuePrefix,
+      suffix: metric.valueSuffix,
+      format: metric.valueFormat,
+    }
+  }
+
+  const compactDisplay = resolveMetricValue(metric.value)
+  return {
+    value: compactDisplay.value,
+    suffix: compactDisplay.suffix,
+    format: compactDisplay.format,
+  }
+}
+
 export function MetricCard({
   metric,
   className,
   animationMode = 'on-mount',
 }: MetricCardProps) {
-  const formattedValue = resolveMetricValue(metric.value)
+  const formattedValue = resolveMetricDisplay(metric)
 
   const TrendIcon = metric.changeType === 'increase' ? ArrowUp :
     metric.changeType === 'decrease' ? ArrowDown : Minus
@@ -58,6 +87,7 @@ export function MetricCard({
     <MetricSurfaceCard
       title={metric.label}
       value={formattedValue.value}
+      valuePrefix={formattedValue.prefix}
       valueFormat={formattedValue.format}
       valueSuffix={formattedValue.suffix}
       animationMode={animationMode}
