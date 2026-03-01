@@ -66,11 +66,18 @@ const trendSeriesConfig = [
 
 export function TrendsChart({ data, className, period = '24h' }: TrendsChartProps) {
   const [chartWidth, setChartWidth] = useState<number>(Number.NaN)
+  const [chartHeight, setChartHeight] = useState<number>(Number.NaN)
   const [isLineSeriesReady, setIsLineSeriesReady] = useState(false)
   const [areLinesVisible, setAreLinesVisible] = useState(false)
-  const latestChartWidthRef = useRef<number>(Number.NaN)
-  const previousFrameWidthRef = useRef<number>(Number.NaN)
-  const stableWidthFrameCountRef = useRef(0)
+  const latestChartSizeRef = useRef<{ width: number; height: number }>({
+    width: Number.NaN,
+    height: Number.NaN,
+  })
+  const previousFrameSizeRef = useRef<{ width: number; height: number }>({
+    width: Number.NaN,
+    height: Number.NaN,
+  })
+  const stableSizeFrameCountRef = useRef(0)
   const normalizedChartData = useMemo(() => normalizeEmbeddingTrends(data), [data])
   const chartData = useMemo(
     () => normalizedChartData.filter((point) => Number.isFinite(point.timestamp)),
@@ -119,56 +126,63 @@ export function TrendsChart({ data, className, period = '24h' }: TrendsChartProp
       color: getChartColor(series.tone, resolvedTheme),
     }))
   }, [resolvedTheme])
-  const handleChartResize = useCallback((width: number) => {
-    latestChartWidthRef.current = width
+  const handleChartResize = useCallback((width: number, height: number) => {
+    latestChartSizeRef.current = { width, height }
     setChartWidth((currentWidth) => (currentWidth === width ? currentWidth : width))
+    setChartHeight((currentHeight) => (currentHeight === height ? currentHeight : height))
   }, [])
 
   useEffect(() => {
-    latestChartWidthRef.current = chartWidth
-  }, [chartWidth])
+    latestChartSizeRef.current = { width: chartWidth, height: chartHeight }
+  }, [chartHeight, chartWidth])
 
   useEffect(() => {
-    if (isLineSeriesReady || !Number.isFinite(chartWidth)) return
+    if (isLineSeriesReady || !Number.isFinite(chartWidth) || !Number.isFinite(chartHeight)) return
 
     let rafId: number | null = null
     let cancelled = false
 
-    const verifyStableWidth = () => {
+    const verifyStableSize = () => {
       if (cancelled) return
 
-      const currentWidth = latestChartWidthRef.current
+      const currentSize = latestChartSizeRef.current
 
-      if (!Number.isFinite(currentWidth)) {
-        stableWidthFrameCountRef.current = 0
-        previousFrameWidthRef.current = Number.NaN
-        rafId = requestAnimationFrame(verifyStableWidth)
+      if (!Number.isFinite(currentSize.width) || !Number.isFinite(currentSize.height)) {
+        stableSizeFrameCountRef.current = 0
+        previousFrameSizeRef.current = { width: Number.NaN, height: Number.NaN }
+        rafId = requestAnimationFrame(verifyStableSize)
         return
       }
 
-      if (Object.is(previousFrameWidthRef.current, currentWidth)) {
-        stableWidthFrameCountRef.current += 1
+      if (
+        Object.is(previousFrameSizeRef.current.width, currentSize.width)
+        && Object.is(previousFrameSizeRef.current.height, currentSize.height)
+      ) {
+        stableSizeFrameCountRef.current += 1
       } else {
-        stableWidthFrameCountRef.current = 1
+        stableSizeFrameCountRef.current = 1
       }
 
-      previousFrameWidthRef.current = currentWidth
+      previousFrameSizeRef.current = {
+        width: currentSize.width,
+        height: currentSize.height,
+      }
 
-      if (stableWidthFrameCountRef.current >= 2) {
+      if (stableSizeFrameCountRef.current >= 2) {
         setIsLineSeriesReady(true)
         return
       }
 
-      rafId = requestAnimationFrame(verifyStableWidth)
+      rafId = requestAnimationFrame(verifyStableSize)
     }
 
-    rafId = requestAnimationFrame(verifyStableWidth)
+    rafId = requestAnimationFrame(verifyStableSize)
 
     return () => {
       cancelled = true
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
-  }, [chartWidth, isLineSeriesReady])
+  }, [chartHeight, chartWidth, isLineSeriesReady])
 
   useEffect(() => {
     if (!isLineSeriesReady || areLinesVisible) return
@@ -210,7 +224,7 @@ export function TrendsChart({ data, className, period = '24h' }: TrendsChartProp
           <YAxis
             {...chartAxisDefaults}
             tickFormatter={(value) => countFormatter.formatTick(Number(value))}
-            width="auto"
+            width={48}
           />
           <Tooltip
             cursor={chartTooltipCursor}
@@ -270,6 +284,7 @@ export function TrendsChart({ data, className, period = '24h' }: TrendsChartProp
               isAnimationActive={true}
               animationDuration={chartAnimationDurationMs}
               animationEasing={chartAnimationEasing}
+              connectNulls={true}
               dot={chartDotConfig.default}
               activeDot={{
                 r: chartDotConfig.active.r,

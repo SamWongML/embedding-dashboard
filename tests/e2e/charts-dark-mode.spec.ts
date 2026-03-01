@@ -152,8 +152,9 @@ interface LatencyDashFrameSample {
   lines: LatencyDashLineSample[]
 }
 
-async function collectLatencyDashSamples(
+async function collectChartDashSamples(
   page: Page,
+  heading: string,
   options: {
     sampleCount?: number
     intervalMs?: number
@@ -162,11 +163,19 @@ async function collectLatencyDashSamples(
   const { sampleCount = 20, intervalMs = 25 } = options
 
   return page.evaluate(
-    async ({ sampleCount, intervalMs }: { sampleCount: number; intervalMs: number }) => {
+    async ({
+      heading,
+      sampleCount,
+      intervalMs,
+    }: {
+      heading: string
+      sampleCount: number
+      intervalMs: number
+    }) => {
       const sleep = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
-      const selectLatencyChart = () => {
+      const selectChart = () => {
         const title = Array.from(document.querySelectorAll('*')).find(
-          (node) => node.textContent?.trim() === 'Latency Distribution'
+          (node) => node.textContent?.trim() === heading
         )
         if (!title) return null
 
@@ -179,11 +188,11 @@ async function collectLatencyDashSamples(
       }
 
       const waitStart = performance.now()
-      while (!selectLatencyChart() && performance.now() - waitStart < 5000) {
+      while (!selectChart() && performance.now() - waitStart < 5000) {
         await sleep(16)
       }
 
-      const chart = selectLatencyChart()
+      const chart = selectChart()
       if (!chart) return []
 
       const samples: LatencyDashFrameSample[] = []
@@ -228,8 +237,28 @@ async function collectLatencyDashSamples(
 
       return samples
     },
-    { sampleCount, intervalMs }
+    { heading, sampleCount, intervalMs }
   )
+}
+
+async function collectLatencyDashSamples(
+  page: Page,
+  options: {
+    sampleCount?: number
+    intervalMs?: number
+  } = {}
+) {
+  return collectChartDashSamples(page, 'Latency Distribution', options)
+}
+
+async function collectOperationsDashSamples(
+  page: Page,
+  options: {
+    sampleCount?: number
+    intervalMs?: number
+  } = {}
+) {
+  return collectChartDashSamples(page, 'Operations', options)
 }
 
 function extractMinuteOfDay(label: string): number | null {
@@ -431,6 +460,28 @@ test.describe('Dark mode chart interactions', () => {
     await expect(page.getByText('Latency Distribution', { exact: true }).first()).toBeVisible()
 
     const samples = await collectLatencyDashSamples(page, { sampleCount: 22, intervalMs: 25 })
+    const animatedLineSamples = samples.flatMap((sample) => sample.lines
+      .filter((line) => Number.isFinite(line.progress) && line.progress > 0 && line.progress < 1)
+      .map((line) => ({
+        ...line,
+        t: sample.t,
+      })))
+
+    expect(animatedLineSamples.length).toBeGreaterThan(0)
+
+    for (const sample of animatedLineSamples) {
+      expect(
+        sample.delta,
+        `${sample.name} had dash mismatch ${sample.delta.toFixed(3)} at ${sample.t.toFixed(1)}ms`
+      ).toBeLessThan(0.5)
+    }
+  })
+
+  test('operations initial line animation keeps contiguous dash segments', async ({ page }) => {
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByText('Operations', { exact: true }).first()).toBeVisible()
+
+    const samples = await collectOperationsDashSamples(page, { sampleCount: 22, intervalMs: 25 })
     const animatedLineSamples = samples.flatMap((sample) => sample.lines
       .filter((line) => Number.isFinite(line.progress) && line.progress > 0 && line.progress < 1)
       .map((line) => ({

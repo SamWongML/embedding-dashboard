@@ -106,6 +106,13 @@ describe('chart consistency', () => {
     expect(trendsSource).toContain('activeDot={{')
   })
 
+  it('keeps operations y-axis width fixed for stable first-load line animation', () => {
+    const trendsSource = loadChartFile('trends-chart.tsx')
+
+    expect(trendsSource).toContain('width={48}')
+    expect(trendsSource).not.toContain('width="auto"')
+  })
+
   it('renders primary time-series charts as line-only without area gradients', () => {
     const latencyDistributionSource = loadChartFile('latency-distribution-chart.tsx')
     const latencySource = loadChartFile('latency-chart.tsx')
