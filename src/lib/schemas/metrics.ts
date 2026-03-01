@@ -34,6 +34,8 @@ export const searchAnalyticsSchema = z.object({
   hour: z.number(),
   day: z.string(),
   count: z.number(),
+  timestamp: z.string().optional(),
+  date: z.string().optional(),
 })
 
 export const metricsOverviewSchema = z.object({

@@ -110,6 +110,37 @@ test.describe('Usage Analytics header layout', () => {
     await expect(page.getByText('Most Accessed Embeddings')).toBeVisible()
   })
 
+<<<<<<< ours
+=======
+  test('supports 30d week navigation controls in activity heatmap header', async ({ page }) => {
+    await page.goto('/metrics')
+    await page.getByRole('tab', { name: '30d' }).click()
+
+    const previousWeekButton = page.getByRole('button', { name: 'Previous week' })
+    const nextWeekButton = page.getByRole('button', { name: 'Next week' })
+    const firstHeatmapCell = page.locator('[data-slot="activity-heatmap-cell"]').first()
+
+    await expect(previousWeekButton).toBeVisible()
+    await expect(nextWeekButton).toBeVisible()
+    await expect(nextWeekButton).toBeDisabled()
+    await expect(previousWeekButton).toBeEnabled()
+    await expect(firstHeatmapCell).toBeVisible()
+
+    const newestWindowFirstCellLabel = await firstHeatmapCell.getAttribute('aria-label')
+    await previousWeekButton.click()
+    await expect(nextWeekButton).toBeEnabled()
+
+    const olderWindowFirstCellLabel = await firstHeatmapCell.getAttribute('aria-label')
+    expect(olderWindowFirstCellLabel).not.toBe(newestWindowFirstCellLabel)
+
+    await nextWeekButton.click()
+    await expect(nextWeekButton).toBeDisabled()
+
+    const resetWindowFirstCellLabel = await firstHeatmapCell.getAttribute('aria-label')
+    expect(resetWindowFirstCellLabel).toBe(newestWindowFirstCellLabel)
+  })
+
+>>>>>>> theirs
   test('positions activity heatmap to the right of embedding trends on desktop', async ({
     page,
   }) => {
@@ -147,7 +178,93 @@ test.describe('Usage Analytics header layout', () => {
       return
     }
 
+<<<<<<< ours
     expect(heatmapGridBox.width / heatmapContentBox.width).toBeGreaterThanOrEqual(0.85)
+=======
+    expect(heatmapGridBox.width / heatmapContentBox.width).toBeGreaterThanOrEqual(0.9)
+  })
+
+  test("matches usage analytics second-row height with metrics & traces", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+
+    await page.goto("/")
+    const metricsRowHeight = await page.evaluate<number | null>(() => {
+      const latencyCard = Array.from(document.querySelectorAll("[data-slot=\"card-title\"]"))
+        .find((node) => node.textContent?.trim() === "Latency Distribution")
+        ?.closest("[data-slot=\"card\"]")
+
+      return latencyCard?.parentElement?.getBoundingClientRect().height ?? null
+    })
+
+    expect(metricsRowHeight).not.toBeNull()
+    if (metricsRowHeight === null) {
+      return
+    }
+
+    await page.goto("/metrics")
+    const usageRowHeight = await page.evaluate<number | null>(() => {
+      const trendsCard = Array.from(document.querySelectorAll("[data-slot=\"card-title\"]"))
+        .find((node) => node.textContent?.trim() === "Embedding Trends")
+        ?.closest("[data-slot=\"card\"]")
+
+      return trendsCard?.parentElement?.getBoundingClientRect().height ?? null
+    })
+
+    expect(usageRowHeight).not.toBeNull()
+    if (usageRowHeight === null) {
+      return
+    }
+
+    expect(Math.abs(usageRowHeight - metricsRowHeight)).toBeLessThanOrEqual(2)
+  })
+
+  test("matches heatmap title-description spacing with metrics & traces row-2 cards", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+
+    await page.goto("/")
+    const metricsSpacing = await page.evaluate<number | null>(() => {
+      const throughputCard = Array.from(document.querySelectorAll("[data-slot=\"card-title\"]"))
+        .find((node) => node.textContent?.trim() === "Throughput & Errors")
+        ?.closest("[data-slot=\"card\"]")
+
+      const title = throughputCard?.querySelector("[data-slot=\"card-title\"]")
+      const description = throughputCard?.querySelector("[data-slot=\"card-description\"]")
+      if (!title || !description) {
+        return null
+      }
+
+      return description.getBoundingClientRect().top - title.getBoundingClientRect().bottom
+    })
+
+    expect(metricsSpacing).not.toBeNull()
+    if (metricsSpacing === null) {
+      return
+    }
+
+    await page.goto("/metrics")
+    const heatmapSpacing = await page.evaluate<number | null>(() => {
+      const heatmapCard = Array.from(document.querySelectorAll("[data-slot=\"card-title\"]"))
+        .find((node) => node.textContent?.trim() === "Activity Heatmap")
+        ?.closest("[data-slot=\"card\"]")
+
+      const title = heatmapCard?.querySelector("[data-slot=\"card-title\"]")
+      const description = heatmapCard?.querySelector("[data-slot=\"card-description\"]")
+      if (!title || !description) {
+        return null
+      }
+
+      return description.getBoundingClientRect().top - title.getBoundingClientRect().bottom
+    })
+
+    expect(heatmapSpacing).not.toBeNull()
+    if (heatmapSpacing === null) {
+      return
+    }
+
+    expect(Math.abs(heatmapSpacing - metricsSpacing)).toBeLessThanOrEqual(1)
+>>>>>>> theirs
   })
 })
 

@@ -9,11 +9,19 @@ import {
   buildHeatmapLegend,
   buildHeatmapScale,
   type ActivityHeatmapPeriod,
+<<<<<<< ours
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
 } from './activity-heatmap-utils'
 
 interface ActivityHeatmapProps {
   data: SearchAnalytics[]
   period: ActivityHeatmapPeriod
+<<<<<<< ours
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
   className?: string
 }
 
@@ -41,7 +49,11 @@ function periodDescription(period: ActivityHeatmapPeriod) {
   return 'Last 30 days in UTC'
 }
 
+<<<<<<< ours
 export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProps) {
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
   const counts = useMemo(
     () =>
       data.map((point) => (Number.isFinite(point.count) ? Math.max(0, point.count) : 0)),
@@ -49,9 +61,25 @@ export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProp
   )
   const scale = useMemo(() => buildHeatmapScale(counts), [counts])
   const rows = useMemo(() => buildActivityHeatmapRows(data, period, scale), [data, period, scale])
+<<<<<<< ours
   const legend = useMemo(() => buildHeatmapLegend(scale), [scale])
 
   if (!rows.length) {
+=======
+  const visibleRows = useMemo(() => {
+    if (!visibleRowRange) {
+      return rows
+    }
+
+    const start = Math.max(0, Math.trunc(visibleRowRange.start))
+    const end = Math.min(rows.length, Math.max(start, Math.trunc(visibleRowRange.end)))
+    const slicedRows = rows.slice(start, end)
+    return slicedRows.length > 0 ? slicedRows : rows
+  }, [rows, visibleRowRange])
+  const legend = useMemo(() => buildHeatmapLegend(scale), [scale])
+
+  if (!visibleRows.length) {
+>>>>>>> theirs
     return (
       <div className="flex h-(--chart-height-tall) items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 px-4 text-center typography-copy-13 text-muted-foreground">
         No activity data is available for this period.
@@ -78,7 +106,11 @@ export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProp
               </span>
             ))}
 
+<<<<<<< ours
             {rows.map((row) => (
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
               <Fragment key={row.id}>
                 <span className="typography-copy-13 pr-1 text-muted-foreground">
                   {row.label}
@@ -90,7 +122,12 @@ export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProp
                         type="button"
                         data-slot="activity-heatmap-cell"
                         data-level={cell.level}
+<<<<<<< ours
                         aria-label={`${cell.dayLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
                         className="h-auto w-full aspect-square rounded-[calc(var(--radius-sm)-1px)] border transition-[transform,filter,box-shadow] duration-150 hover:-translate-y-px hover:brightness-110 hover:saturate-125 focus-visible:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card"
                         style={{
                           backgroundColor: `var(--heatmap-level-${cell.level})`,
@@ -101,7 +138,11 @@ export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProp
                     <TooltipContent variant="surface" side="top" sideOffset={6} showArrow={false}>
                       <div className="flex flex-col gap-0.5">
                         <span className="typography-copy-13 text-muted-foreground tabular-nums">
+<<<<<<< ours
                           {cell.dayLabel} {cell.hourLabel} UTC
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
                         </span>
                         <span className="typography-copy-13 typography-weight-medium tabular-nums text-foreground">
                           {REQUEST_COUNT_FORMATTER.format(cell.count)} requests

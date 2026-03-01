@@ -26,7 +26,7 @@ function trendsByPeriod(period: MetricsPeriod): EmbeddingTrend[] {
 
 function analyticsByPeriod(period: MetricsPeriod): SearchAnalytics[] {
   const analytics = getDemoScenarioState().metricsOverview.searchAnalytics
-  const window = period === '24h' ? 24 : 168
+  const window = period === '24h' ? 24 : period === '7d' ? 168 : 720
   return cloneDemoValue(analytics.slice(-window))
 }
 

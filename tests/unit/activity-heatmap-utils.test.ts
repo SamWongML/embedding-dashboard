@@ -1,20 +1,56 @@
+<<<<<<< ours
 import { describe, expect, it } from 'vitest'
 import type { SearchAnalytics } from '@/lib/schemas/metrics'
 import {
   buildActivityHeatmapModel,
+=======
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { SearchAnalytics } from '@/lib/schemas/metrics'
+import {
+  buildActivityHeatmapModel,
+  buildActivityHeatmapRowRanges,
+>>>>>>> theirs
   buildActivityHeatmapRows,
   buildHeatmapLegend,
   buildHeatmapScale,
 } from '@/components/charts/activity-heatmap-utils'
 
+<<<<<<< ours
 function point(day: string, hour: number, count: number): SearchAnalytics {
   return { day, hour, count }
+=======
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
+
+function point(day: string, hour: number, count: number, timestamp?: string): SearchAnalytics {
+  return { day, hour, count, timestamp }
+>>>>>>> theirs
 }
 
 function buildDay(day: string, baseCount: number): SearchAnalytics[] {
   return Array.from({ length: 24 }, (_, hour) => point(day, hour, baseCount + hour))
 }
 
+<<<<<<< ours
+=======
+function buildUtcDay(date: string, baseCount: number): SearchAnalytics[] {
+  const dayStart = Date.parse(`${date}T00:00:00.000Z`)
+
+  return Array.from({ length: 24 }, (_, hour) => {
+    const timestamp = new Date(dayStart + hour * 60 * 60 * 1000)
+    return point(
+      DAY_LABELS[timestamp.getUTCDay()] ?? 'Sun',
+      timestamp.getUTCHours(),
+      baseCount + hour,
+      timestamp.toISOString()
+    )
+  })
+}
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
+>>>>>>> theirs
 describe('activity-heatmap-utils', () => {
   it('builds a single 24-hour row for the 24h period', () => {
     const analytics = buildDay('Fri', 100)
@@ -84,4 +120,45 @@ describe('activity-heatmap-utils', () => {
     expect(model.legend).toHaveLength(5)
     expect(model.maxCount).toBeGreaterThan(0)
   })
+<<<<<<< ours
+=======
+
+  it('builds latest-first 7-day row windows for 30-day navigation', () => {
+    expect(buildActivityHeatmapRowRanges(30, 7)).toEqual([
+      { start: 23, end: 30 },
+      { start: 16, end: 23 },
+      { start: 9, end: 16 },
+      { start: 2, end: 9 },
+      { start: 0, end: 2 },
+    ])
+  })
+
+  it('marks only the UTC current-day cells as today when timestamps are present', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-02-27T12:00:00.000Z'))
+
+    const analytics = [...buildUtcDay('2026-02-26', 100), ...buildUtcDay('2026-02-27', 200)]
+    const rows = buildActivityHeatmapRows(analytics, '30d')
+
+    expect(rows).toHaveLength(2)
+    expect(rows[0]?.cells.some((cell) => cell.isToday)).toBe(false)
+    expect(rows[1]?.cells.every((cell) => cell.isToday)).toBe(true)
+    expect(rows[0]?.cells[0]?.dateLabel).toBe('Thu, Feb 26')
+    expect(rows[1]?.cells[0]?.dateLabel).toBe('Fri, Feb 27')
+  })
+
+  it('uses deterministic fallback date labels and today detection without timestamps', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-02-27T12:00:00.000Z'))
+
+    const analytics = [...buildDay('Thu', 100), ...buildDay('Fri', 200)]
+    const rows = buildActivityHeatmapRows(analytics, '30d')
+
+    expect(rows).toHaveLength(2)
+    expect(rows[0]?.cells[0]?.dateLabel).toBe('Thu, Feb 26')
+    expect(rows[1]?.cells[0]?.dateLabel).toBe('Fri, Feb 27')
+    expect(rows[0]?.cells.some((cell) => cell.isToday)).toBe(false)
+    expect(rows[1]?.cells.every((cell) => cell.isToday)).toBe(true)
+  })
+>>>>>>> theirs
 })

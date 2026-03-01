@@ -25,8 +25,24 @@ async function gotoWithDarkMode(page: Page, path: string) {
 
 function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+<<<<<<< ours
   const analyticsCount = period === '24h' ? 24 : 168
   const trendCount = period === '24h' ? 24 : period === '7d' ? 7 : 30
+=======
+  const analyticsCount = period === '24h' ? 24 : period === '7d' ? 168 : 720
+  const trendCount = period === '24h' ? 24 : period === '7d' ? 7 : 30
+  const now = new Date()
+  const endTimestamp = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    23,
+    0,
+    0,
+    0
+  )
+  const startTimestamp = endTimestamp - (analyticsCount - 1) * 60 * 60 * 1000
+>>>>>>> theirs
 
   return {
     cards: [
@@ -56,11 +72,23 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
       imageEmbeddings: 920 + index * 12,
       searches: 4200 + index * 75,
     })),
+<<<<<<< ours
     searchAnalytics: Array.from({ length: analyticsCount }, (_, index) => ({
       hour: index % 24,
       day: dayLabels[Math.floor(index / 24) % dayLabels.length] ?? 'Sun',
       count: index % 29 === 0 ? 0 : 780 + (index % 24) * 26 + (index % 5) * 13,
     })),
+=======
+    searchAnalytics: Array.from({ length: analyticsCount }, (_, index) => {
+      const timestamp = new Date(startTimestamp + index * 60 * 60 * 1000)
+      return {
+        hour: timestamp.getUTCHours(),
+        day: dayLabels[timestamp.getUTCDay()] ?? 'Sun',
+        count: index % 29 === 0 ? 0 : 780 + (index % 24) * 26 + (index % 5) * 13,
+        timestamp: timestamp.toISOString(),
+      }
+    }),
+>>>>>>> theirs
   }
 }
 
@@ -337,6 +365,7 @@ test.describe('Dark mode chart interactions', () => {
     await gotoWithDarkMode(page, '/metrics')
     await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
 
+<<<<<<< ours
     const targetCell = page.locator('[data-slot="activity-heatmap-cell"]').nth(8)
     await expect(targetCell).toBeVisible()
 
@@ -345,6 +374,24 @@ test.describe('Dark mode chart interactions', () => {
 
     await targetCell.focus()
     await expect(page.locator('[data-slot="tooltip-content"]').filter({ hasText: 'UTC' }).first()).toBeVisible()
+=======
+    await page.getByRole('tab', { name: '30d' }).click()
+
+    const todayCell = page.locator('[data-slot="activity-heatmap-cell"][aria-current="date"]').first()
+    const nonTodayCell = page
+      .locator('[data-slot="activity-heatmap-cell"]:not([aria-current="date"])')
+      .first()
+    await expect(todayCell).toBeVisible()
+    await expect(nonTodayCell).toBeVisible()
+
+    await todayCell.hover()
+    const tooltipContent = page.locator('[data-slot="tooltip-content"]').first()
+    await expect(tooltipContent).toContainText('Today ·')
+    await expect(tooltipContent).toContainText('requests')
+
+    await nonTodayCell.focus()
+    await expect(tooltipContent).toContainText(/[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} · \d{2}:00 UTC/)
+>>>>>>> theirs
   })
 
   test('primary line charts do not render area fill paths', async ({ page }) => {

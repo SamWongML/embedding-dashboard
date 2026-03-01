@@ -549,8 +549,9 @@ function buildHourlyTrends(baseDate: Date, seed: number): EmbeddingTrend[] {
 function buildSearchAnalytics(baseDate: Date, seed: number): SearchAnalytics[] {
   const random = createSeededRandom(seed + 58)
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const analytics = Array.from({ length: 168 }, (_, index) => {
-    const currentDate = new Date(baseDate.getTime() - (167 - index) * HOUR_MS)
+  const totalHours = 30 * 24
+  const analytics = Array.from({ length: totalHours }, (_, index) => {
+    const currentDate = new Date(baseDate.getTime() - (totalHours - 1 - index) * HOUR_MS)
     const hour = currentDate.getUTCHours()
     const dayIndex = currentDate.getUTCDay()
     const day = dayLabels[currentDate.getUTCDay()] ?? 'Sun'
@@ -568,6 +569,7 @@ function buildSearchAnalytics(baseDate: Date, seed: number): SearchAnalytics[] {
       hour,
       day,
       count,
+      timestamp: currentDate.toISOString(),
     }
   })
 
