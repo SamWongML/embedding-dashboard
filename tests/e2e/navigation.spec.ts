@@ -111,7 +111,13 @@ test.describe('Usage Analytics header layout', () => {
   })
 
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   test('supports 30d week navigation controls in activity heatmap header', async ({ page }) => {
     await page.goto('/metrics')
     await page.getByRole('tab', { name: '30d' }).click()
@@ -140,6 +146,12 @@ test.describe('Usage Analytics header layout', () => {
     expect(resetWindowFirstCellLabel).toBe(newestWindowFirstCellLabel)
   })
 
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
   test('positions activity heatmap to the right of embedding trends on desktop', async ({
     page,
@@ -179,8 +191,14 @@ test.describe('Usage Analytics header layout', () => {
     }
 
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
     expect(heatmapGridBox.width / heatmapContentBox.width).toBeGreaterThanOrEqual(0.85)
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
     expect(heatmapGridBox.width / heatmapContentBox.width).toBeGreaterThanOrEqual(0.9)
   })
 
@@ -264,6 +282,12 @@ test.describe('Usage Analytics header layout', () => {
     }
 
     expect(Math.abs(heatmapSpacing - metricsSpacing)).toBeLessThanOrEqual(1)
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
   })
 })

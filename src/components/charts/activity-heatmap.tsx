@@ -10,6 +10,14 @@ import {
   buildHeatmapScale,
   type ActivityHeatmapPeriod,
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
 =======
   type ActivityHeatmapRowRange,
 >>>>>>> theirs
@@ -19,6 +27,14 @@ interface ActivityHeatmapProps {
   data: SearchAnalytics[]
   period: ActivityHeatmapPeriod
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
 =======
   visibleRowRange?: ActivityHeatmapRowRange
 >>>>>>> theirs
@@ -50,7 +66,15 @@ function periodDescription(period: ActivityHeatmapPeriod) {
 }
 
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProps) {
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
 =======
 export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
 >>>>>>> theirs
@@ -62,10 +86,16 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
   const scale = useMemo(() => buildHeatmapScale(counts), [counts])
   const rows = useMemo(() => buildActivityHeatmapRows(data, period, scale), [data, period, scale])
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   const legend = useMemo(() => buildHeatmapLegend(scale), [scale])
 
   if (!rows.length) {
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   const visibleRows = useMemo(() => {
     if (!visibleRowRange) {
       return rows
@@ -79,6 +109,12 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
   const legend = useMemo(() => buildHeatmapLegend(scale), [scale])
 
   if (!visibleRows.length) {
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
     return (
       <div className="flex h-(--chart-height-tall) items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 px-4 text-center typography-copy-13 text-muted-foreground">
@@ -107,7 +143,15 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
             ))}
 
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
             {rows.map((row) => (
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
 =======
             {visibleRows.map((row) => (
 >>>>>>> theirs
@@ -123,7 +167,17 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
                         data-slot="activity-heatmap-cell"
                         data-level={cell.level}
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
                         aria-label={`${cell.dayLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
 =======
                         aria-current={cell.isToday ? 'date' : undefined}
                         aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
@@ -139,7 +193,15 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
                       <div className="flex flex-col gap-0.5">
                         <span className="typography-copy-13 text-muted-foreground tabular-nums">
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
                           {cell.dayLabel} {cell.hourLabel} UTC
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
 =======
                           {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
 >>>>>>> theirs

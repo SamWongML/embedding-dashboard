@@ -11,11 +11,23 @@ import { TrendsChart } from '@/components/charts/trends-chart'
 import { TopHitsChart } from '@/components/charts/top-hits-chart'
 import { ActivityHeatmap } from '@/components/charts/activity-heatmap'
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 import {
   buildActivityHeatmapRowRanges,
   buildActivityHeatmapRows,
 } from '@/components/charts/activity-heatmap-utils'
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 import {
   MonitoringMetricCardsGrid,
@@ -130,7 +142,15 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
 
       {/* Trends + Activity */}
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)]">
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
 =======
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
 >>>>>>> theirs
@@ -140,6 +160,8 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
               Embedding Trends
             </CardTitle>
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
           </CardHeader>
           <CardContent>
             {isInitialLoading ? (
@@ -147,6 +169,10 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
             ) : (
               <TrendsChart data={data?.trends || []} period={period} />
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
             <CardDescription className="typography-size-sm text-muted-foreground">
               Text, image, and search request volume over time
             </CardDescription>
@@ -160,12 +186,20 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
                 period={period}
                 className="h-(--chart-height-standard)"
               />
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
             )}
           </CardContent>
         </Card>
 
         <Card className="h-full">
+<<<<<<< ours
+<<<<<<< ours
 <<<<<<< ours
           <CardHeader className="pb-2">
             <CardTitle className="typography-size-base typography-weight-medium">
@@ -178,6 +212,10 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
             ) : (
               <ActivityHeatmap data={data?.searchAnalytics || []} period={period} className="h-full" />
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
           <CardHeader className="relative pb-2">
             <CardTitle className="pr-20 typography-size-base typography-weight-medium">
               Activity Heatmap
@@ -229,6 +267,12 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
                 visibleRowRange={visibleWeekRange}
                 className="h-full min-h-(--chart-height-standard)"
               />
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
             )}
           </CardContent>
