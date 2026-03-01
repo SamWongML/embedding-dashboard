@@ -37,8 +37,15 @@ describe('DashboardPageShell', () => {
     expect(within(stickyTopbar as HTMLElement).queryByRole('heading', { name: 'Metrics' })).toBeNull()
     expect(pageHeading.closest('header')).toBeNull()
 
-    const shellRoot = stickyTopbar?.parentElement
-    expect(shellRoot).not.toBeNull()
+    const dashboardScrollRoot = container.querySelector('[data-slot="dashboard-scroll-root"]')
+    expect(dashboardScrollRoot).not.toBeNull()
+    expect(dashboardScrollRoot).toHaveClass('min-h-0')
+    expect(dashboardScrollRoot).toHaveClass('min-w-0')
+    expect(dashboardScrollRoot).toHaveClass('overflow-y-auto')
+    expect(dashboardScrollRoot).toHaveClass('overscroll-y-contain')
+    expect(dashboardScrollRoot).toContainElement(stickyTopbar)
+
+    const shellRoot = dashboardScrollRoot?.parentElement
     expect(shellRoot).toHaveClass('min-w-0')
 
     const contentRegion = stickyTopbar?.nextElementSibling

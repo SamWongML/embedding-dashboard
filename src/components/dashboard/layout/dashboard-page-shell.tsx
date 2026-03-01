@@ -48,37 +48,42 @@ function DashboardPageShellContent({
   const hasPageHeaderActions = pageHeaderActions !== null
 
   return (
-    <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col", className)}>
-      <header className="sticky top-0 z-(--z-sticky) flex h-(--header-height) shrink-0 items-center border-b border-border bg-background/95 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <SidebarTrigger className="-ml-1 md:hidden" />
-        <div className="ml-auto flex min-w-0 items-center gap-(--form-item-gap)">
-          <DevSimulationIndicator />
-          {showCommandPalette ? <CommandPalette /> : null}
-          {actions}
-        </div>
-      </header>
-      <div className="min-h-0 min-w-0 flex-1 p-6">
-        <div
-          data-slot="page-heading-row"
-          className="mb-(--space-page) flex flex-nowrap items-center justify-between gap-(--page-heading-row-gap)"
-        >
-          <h1 className="flex-1 min-w-0 truncate [font-size:var(--page-title-size)] [line-height:var(--page-title-line-height)] [font-weight:var(--page-title-weight)]">
-            {title}
-          </h1>
-          <div
-            data-slot="page-heading-actions"
-            aria-hidden={!hasPageHeaderActions}
-            className={cn(
-              "flex min-h-(--page-heading-actions-min-height) w-auto shrink-0 items-center justify-end",
-              hasPageHeaderActions
-                ? "pointer-events-auto visible"
-                : "pointer-events-none invisible"
-            )}
-          >
-            {pageHeaderActions}
+    <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden", className)}>
+      <div
+        data-slot="dashboard-scroll-root"
+        className="min-h-0 flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain"
+      >
+        <header className="sticky top-0 z-(--z-sticky) flex h-(--header-height) shrink-0 items-center border-b border-border/70 bg-background/90 px-(--header-padding-x) backdrop-blur supports-[backdrop-filter]:bg-background/70">
+          <SidebarTrigger className="-ml-1 md:hidden" />
+          <div className="ml-auto flex min-w-0 items-center gap-(--form-item-gap)">
+            <DevSimulationIndicator />
+            {showCommandPalette ? <CommandPalette /> : null}
+            {actions}
           </div>
+        </header>
+        <div className="min-h-0 min-w-0 flex-1 p-6">
+          <div
+            data-slot="page-heading-row"
+            className="mb-(--space-page) flex flex-nowrap items-center justify-between gap-(--page-heading-row-gap)"
+          >
+            <h1 className="flex-1 min-w-0 truncate [font-size:var(--page-title-size)] [line-height:var(--page-title-line-height)] [font-weight:var(--page-title-weight)]">
+              {title}
+            </h1>
+            <div
+              data-slot="page-heading-actions"
+              aria-hidden={!hasPageHeaderActions}
+              className={cn(
+                "flex min-h-(--page-heading-actions-min-height) w-auto shrink-0 items-center justify-end",
+                hasPageHeaderActions
+                  ? "pointer-events-auto visible"
+                  : "pointer-events-none invisible"
+              )}
+            >
+              {pageHeaderActions}
+            </div>
+          </div>
+          <div className="min-h-0 min-w-0">{children}</div>
         </div>
-        <div className="min-h-0 min-w-0">{children}</div>
       </div>
     </div>
   )

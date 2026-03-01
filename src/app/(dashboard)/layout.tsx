@@ -53,7 +53,7 @@ export default async function DashboardLayout({
     <AccountProvider initialSnapshot={initialSnapshot}>
       <SidebarProvider defaultOpen={defaultSidebarOpen}>
         <AppSidebar />
-        <SidebarInset className="min-h-svh">
+        <SidebarInset className="h-svh overflow-hidden">
           <DashboardAppShell>{children}</DashboardAppShell>
         </SidebarInset>
       </SidebarProvider>

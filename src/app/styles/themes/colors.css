@@ -120,7 +120,7 @@
   /* Scrollbar Colors */
   --scrollbar-thumb: oklch(65% 0.005 var(--base-hue));
   --scrollbar-thumb-hover: oklch(55% 0.005 var(--base-hue));
-  --scrollbar-track: transparent;
+  --scrollbar-track: oklch(40% 0.003 var(--base-hue) / 0.08);
 
   /* Sidebar - tinted for depth */
   --sidebar: oklch(96% 0.01 260);
@@ -218,7 +218,7 @@
   /* Scrollbar Colors - dark mode */
   --scrollbar-thumb: oklch(100% 0 0 / 0.12);
   --scrollbar-thumb-hover: oklch(100% 0 0 / 0.20);
-  --scrollbar-track: transparent;
+  --scrollbar-track: oklch(100% 0 0 / 0.04);
 
   /* Sidebar - dark mode */
   --sidebar: oklch(11% 0.004 265);
