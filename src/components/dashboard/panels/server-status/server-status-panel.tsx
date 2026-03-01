@@ -124,7 +124,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
                 change={card.change}
                 changeType={card.changeType}
                 sparkline={card.sparkline}
-                animationMode="on-change"
+                animationMode="on-mount"
               />
             ))}
           </MonitoringMetricCardsGrid>

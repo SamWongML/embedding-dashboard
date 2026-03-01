@@ -118,7 +118,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
               <MetricCard
                 key={metric.label}
                 metric={metric}
-                animationMode="on-change"
+                animationMode="on-mount"
               />
             ))}
           </MonitoringMetricCardsGrid>

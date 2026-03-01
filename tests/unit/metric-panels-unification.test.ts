@@ -54,8 +54,8 @@ describe('metric panel unification', () => {
     const serverPanelSource = load('src/components/dashboard/panels/server-status/server-status-panel.tsx')
     const workspacePanelSource = load('src/components/dashboard/panels/workspace/workspace-panel.tsx')
 
-    expect(metricsPanelSource).toContain('animationMode="on-change"')
-    expect(serverPanelSource).toContain('animationMode="on-change"')
+    expect(metricsPanelSource).toContain('animationMode="on-mount"')
+    expect(serverPanelSource).toContain('animationMode="on-mount"')
     expect(workspacePanelSource).toContain('animationMode="on-mount"')
   })
 })
