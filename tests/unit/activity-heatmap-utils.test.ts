@@ -1,127 +1,23 @@
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-import { describe, expect, it } from 'vitest'
-import type { SearchAnalytics } from '@/lib/schemas/metrics'
-import {
-  buildActivityHeatmapModel,
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { SearchAnalytics } from '@/lib/schemas/metrics'
 import {
   buildActivityHeatmapModel,
   buildActivityHeatmapRowRanges,
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
   buildActivityHeatmapRows,
   buildHeatmapLegend,
   buildHeatmapScale,
 } from '@/components/charts/activity-heatmap-utils'
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-function point(day: string, hour: number, count: number): SearchAnalytics {
-  return { day, hour, count }
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
 
 function point(day: string, hour: number, count: number, timestamp?: string): SearchAnalytics {
   return { day, hour, count, timestamp }
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 }
 
 function buildDay(day: string, baseCount: number): SearchAnalytics[] {
   return Array.from({ length: 24 }, (_, hour) => point(day, hour, baseCount + hour))
 }
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 function buildUtcDay(date: string, baseCount: number): SearchAnalytics[] {
   const dayStart = Date.parse(`${date}T00:00:00.000Z`)
 
@@ -140,25 +36,6 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 describe('activity-heatmap-utils', () => {
   it('builds a single 24-hour row for the 24h period', () => {
     const analytics = buildDay('Fri', 100)
@@ -228,26 +105,6 @@ describe('activity-heatmap-utils', () => {
     expect(model.legend).toHaveLength(5)
     expect(model.maxCount).toBeGreaterThan(0)
   })
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 
   it('builds latest-first 7-day row windows for 30-day navigation', () => {
     expect(buildActivityHeatmapRowRanges(30, 7)).toEqual([
@@ -286,23 +143,4 @@ describe('activity-heatmap-utils', () => {
     expect(rows[0]?.cells.some((cell) => cell.isToday)).toBe(false)
     expect(rows[1]?.cells.every((cell) => cell.isToday)).toBe(true)
   })
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 })
