@@ -7,6 +7,22 @@ type ActivityHeatmapRangeKey = 1 | 2 | 3 | 4
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+const DAY_MS = 24 * 60 * 60 * 1000
+>>>>>>> theirs
+=======
+const DAY_MS = 24 * 60 * 60 * 1000
+>>>>>>> theirs
+=======
+const DAY_MS = 24 * 60 * 60 * 1000
+>>>>>>> theirs
+=======
+const DAY_MS = 24 * 60 * 60 * 1000
+>>>>>>> theirs
 =======
 const DAY_MS = 24 * 60 * 60 * 1000
 >>>>>>> theirs
@@ -24,7 +40,19 @@ interface ActivityHeatmapPoint {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -41,6 +69,18 @@ interface ActivityHeatmapBucket {
   points: ActivityHeatmapPoint[]
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -54,6 +94,26 @@ export interface ActivityHeatmapCell {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
 =======
   dateLabel: string
   isToday: boolean
@@ -78,6 +138,26 @@ export interface ActivityHeatmapRow {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
+=======
+  dateLabel: string
+  isToday: boolean
+>>>>>>> theirs
 =======
   dateLabel: string
   isToday: boolean
@@ -116,10 +196,22 @@ export interface ActivityHeatmapModel {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 const HOURS_IN_DAY = 24
 const HOUR_INDEXES = Array.from({ length: HOURS_IN_DAY }, (_, hour) => hour)
 const ACTIVITY_LEVELS: readonly ActivityHeatmapRangeKey[] = [1, 2, 3, 4]
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -169,6 +261,18 @@ function normalizeUtcDayStart(timestamp: number | null, fallbackDayStart: number
 }
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -191,7 +295,19 @@ function toIdToken(value: string) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -209,6 +325,18 @@ function parseSearchAnalyticsTimestamp(point: SearchAnalytics) {
 
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -231,6 +359,22 @@ function normalizeActivityPoints(data: SearchAnalytics[]): ActivityHeatmapPoint[
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+        timestamp: parseSearchAnalyticsTimestamp(point),
+>>>>>>> theirs
+=======
+        timestamp: parseSearchAnalyticsTimestamp(point),
+>>>>>>> theirs
+=======
+        timestamp: parseSearchAnalyticsTimestamp(point),
+>>>>>>> theirs
+=======
+        timestamp: parseSearchAnalyticsTimestamp(point),
+>>>>>>> theirs
 =======
         timestamp: parseSearchAnalyticsTimestamp(point),
 >>>>>>> theirs
@@ -248,6 +392,10 @@ function normalizeActivityPoints(data: SearchAnalytics[]): ActivityHeatmapPoint[
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 function bucketPointsByDay(
   points: ActivityHeatmapPoint[],
   period: ActivityHeatmapPeriod
@@ -261,6 +409,18 @@ function bucketPointsByDay(
   }
 
   const maxRows = period === '7d' ? 7 : 30
+=======
+function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: number): ActivityHeatmapBucket[] {
+>>>>>>> theirs
+=======
+function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: number): ActivityHeatmapBucket[] {
+>>>>>>> theirs
+=======
+function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: number): ActivityHeatmapBucket[] {
+>>>>>>> theirs
+=======
+function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: number): ActivityHeatmapBucket[] {
+>>>>>>> theirs
 =======
 function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: number): ActivityHeatmapBucket[] {
 >>>>>>> theirs
@@ -291,8 +451,20 @@ function inferBucketsByHourSequence(points: ActivityHeatmapPoint[], maxRows: num
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   return buckets.slice(-maxRows)
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -380,6 +552,18 @@ function bucketPointsByDay(points: ActivityHeatmapPoint[], period: ActivityHeatm
   }))
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -528,6 +712,10 @@ export function buildActivityHeatmapRows(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 
   return buckets.map((bucket, rowIndex) => {
     const pointsByHour = new Map<number, ActivityHeatmapPoint>()
@@ -539,6 +727,14 @@ export function buildActivityHeatmapRows(
     const rowLabel = period === '24h' ? '24h' : fallbackDayLabel
     const rowId = `${period}-${rowIndex}-${toIdToken(fallbackDayLabel)}`
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -557,6 +753,18 @@ export function buildActivityHeatmapRows(
     const rowId = `${period}-${rowIndex}-${bucket.idToken}`
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -570,11 +778,23 @@ export function buildActivityHeatmapRows(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 
       return {
         id: `${rowId}-${hour}`,
         dayLabel,
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -591,6 +811,18 @@ export function buildActivityHeatmapRows(
         isToday,
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -608,7 +840,31 @@ export function buildActivityHeatmapRows(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
       label: rowLabel,
+=======
+      label: bucket.rowLabel,
+      dateLabel: bucket.dateLabel,
+      isToday: bucket.isToday,
+>>>>>>> theirs
+=======
+      label: bucket.rowLabel,
+      dateLabel: bucket.dateLabel,
+      isToday: bucket.isToday,
+>>>>>>> theirs
+=======
+      label: bucket.rowLabel,
+      dateLabel: bucket.dateLabel,
+      isToday: bucket.isToday,
+>>>>>>> theirs
+=======
+      label: bucket.rowLabel,
+      dateLabel: bucket.dateLabel,
+      isToday: bucket.isToday,
+>>>>>>> theirs
 =======
       label: bucket.rowLabel,
       dateLabel: bucket.dateLabel,
@@ -632,7 +888,19 @@ export function buildActivityHeatmapRows(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -654,6 +922,18 @@ export function buildActivityHeatmapRowRanges(totalRows: number, windowSize = 7)
 
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs

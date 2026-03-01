@@ -12,6 +12,22 @@ import {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
+=======
+  type ActivityHeatmapRowRange,
+>>>>>>> theirs
 =======
   type ActivityHeatmapRowRange,
 >>>>>>> theirs
@@ -29,6 +45,22 @@ interface ActivityHeatmapProps {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
+=======
+  visibleRowRange?: ActivityHeatmapRowRange
+>>>>>>> theirs
 =======
   visibleRowRange?: ActivityHeatmapRowRange
 >>>>>>> theirs
@@ -68,7 +100,23 @@ function periodDescription(period: ActivityHeatmapPeriod) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 export function ActivityHeatmap({ data, period, className }: ActivityHeatmapProps) {
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
+=======
+export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
+>>>>>>> theirs
 =======
 export function ActivityHeatmap({ data, period, visibleRowRange, className }: ActivityHeatmapProps) {
 >>>>>>> theirs
@@ -88,10 +136,22 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   const legend = useMemo(() => buildHeatmapLegend(scale), [scale])
 
   if (!rows.length) {
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -111,6 +171,18 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
   if (!visibleRows.length) {
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -145,7 +217,23 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
             {rows.map((row) => (
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
+=======
+            {visibleRows.map((row) => (
+>>>>>>> theirs
 =======
             {visibleRows.map((row) => (
 >>>>>>> theirs
@@ -169,7 +257,27 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
                         aria-label={`${cell.dayLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
+=======
+                        aria-current={cell.isToday ? 'date' : undefined}
+                        aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
+>>>>>>> theirs
 =======
                         aria-current={cell.isToday ? 'date' : undefined}
                         aria-label={`${cell.isToday ? 'Today' : cell.dateLabel} ${cell.hourLabel} UTC: ${REQUEST_COUNT_FORMATTER.format(cell.count)} requests`}
@@ -195,7 +303,23 @@ export function ActivityHeatmap({ data, period, visibleRowRange, className }: Ac
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
                           {cell.dayLabel} {cell.hourLabel} UTC
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
+=======
+                          {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
+>>>>>>> theirs
 =======
                           {cell.isToday ? 'Today' : cell.dateLabel} · {cell.hourLabel} UTC
 >>>>>>> theirs

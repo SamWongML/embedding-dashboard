@@ -13,7 +13,19 @@ import { ActivityHeatmap } from '@/components/charts/activity-heatmap'
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -24,6 +36,18 @@ import {
 } from '@/components/charts/activity-heatmap-utils'
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -144,7 +168,23 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1.15fr)]">
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
+=======
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
+>>>>>>> theirs
 =======
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1.05fr)]">
 >>>>>>> theirs
@@ -162,6 +202,10 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
           </CardHeader>
           <CardContent>
             {isInitialLoading ? (
@@ -169,6 +213,14 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
             ) : (
               <TrendsChart data={data?.trends || []} period={period} />
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -188,6 +240,18 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
               />
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -198,6 +262,10 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         </Card>
 
         <Card className="h-full">
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
@@ -212,6 +280,14 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
             ) : (
               <ActivityHeatmap data={data?.searchAnalytics || []} period={period} className="h-full" />
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -269,6 +345,18 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
               />
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs

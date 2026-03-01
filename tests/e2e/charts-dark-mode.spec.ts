@@ -28,9 +28,21 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   const analyticsCount = period === '24h' ? 24 : 168
   const trendCount = period === '24h' ? 24 : period === '7d' ? 7 : 30
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -50,6 +62,18 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
   const startTimestamp = endTimestamp - (analyticsCount - 1) * 60 * 60 * 1000
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -87,12 +111,24 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
     searchAnalytics: Array.from({ length: analyticsCount }, (_, index) => ({
       hour: index % 24,
       day: dayLabels[Math.floor(index / 24) % dayLabels.length] ?? 'Sun',
       count: index % 29 === 0 ? 0 : 780 + (index % 24) * 26 + (index % 5) * 13,
     })),
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -108,6 +144,18 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
     }),
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -392,6 +440,10 @@ test.describe('Dark mode chart interactions', () => {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
     const targetCell = page.locator('[data-slot="activity-heatmap-cell"]').nth(8)
     await expect(targetCell).toBeVisible()
 
@@ -401,6 +453,14 @@ test.describe('Dark mode chart interactions', () => {
     await targetCell.focus()
     await expect(page.locator('[data-slot="tooltip-content"]').filter({ hasText: 'UTC' }).first()).toBeVisible()
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -423,6 +483,18 @@ test.describe('Dark mode chart interactions', () => {
     await expect(tooltipContent).toContainText(/[A-Z][a-z]{2}, [A-Z][a-z]{2} \d{1,2} · \d{2}:00 UTC/)
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
