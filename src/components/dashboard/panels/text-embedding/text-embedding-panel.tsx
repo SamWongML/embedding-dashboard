@@ -58,6 +58,7 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
               void queueQuery.refetch()
             }}
             onSelectJob={selectJobId}
+            selectedJobId={selectedJobId}
           />
         </div>
       </div>

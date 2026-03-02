@@ -40,6 +40,8 @@ export function EmbeddingSourceFields({
 }: EmbeddingSourceFieldsProps) {
   const activeError = sourceType === 'text' ? textError : urlError
   const textCharacterCount = textValue.length
+  const textTabId = 'text-embedding-source-tab-text'
+  const urlTabId = 'text-embedding-source-tab-url'
 
   return (
     <div className="space-y-4">
@@ -55,6 +57,7 @@ export function EmbeddingSourceFields({
         <SelectorTabsList aria-label="Embedding source type">
           <SelectorTabsTrigger
             value="text"
+            id={textTabId}
             disabled={disabled}
             aria-controls="text-embedding-source-text-panel"
           >
@@ -62,6 +65,7 @@ export function EmbeddingSourceFields({
           </SelectorTabsTrigger>
           <SelectorTabsTrigger
             value="url"
+            id={urlTabId}
             disabled={disabled}
             aria-controls="text-embedding-source-url-panel"
           >
@@ -74,6 +78,7 @@ export function EmbeddingSourceFields({
         <div
           id="text-embedding-source-text-panel"
           role="tabpanel"
+          aria-labelledby={textTabId}
           className="space-y-2"
         >
           <Label htmlFor="text-embedding-source-text">Text to embed</Label>
@@ -94,6 +99,7 @@ export function EmbeddingSourceFields({
         <div
           id="text-embedding-source-url-panel"
           role="tabpanel"
+          aria-labelledby={urlTabId}
           className="space-y-2"
         >
           <Label htmlFor="text-embedding-source-url">URL to embed</Label>

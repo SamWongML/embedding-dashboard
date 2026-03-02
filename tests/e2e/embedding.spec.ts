@@ -8,6 +8,13 @@ async function setServiceModeFromAccount(page: Page, mode: 'simple' | 'technical
   await expect(radio).toBeChecked()
 }
 
+function getQueueItemByText(page: Page, text: string) {
+  return page
+    .locator('[data-testid^="embedding-queue-item-"]')
+    .filter({ hasText: text })
+    .first()
+}
+
 test.describe('Text Embedding', () => {
   test('shows simple mode by default', async ({ page }) => {
     await page.goto('/text-embedding')
@@ -41,10 +48,11 @@ test.describe('Text Embedding', () => {
     await page.getByRole('button', { name: 'Generate Embedding' }).click()
 
     await expect(page.getByText('Embedding Queue')).toBeVisible()
-    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
-    await expect(firstQueueItem).toBeVisible({ timeout: 15000 })
-    await expect(firstQueueItem).toContainText('Queue demo text for embedding')
-    await firstQueueItem.click()
+    const submittedQueueItem = getQueueItemByText(page, 'Queue demo text for embedding')
+    await expect(submittedQueueItem).toBeVisible({ timeout: 15000 })
+    await expect(submittedQueueItem).toContainText('TXT')
+    await expect(submittedQueueItem).toContainText(/Queued|Processing|Completed|Failed/)
+    await submittedQueueItem.click()
 
     await expect(page.getByText('Embedding Result')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Copy Full Vector' })).toBeVisible({
@@ -62,9 +70,13 @@ test.describe('Text Embedding', () => {
       .fill('https://example.com/docs/embedding')
     await page.getByRole('button', { name: 'Generate Embedding' }).click()
 
-    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
-    await expect(firstQueueItem).toBeVisible({ timeout: 15000 })
-    await expect(firstQueueItem).toContainText('https://example.com/docs/embedding')
+    const submittedQueueItem = getQueueItemByText(
+      page,
+      'https://example.com/docs/embedding'
+    )
+    await expect(submittedQueueItem).toBeVisible({ timeout: 15000 })
+    await expect(submittedQueueItem).toContainText('URL')
+    await expect(submittedQueueItem).toContainText(/Queued|Processing|Completed|Failed/)
   })
 
   test('queues technical embedding with advanced options', async ({ page }) => {
@@ -81,12 +93,14 @@ test.describe('Text Embedding', () => {
     await page.getByRole('button', { name: 'Generate Embedding' }).click()
 
     await expect(page.getByText('Embedding Queue')).toBeVisible()
-    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
-    await expect(firstQueueItem).toBeVisible({ timeout: 30000 })
-    await expect(firstQueueItem).toContainText(
+    const submittedQueueItem = getQueueItemByText(
+      page,
       'Technical mode embedding request for queue detail validation'
     )
-    await firstQueueItem.click()
+    await expect(submittedQueueItem).toBeVisible({ timeout: 30000 })
+    await expect(submittedQueueItem).toContainText('TXT')
+    await expect(submittedQueueItem).toContainText(/Queued|Processing|Completed|Failed/)
+    await submittedQueueItem.click()
     await expect(page.getByRole('button', { name: 'Copy Full Vector' })).toBeVisible({
       timeout: 30000,
     })

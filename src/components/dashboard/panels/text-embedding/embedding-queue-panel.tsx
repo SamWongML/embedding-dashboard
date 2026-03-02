@@ -4,17 +4,13 @@ import { useMemo, type CSSProperties } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { FileText, Link2, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import type {
   EmbeddingQueueStatus,
   TextEmbeddingJobSummary,
 } from '@/lib/schemas/text-embedding'
 import { cn } from '@/lib/utils'
-import {
-  EmbeddingStatusBadge,
-  getEmbeddingStatusConfig,
-} from './embedding-status-badge'
+import { getEmbeddingStatusConfig } from './embedding-status-badge'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { AnimatedMetricValue } from '@/components/dashboard/panels/shared/animated-metric-value'
 
@@ -24,6 +20,7 @@ interface EmbeddingQueuePanelProps {
   errorMessage?: string | null
   onRetry: () => void
   onSelectJob: (id: string) => void
+  selectedJobId?: string | null
   className?: string
 }
 
@@ -69,6 +66,33 @@ const initialStatusCounts: StatusCounts = {
   processing: 0,
   completed: 0,
   failed: 0,
+}
+
+const statusOrderRank: Record<EmbeddingQueueStatus, number> = {
+  processing: 0,
+  queued: 1,
+  failed: 2,
+  completed: 3,
+}
+
+const statusDotClassName: Record<EmbeddingQueueStatus, string> = {
+  queued: 'bg-muted-foreground/70',
+  processing: 'bg-[oklch(0.60_0.10_250)]',
+  completed: 'bg-[oklch(0.52_0.12_150)] dark:bg-[oklch(0.76_0.09_150)]',
+  failed: 'bg-destructive',
+}
+
+export function sortEmbeddingQueueJobs(jobs: TextEmbeddingJobSummary[]) {
+  return [...jobs].sort((left, right) => {
+    const rankDiff = statusOrderRank[left.status] - statusOrderRank[right.status]
+    if (rankDiff !== 0) {
+      return rankDiff
+    }
+
+    const rightUpdatedAt = new Date(right.updatedAt).getTime()
+    const leftUpdatedAt = new Date(left.updatedAt).getTime()
+    return rightUpdatedAt - leftUpdatedAt
+  })
 }
 
 function formatTime(value: string) {
@@ -125,15 +149,15 @@ function QueueLoadingState() {
 function QueueItem({
   job,
   index,
+  isSelected,
   onSelectJob,
 }: {
   job: TextEmbeddingJobSummary
   index: number
+  isSelected: boolean
   onSelectJob: (id: string) => void
 }) {
   const statusConfig = getEmbeddingStatusConfig(job.status)
-  const StatusIcon = statusConfig.icon
-  const SourceIcon = job.sourceType === 'url' ? Link2 : FileText
   const sourceTypeLabel = job.sourceType === 'url' ? 'URL' : 'TXT'
   const progressLabel = `${job.progress.completedChunks}/${job.progress.totalChunks} chunks`
   const progressPercent = getProgressPercent(job)
@@ -147,64 +171,83 @@ function QueueItem({
   return (
     <Button
       variant="ghost"
-      className="h-auto w-full justify-start rounded-none px-4 py-3 text-left transition-[background-color,border-color] duration-(--duration-moderate) hover:bg-muted/40 focus-visible:bg-muted/45 fade-in motion-reduce:animate-none"
+      className={cn(
+        'h-auto w-full justify-start rounded-none border-l-2 border-transparent px-4 py-3 text-left transition-[background-color,border-color] duration-(--duration-moderate) hover:bg-muted/40 focus-visible:bg-muted/45 fade-in motion-reduce:animate-none',
+        isSelected &&
+          'border-l-[oklch(0.60_0.10_250)] bg-muted/45 hover:bg-muted/45 focus-visible:bg-muted/45'
+      )}
       style={itemStyle}
       onClick={() => onSelectJob(job.id)}
       data-testid={`embedding-queue-item-${job.id}`}
+      data-selected={isSelected ? 'true' : 'false'}
     >
       <div className="flex w-full items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border/70 bg-muted/35">
-            <SourceIcon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <StatusIcon
+        <div className="min-w-0 flex-1">
+          <p className="line-clamp-2 typography-size-sm typography-weight-medium leading-5 text-foreground">
+            {job.sourcePreview}
+          </p>
+          <div
+            className="mt-1.5 flex flex-wrap items-center gap-1.5 typography-size-xs text-muted-foreground"
+            data-testid={`embedding-queue-status-${job.id}`}
+          >
+            <span className="relative inline-flex h-2 w-2 shrink-0 items-center justify-center">
+              {job.status === 'processing' ? (
+                <span
+                  className={cn(
+                    'absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping motion-reduce:animate-none',
+                    statusDotClassName[job.status]
+                  )}
+                  aria-hidden
+                />
+              ) : null}
+              <span
                 className={cn(
-                  'h-3.5 w-3.5 text-muted-foreground',
-                  statusConfig.iconClassName
+                  'relative inline-flex h-2 w-2 rounded-full',
+                  statusDotClassName[job.status]
                 )}
                 aria-hidden
               />
-              <Badge variant="outline" className="typography-size-xs">
-                {sourceTypeLabel}
-              </Badge>
-              <span className="typography-size-xs text-muted-foreground">{job.id}</span>
-            </div>
-            <p className="mt-1 line-clamp-2 typography-size-sm typography-weight-medium leading-5 text-foreground">
-              {job.sourcePreview}
-            </p>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 typography-size-xs text-muted-foreground">
-              <span>{job.model}</span>
-              <span aria-hidden>•</span>
-              <span>{job.dimensions}d</span>
-              <span aria-hidden>•</span>
-              <span>{progressLabel}</span>
-              <span aria-hidden>•</span>
-              <span>{formatTime(job.updatedAt)}</span>
-            </div>
-            {isActive ? (
+            </span>
+            <span className="typography-weight-medium text-foreground">
+              {statusConfig.label}
+            </span>
+            <span aria-hidden>•</span>
+            <span>{progressLabel}</span>
+            <span aria-hidden>•</span>
+            <span>{formatTime(job.updatedAt)}</span>
+          </div>
+          {isActive ? (
+            <div
+              className="mt-2 h-1 overflow-hidden rounded-full bg-muted/70"
+              data-testid={`embedding-queue-progress-${job.id}`}
+            >
               <div
-                className="mt-2 h-1 overflow-hidden rounded-full bg-muted/70"
-                data-testid={`embedding-queue-progress-${job.id}`}
-              >
-                <div
-                  className={cn(
-                    'h-full rounded-full transition-[width] duration-(--duration-moderate)',
-                    job.status === 'processing'
-                      ? 'bg-[oklch(0.60_0.10_250)] shimmer motion-reduce:animate-none'
-                      : 'bg-muted-foreground/70'
-                  )}
-                  style={{ width: `${Math.max(6, progressPercent)}%` }}
-                />
-              </div>
-            ) : null}
+                className={cn(
+                  'h-full rounded-full transition-[width] duration-(--duration-moderate)',
+                  job.status === 'processing'
+                    ? 'bg-[oklch(0.60_0.10_250)] shimmer motion-reduce:animate-none'
+                    : 'bg-muted-foreground/70'
+                )}
+                style={{ width: `${Math.max(6, progressPercent)}%` }}
+              />
+            </div>
+          ) : null}
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 typography-size-xs text-muted-foreground">
+            <span
+              className="typography-family-mono typography-weight-medium uppercase tracking-[0.08em]"
+              data-testid={`embedding-queue-source-type-${job.id}`}
+            >
+              {sourceTypeLabel}
+            </span>
+            <span aria-hidden>•</span>
+            <span>{job.model}</span>
+            <span aria-hidden>•</span>
+            <span>{job.dimensions}d</span>
+            <span aria-hidden>•</span>
+            <span className="typography-family-mono">#{job.id}</span>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <EmbeddingStatusBadge status={job.status} />
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </div>
+        <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
       </div>
     </Button>
   )
@@ -216,6 +259,7 @@ export function EmbeddingQueuePanel({
   errorMessage,
   onRetry,
   onSelectJob,
+  selectedJobId,
   className,
 }: EmbeddingQueuePanelProps) {
   const statusCounts = useMemo(() => {
@@ -224,6 +268,7 @@ export function EmbeddingQueuePanel({
       return counts
     }, { ...initialStatusCounts })
   }, [jobs])
+  const sortedJobs = useMemo(() => sortEmbeddingQueueJobs(jobs), [jobs])
 
   return (
     <Card
@@ -265,11 +310,12 @@ export function EmbeddingQueuePanel({
                 No embeddings queued yet.
               </div>
             ) : (
-              jobs.map((job, index) => (
+              sortedJobs.map((job, index) => (
                 <QueueItem
                   key={job.id}
                   job={job}
                   index={index}
+                  isSelected={selectedJobId === job.id}
                   onSelectJob={onSelectJob}
                 />
               ))

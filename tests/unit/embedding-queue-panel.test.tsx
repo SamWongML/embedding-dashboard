@@ -14,7 +14,10 @@ vi.mock('@/components/dashboard/panels/shared/animated-metric-value', () => {
   }
 })
 
-import { EmbeddingQueuePanel } from '@/components/dashboard/panels/text-embedding/embedding-queue-panel'
+import {
+  EmbeddingQueuePanel,
+  sortEmbeddingQueueJobs,
+} from '@/components/dashboard/panels/text-embedding/embedding-queue-panel'
 
 function buildJob(
   id: string,
@@ -123,6 +126,68 @@ describe('EmbeddingQueuePanel', () => {
     expect(
       screen.queryByTestId('embedding-queue-progress-job-completed')
     ).not.toBeInTheDocument()
+  })
+
+  it('renders a single source type label and inline status text for each row', () => {
+    const job = buildJob('job-url', 'processing', {
+      sourceType: 'url',
+      progress: { completedChunks: 2, totalChunks: 6, failedChunks: 0 },
+    })
+
+    render(
+      <EmbeddingQueuePanel
+        jobs={[job]}
+        isLoading={false}
+        onRetry={() => {}}
+        onSelectJob={() => {}}
+      />
+    )
+
+    const queueItem = screen.getByTestId('embedding-queue-item-job-url')
+    expect(within(queueItem).getByTestId('embedding-queue-source-type-job-url')).toHaveTextContent('URL')
+    expect(within(queueItem).getAllByText('URL')).toHaveLength(1)
+    expect(within(queueItem).getByTestId('embedding-queue-status-job-url')).toBeInTheDocument()
+    expect(within(queueItem).getAllByText('Processing')).toHaveLength(1)
+  })
+
+  it('sorts rows with active jobs first, then by most recently updated', () => {
+    const jobs: TextEmbeddingJobSummary[] = [
+      buildJob('job-completed', 'completed', { updatedAt: '2026-02-07T12:04:00.000Z' }),
+      buildJob('job-queued', 'queued', { updatedAt: '2026-02-07T12:03:00.000Z' }),
+      buildJob('job-failed', 'failed', { updatedAt: '2026-02-07T12:05:00.000Z' }),
+      buildJob('job-processing-new', 'processing', {
+        updatedAt: '2026-02-07T12:06:00.000Z',
+      }),
+      buildJob('job-processing-old', 'processing', {
+        updatedAt: '2026-02-07T12:02:00.000Z',
+      }),
+    ]
+
+    const sortedIds = sortEmbeddingQueueJobs(jobs).map((job) => job.id)
+    expect(sortedIds).toEqual([
+      'job-processing-new',
+      'job-processing-old',
+      'job-queued',
+      'job-failed',
+      'job-completed',
+    ])
+  })
+
+  it('marks the selected queue item for active row styling', () => {
+    render(
+      <EmbeddingQueuePanel
+        jobs={[buildJob('job-selected', 'processing')]}
+        isLoading={false}
+        onRetry={() => {}}
+        onSelectJob={() => {}}
+        selectedJobId="job-selected"
+      />
+    )
+
+    expect(screen.getByTestId('embedding-queue-item-job-selected')).toHaveAttribute(
+      'data-selected',
+      'true'
+    )
   })
 
   it('renders empty and error states', () => {
