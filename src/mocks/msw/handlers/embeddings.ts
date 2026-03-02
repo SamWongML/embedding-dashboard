@@ -1,9 +1,16 @@
 import { http, HttpResponse } from 'msw'
-import type { TextEmbeddingRequest } from '@/lib/schemas/text-embedding'
+import type {
+  TextEmbeddingJobCreateRequest,
+  TextEmbeddingJobListParams,
+  TextEmbeddingRequest,
+} from '@/lib/schemas/text-embedding'
 import {
+  createDemoTextEmbeddingJob,
   createDemoImageEmbedding,
   createDemoTextEmbedding,
+  getDemoTextEmbeddingJobDetail,
   getDemoImageEmbeddingModels,
+  listDemoTextEmbeddingJobs,
   getDemoTextEmbeddingModels,
 } from '@/mocks'
 import { API_URL } from '@/mocks/msw/handlers/constants'
@@ -15,6 +22,26 @@ export const embeddingHandlers = [
   http.post(`${API_URL}/embed/text`, async ({ request }) => {
     const body = (await request.json()) as TextEmbeddingRequest
     return HttpResponse.json(createDemoTextEmbedding(body))
+  }),
+  http.post(`${API_URL}/embed/text/jobs`, async ({ request }) => {
+    const body = (await request.json()) as TextEmbeddingJobCreateRequest
+    return HttpResponse.json(createDemoTextEmbeddingJob(body))
+  }),
+  http.get(`${API_URL}/embed/text/jobs`, ({ request }) => {
+    const url = new URL(request.url)
+    const limit = Number(url.searchParams.get('limit') ?? '50')
+    const params: TextEmbeddingJobListParams = {
+      limit: Number.isFinite(limit) ? limit : 50,
+    }
+    return HttpResponse.json(listDemoTextEmbeddingJobs(params))
+  }),
+  http.get(`${API_URL}/embed/text/jobs/:id`, ({ params }) => {
+    const id = String(params.id ?? '')
+    try {
+      return HttpResponse.json(getDemoTextEmbeddingJobDetail(id))
+    } catch {
+      return HttpResponse.json({ message: 'Not found' }, { status: 404 })
+    }
   }),
   http.get(`${API_URL}/embed/image/models`, () => {
     return HttpResponse.json(getDemoImageEmbeddingModels())

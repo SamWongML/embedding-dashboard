@@ -36,13 +36,17 @@ export function ServiceModeProvider({
   defaultServiceMode = 'simple',
   storageKey = SERVICE_MODE_STORAGE_KEY,
 }: ServiceModeProviderProps) {
-  const [serviceMode, setServiceModeState] = React.useState<ServiceMode>(() => {
-    if (typeof window === 'undefined') {
-      return defaultServiceMode
+  const [serviceMode, setServiceModeState] =
+    React.useState<ServiceMode>(defaultServiceMode)
+
+  React.useEffect(() => {
+    const storedServiceMode = readStoredServiceMode(storageKey)
+    if (!storedServiceMode || storedServiceMode === serviceMode) {
+      return
     }
 
-    return readStoredServiceMode(storageKey) ?? defaultServiceMode
-  })
+    setServiceModeState(storedServiceMode)
+  }, [serviceMode, storageKey])
 
   const setServiceMode = React.useCallback(
     (nextServiceMode: ServiceMode) => {

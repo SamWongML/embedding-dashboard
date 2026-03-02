@@ -1,3 +1,7 @@
 export { TextEmbeddingPanel } from './text-embedding-panel'
 export { SimpleMode } from './simple-mode'
 export { TechnicalMode } from './technical-mode'
+export { EmbeddingQueuePanel } from './embedding-queue-panel'
+export { EmbeddingJobDetailSheet } from './embedding-job-detail-sheet'
+export { EmbeddingSourceFields } from './embedding-source-fields'
+export { EmbeddingStatusBadge } from './embedding-status-badge'

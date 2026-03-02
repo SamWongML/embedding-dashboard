@@ -5,7 +5,12 @@ import {
   traceSpansResponseSchema,
   traceSummarySchema,
 } from '@/lib/schemas/server-status'
-import { textEmbeddingRequestSchema } from '@/lib/schemas/text-embedding'
+import {
+  textEmbeddingRequestSchema,
+  textEmbeddingSourceSchema,
+  textEmbeddingJobCreateRequestSchema,
+  textEmbeddingJobSummarySchema,
+} from '@/lib/schemas/text-embedding'
 import { searchRequestSchema } from '@/lib/schemas/search'
 
 describe('Server Status Schemas', () => {
@@ -184,6 +189,93 @@ describe('Text Embedding Schemas', () => {
       expect(() =>
         textEmbeddingRequestSchema.parse({ text: 'test', chunkSize: 500 })
       ).not.toThrow()
+    })
+
+    it('requires chunk overlap to be less than chunk size', () => {
+      expect(() =>
+        textEmbeddingRequestSchema.parse({
+          text: 'test',
+          chunkSize: 200,
+          chunkOverlap: 200,
+        })
+      ).toThrow()
+    })
+  })
+
+  describe('textEmbeddingSourceSchema', () => {
+    it('accepts text source payloads', () => {
+      expect(() =>
+        textEmbeddingSourceSchema.parse({
+          type: 'text',
+          text: 'Embedding content',
+        })
+      ).not.toThrow()
+    })
+
+    it('requires https for url source payloads', () => {
+      expect(() =>
+        textEmbeddingSourceSchema.parse({
+          type: 'url',
+          url: 'http://example.com',
+        })
+      ).toThrow()
+    })
+  })
+
+  describe('textEmbeddingJobCreateRequestSchema', () => {
+    it('validates technical job options', () => {
+      expect(() =>
+        textEmbeddingJobCreateRequestSchema.parse({
+          source: {
+            type: 'url',
+            url: 'https://example.com/docs',
+            extractionMode: 'main-content',
+            maxChars: 20000,
+          },
+          mode: 'technical',
+          options: {
+            model: 'text-embedding-3-small',
+            dimensions: 1536,
+            chunkSize: 800,
+            chunkOverlap: 80,
+            batchSize: 8,
+          },
+        })
+      ).not.toThrow()
+    })
+
+    it('rejects invalid dimensions', () => {
+      expect(() =>
+        textEmbeddingJobCreateRequestSchema.parse({
+          source: { type: 'text', text: 'hello' },
+          mode: 'technical',
+          options: {
+            dimensions: 64,
+          },
+        })
+      ).toThrow()
+    })
+  })
+
+  describe('textEmbeddingJobSummarySchema', () => {
+    it('normalizes backend statuses into canonical queue states', () => {
+      const parsed = textEmbeddingJobSummarySchema.parse({
+        id: 'job-1',
+        status: 'in_progress',
+        sourceType: 'text',
+        sourcePreview: 'Demo text',
+        model: 'text-embedding-3-small',
+        dimensions: 1536,
+        progress: {
+          completedChunks: 1,
+          totalChunks: 4,
+          failedChunks: 0,
+        },
+        queuedAt: '2026-02-07T12:00:00.000Z',
+        updatedAt: '2026-02-07T12:01:00.000Z',
+      })
+
+      expect(parsed.status).toBe('processing')
     })
   })
 })

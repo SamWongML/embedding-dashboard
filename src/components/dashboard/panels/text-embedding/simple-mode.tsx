@@ -1,47 +1,81 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Loader2, Send, Copy, Check } from 'lucide-react'
+import { Form } from '@/components/ui/form'
+import { Loader2, Send } from 'lucide-react'
 import { ActionWarningState } from '@/components/dashboard/panels/shared/action-warning-state'
 import { toActionErrorMessage } from '@/lib/api'
-import { useCreateTextEmbedding } from '@/lib/hooks/use-text-embedding'
+import { useCreateTextEmbeddingJob } from '@/lib/hooks/use-text-embedding'
 import { cn } from '@/lib/utils'
-import type { TextEmbeddingResponse } from '@/lib/schemas/text-embedding'
+import { EmbeddingSourceFields } from './embedding-source-fields'
 
-const simpleFormSchema = z.object({
-  text: z.string().min(1, 'Text is required'),
-})
+const simpleFormSchema = z
+  .object({
+    sourceType: z.enum(['text', 'url']),
+    text: z.string().optional(),
+    url: z.string().optional(),
+  })
+  .superRefine((values, context) => {
+    if (values.sourceType === 'text') {
+      if (!values.text || values.text.trim().length === 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['text'],
+          message: 'Text is required',
+        })
+      }
+      return
+    }
+
+    if (!values.url || values.url.trim().length === 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'URL is required',
+      })
+      return
+    }
+
+    try {
+      const url = new URL(values.url)
+      if (url.protocol !== 'https:') {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['url'],
+          message: 'URL must use HTTPS',
+        })
+      }
+    } catch {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'URL must be valid',
+      })
+    }
+  })
 
 type SimpleFormValues = z.infer<typeof simpleFormSchema>
 
 interface SimpleModeProps {
   className?: string
+  onJobCreated?: (id: string) => void
 }
 
-export function SimpleMode({ className }: SimpleModeProps) {
-  const [result, setResult] = useState<TextEmbeddingResponse | null>(null)
+export function SimpleMode({ className, onJobCreated }: SimpleModeProps) {
   const [actionWarning, setActionWarning] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
-  const createEmbedding = useCreateTextEmbedding()
+  const createEmbeddingJob = useCreateTextEmbeddingJob()
 
   const form = useForm<SimpleFormValues>({
     resolver: zodResolver(simpleFormSchema),
     defaultValues: {
+      sourceType: 'text',
       text: '',
+      url: '',
     },
   })
 
@@ -49,65 +83,90 @@ export function SimpleMode({ className }: SimpleModeProps) {
     setActionWarning(null)
 
     try {
-      const response = await createEmbedding.mutateAsync(values)
-      setResult(response)
+      const source =
+        values.sourceType === 'url'
+          ? {
+              type: 'url' as const,
+              url: values.url?.trim() ?? '',
+            }
+          : {
+              type: 'text' as const,
+              text: values.text?.trim() ?? '',
+            }
+
+      const response = await createEmbeddingJob.mutateAsync({
+        source,
+        mode: 'simple',
+      })
+      onJobCreated?.(response.id)
     } catch (error) {
       setActionWarning(
-        toActionErrorMessage(error, 'Unable to create text embedding.')
+        toActionErrorMessage(error, 'Unable to queue text embedding job.')
       )
     }
   }
 
-  const handleCopy = async () => {
-    if (result?.results[0]?.vector) {
-      await navigator.clipboard.writeText(
-        JSON.stringify(result.results[0].vector)
-      )
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
+  const sourceType = useWatch({
+    control: form.control,
+    name: 'sourceType',
+  }) ?? 'text'
+  const text = useWatch({
+    control: form.control,
+    name: 'text',
+  }) ?? ''
+  const url = useWatch({
+    control: form.control,
+    name: 'url',
+  }) ?? ''
 
   return (
-    <div className={cn('grid gap-6 lg:grid-cols-2', className)}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="typography-size-base typography-weight-medium">Input</CardTitle>
+    <div className={cn(className)}>
+      <Card className="border-border/70">
+        <CardHeader className="space-y-1">
+          <CardTitle className="typography-size-base typography-weight-medium">
+            Direct Input
+          </CardTitle>
+          <p className="typography-size-sm text-muted-foreground">
+            Generate vector embeddings from text content or web URLs.
+          </p>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="text"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Text to embed</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter text to create an embedding..."
-                        className="min-h-[200px] resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <EmbeddingSourceFields
+                sourceType={sourceType}
+                onSourceTypeChange={(nextType) => {
+                  form.setValue('sourceType', nextType, { shouldValidate: true })
+                }}
+                textValue={text}
+                onTextValueChange={(value) => {
+                  form.setValue('text', value, { shouldValidate: true })
+                }}
+                urlValue={url}
+                onUrlValueChange={(value) => {
+                  form.setValue('url', value, { shouldValidate: true })
+                }}
+                textError={form.formState.errors.text?.message}
+                urlError={form.formState.errors.url?.message}
+                disabled={createEmbeddingJob.isPending}
               />
+              <input type="hidden" {...form.register('sourceType')} />
+              <input type="hidden" {...form.register('text')} />
+              <input type="hidden" {...form.register('url')} />
               <Button
                 type="submit"
-                disabled={createEmbedding.isPending}
-                className="w-full"
+                disabled={createEmbeddingJob.isPending}
+                className="h-10 w-full"
               >
-                {createEmbedding.isPending ? (
+                {createEmbeddingJob.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
+                    Queueing...
                   </>
                 ) : (
                   <>
                     <Send className="mr-2 h-4 w-4" />
-                    Create Embedding
+                    Generate Embedding
                   </>
                 )}
               </Button>
@@ -122,67 +181,6 @@ export function SimpleMode({ className }: SimpleModeProps) {
               ) : null}
             </form>
           </Form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="typography-size-base typography-weight-medium">Result</CardTitle>
-          {result && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopy}
-              className="h-8"
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-success" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-          {result ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 typography-size-sm">
-                <div>
-                  <p className="text-muted-foreground">Model</p>
-                  <p className="typography-weight-medium">{result.results[0]?.model}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Tokens</p>
-                  <p className="typography-weight-medium">{result.totalTokens}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Dimensions</p>
-                  <p className="typography-weight-medium">
-                    {result.results[0]?.vector.length}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Processing Time</p>
-                  <p className="typography-weight-medium">
-                    {result.processingTime.toFixed(0)}ms
-                  </p>
-                </div>
-              </div>
-              <div>
-                <p className="typography-size-sm text-muted-foreground mb-2">
-                  Vector Preview
-                </p>
-                <div className="bg-muted rounded-md p-3 typography-family-mono typography-size-xs overflow-x-auto">
-                  [{result.results[0]?.vector.slice(0, 5).map(v => v.toFixed(6)).join(', ')}
-                  , ...]
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground typography-size-sm">
-              Results will appear here
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

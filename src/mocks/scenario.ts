@@ -32,6 +32,7 @@ import type {
 } from '@/lib/schemas/server-status'
 import type {
   EmbeddingModel,
+  TextEmbeddingJobDetail,
 } from '@/lib/schemas/text-embedding'
 import type {
   PermissionMatrix,
@@ -77,6 +78,8 @@ export interface DemoScenario {
   recentTraces: TraceSummary[]
   traceSpansByTraceId: Record<string, TraceSpansResponse>
   textEmbeddingModels: EmbeddingModel[]
+  textEmbeddingJobs: TextEmbeddingJobDetail[]
+  textEmbeddingJobPolls: Record<string, number>
   imageEmbeddingModels: ImageEmbeddingModel[]
 }
 
@@ -1251,6 +1254,350 @@ function buildImageEmbeddingModels(): ImageEmbeddingModel[] {
   ]
 }
 
+function buildCompletedSeedResult(
+  seed: number,
+  dimensions: number,
+  model: string,
+  baseDate: Date,
+  sourceKey: string,
+  chunks: string[],
+  totalChunks: number,
+  offsetMinutes: number
+) {
+  const results = chunks.map((chunk, index) => ({
+    id: `${sourceKey}-result-${index + 1}`,
+    text: chunk.slice(0, 220),
+    vector: toVector(dimensions, `${sourceKey}:chunk-${index + 1}`, seed),
+    model,
+    tokenCount: Math.max(1, Math.ceil(chunk.length / 4)),
+    chunkIndex: index,
+    totalChunks,
+    createdAt: toIsoWithOffset(baseDate, -(offsetMinutes - index) * MINUTE_MS),
+  }))
+
+  const totalTokens = results.reduce((sum, result) => sum + result.tokenCount, 0)
+
+  return {
+    results,
+    totalTokens,
+    processingTime: 320 + totalChunks * 22,
+  }
+}
+
+function buildSeedTextEmbeddingQueue(
+  baseDate: Date,
+  seed: number
+): {
+  jobs: TextEmbeddingJobDetail[]
+  polls: Record<string, number>
+} {
+  const queuedUrl = 'https://docs.acme.ai/guides/hybrid-retrieval'
+  const processingUrl = 'https://status.embedding.dev/postmortems/worker-latency'
+  const completedUrl = 'https://vercel.com/docs/agents/rules'
+
+  const completedTextChunks = [
+    'Retrieval quality checklist: normalize source metadata, preserve hierarchy, and monitor recall drift.',
+    'Use deterministic chunking settings and preserve source identifiers for downstream traceability.',
+  ]
+  const completedUrlChunks = [
+    'Agent guardrails should prioritize safety, deterministic execution, and transparent error reporting.',
+    'Rules should be auditable and easy to diff during pull request review.',
+  ]
+
+  const queuedJob: TextEmbeddingJobDetail = {
+    id: 'job-queue-url-001',
+    status: 'queued',
+    sourceType: 'url',
+    sourcePreview: queuedUrl,
+    sourceUrl: queuedUrl,
+    model: 'text-embedding-3-small',
+    dimensions: 1536,
+    progress: {
+      completedChunks: 0,
+      totalChunks: 6,
+      failedChunks: 0,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -2 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -1 * MINUTE_MS),
+    request: {
+      source: {
+        type: 'url',
+        url: queuedUrl,
+        extractionMode: 'main-content',
+        maxChars: 20_000,
+      },
+      mode: 'simple',
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-queue-url-001',
+      attemptCount: 1,
+    },
+  }
+
+  const processingTextJob: TextEmbeddingJobDetail = {
+    id: 'job-processing-text-001',
+    status: 'processing',
+    sourceType: 'text',
+    sourcePreview:
+      'Quarterly search relevance review with multilingual policy snippets and retrieval diagnostics.',
+    model: 'text-embedding-3-small',
+    dimensions: 1536,
+    progress: {
+      completedChunks: 2,
+      totalChunks: 3,
+      failedChunks: 0,
+    },
+    usage: {
+      inputTokens: 980,
+      totalTokens: 720,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -10 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -9 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -20 * 1000),
+    request: {
+      source: {
+        type: 'text',
+        text:
+          'Quarterly search relevance review with multilingual policy snippets and retrieval diagnostics.',
+      },
+      mode: 'technical',
+      options: {
+        model: 'text-embedding-3-small',
+        chunkSize: 700,
+        chunkOverlap: 80,
+        batchSize: 8,
+        metadata: {
+          source: 'review-doc',
+          locale: 'en-US',
+        },
+      },
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-processing-text-001',
+      attemptCount: 1,
+    },
+  }
+
+  const processingUrlJob: TextEmbeddingJobDetail = {
+    id: 'job-processing-url-001',
+    status: 'processing',
+    sourceType: 'url',
+    sourcePreview: processingUrl,
+    sourceUrl: processingUrl,
+    model: 'voyage-large-2',
+    dimensions: 1536,
+    progress: {
+      completedChunks: 3,
+      totalChunks: 9,
+      failedChunks: 0,
+    },
+    usage: {
+      inputTokens: 2240,
+      totalTokens: 1010,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -7 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -6 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -45 * 1000),
+    request: {
+      source: {
+        type: 'url',
+        url: processingUrl,
+        extractionMode: 'full-content',
+        maxChars: 32_000,
+      },
+      mode: 'technical',
+      options: {
+        model: 'voyage-large-2',
+        chunkSize: 900,
+        chunkOverlap: 90,
+        batchSize: 6,
+        metadata: {
+          source: 'incident-postmortem',
+        },
+      },
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-processing-url-001',
+      attemptCount: 1,
+    },
+  }
+
+  const completedTextJob: TextEmbeddingJobDetail = {
+    id: 'job-completed-text-001',
+    status: 'completed',
+    sourceType: 'text',
+    sourcePreview:
+      'Playbook for index freshness: ingestion SLAs, chunk drift alarms, and rollout checkpoints.',
+    model: 'text-embedding-3-large',
+    dimensions: 3072,
+    progress: {
+      completedChunks: 5,
+      totalChunks: 5,
+      failedChunks: 0,
+    },
+    usage: {
+      inputTokens: 1330,
+      totalTokens: 1330,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -25 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -24 * MINUTE_MS),
+    completedAt: toIsoWithOffset(baseDate, -22 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -22 * MINUTE_MS),
+    request: {
+      source: {
+        type: 'text',
+        text:
+          'Playbook for index freshness: ingestion SLAs, chunk drift alarms, and rollout checkpoints.',
+      },
+      mode: 'technical',
+      options: {
+        model: 'text-embedding-3-large',
+        chunkSize: 800,
+        chunkOverlap: 80,
+        batchSize: 10,
+      },
+    },
+    result: buildCompletedSeedResult(
+      seed,
+      3072,
+      'text-embedding-3-large',
+      baseDate,
+      'job-completed-text-001',
+      completedTextChunks,
+      5,
+      22
+    ),
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-completed-text-001',
+      attemptCount: 1,
+    },
+  }
+
+  const completedUrlJob: TextEmbeddingJobDetail = {
+    id: 'job-completed-url-001',
+    status: 'completed',
+    sourceType: 'url',
+    sourcePreview: completedUrl,
+    sourceUrl: completedUrl,
+    model: 'text-embedding-3-small',
+    dimensions: 1536,
+    progress: {
+      completedChunks: 8,
+      totalChunks: 8,
+      failedChunks: 0,
+    },
+    usage: {
+      inputTokens: 1042,
+      totalTokens: 1042,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -40 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -39 * MINUTE_MS),
+    completedAt: toIsoWithOffset(baseDate, -35 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -35 * MINUTE_MS),
+    request: {
+      source: {
+        type: 'url',
+        url: completedUrl,
+        extractionMode: 'main-content',
+        maxChars: 18_000,
+      },
+      mode: 'simple',
+      options: {
+        model: 'text-embedding-3-small',
+      },
+    },
+    result: buildCompletedSeedResult(
+      seed,
+      1536,
+      'text-embedding-3-small',
+      baseDate,
+      'job-completed-url-001',
+      completedUrlChunks,
+      8,
+      35
+    ),
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-completed-url-001',
+      attemptCount: 1,
+    },
+  }
+
+  const failedTextJob: TextEmbeddingJobDetail = {
+    id: 'job-failed-text-001',
+    status: 'failed',
+    sourceType: 'text',
+    sourcePreview:
+      'Compliance export notes with malformed YAML frontmatter and unresolved include directives.',
+    model: 'cohere-embed-v3',
+    dimensions: 1024,
+    progress: {
+      completedChunks: 2,
+      totalChunks: 6,
+      failedChunks: 1,
+    },
+    usage: {
+      inputTokens: 860,
+      totalTokens: 298,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -18 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -17 * MINUTE_MS),
+    failedAt: toIsoWithOffset(baseDate, -16 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -16 * MINUTE_MS),
+    error: {
+      code: 'EMBED_WORKER_ERROR',
+      message: 'Embedding worker failed during chunk processing.',
+      retryable: true,
+    },
+    request: {
+      source: {
+        type: 'text',
+        text:
+          'Compliance export notes with malformed YAML frontmatter and unresolved include directives.',
+      },
+      mode: 'technical',
+      options: {
+        model: 'cohere-embed-v3',
+        chunkSize: 700,
+        chunkOverlap: 70,
+        batchSize: 4,
+        metadata: {
+          forceFail: true,
+          source: 'compliance-export',
+        },
+      },
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-failed-text-001',
+      attemptCount: 2,
+    },
+  }
+
+  return {
+    jobs: [
+      queuedJob,
+      processingTextJob,
+      processingUrlJob,
+      completedTextJob,
+      completedUrlJob,
+      failedTextJob,
+    ],
+    polls: {
+      [queuedJob.id]: 0,
+      [processingTextJob.id]: 1,
+      [processingUrlJob.id]: 1,
+      [completedTextJob.id]: 0,
+      [completedUrlJob.id]: 0,
+      [failedTextJob.id]: 0,
+    },
+  }
+}
+
 function buildAccountSnapshot(baseDate: Date, context: DemoContext): AccountSnapshot {
   const workspaces: WorkspaceSummary[] = [
     {
@@ -1344,6 +1691,7 @@ export function createDemoDataset(
   const traceSpansByTraceId = buildTraceSpansByTraceId(recentTraces, seed)
   const graphData = buildGraphData(records, userGroups)
   const textEmbeddingModels = buildEmbeddingModels()
+  const textEmbeddingQueue = buildSeedTextEmbeddingQueue(baseDate, seed)
   const imageEmbeddingModels = buildImageEmbeddingModels()
   const accountSnapshot = buildAccountSnapshot(baseDate, context)
 
@@ -1364,6 +1712,8 @@ export function createDemoDataset(
     recentTraces,
     traceSpansByTraceId,
     textEmbeddingModels,
+    textEmbeddingJobs: textEmbeddingQueue.jobs,
+    textEmbeddingJobPolls: textEmbeddingQueue.polls,
     imageEmbeddingModels,
   }
 }

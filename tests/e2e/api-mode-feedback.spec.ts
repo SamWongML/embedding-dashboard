@@ -15,9 +15,9 @@ test.describe('API Mode Feedback', () => {
     await page.goto('/text-embedding')
 
     await page
-      .getByPlaceholder('Enter text to create an embedding...')
+      .getByPlaceholder('Paste or type your text content here...')
       .fill('text embedding api failure test')
-    await page.getByRole('button', { name: 'Create Embedding' }).click()
+    await page.getByRole('button', { name: 'Generate Embedding' }).click()
 
     await expect(page.getByText('Text embedding request failed')).toBeVisible()
   })

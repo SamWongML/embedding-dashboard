@@ -3,6 +3,8 @@ import type {
   SearchRequest,
 } from '@/lib/schemas/search'
 import type {
+  TextEmbeddingJobCreateRequest,
+  TextEmbeddingJobListParams,
   TextEmbeddingRequest,
 } from '@/lib/schemas/text-embedding'
 import type {
@@ -12,9 +14,12 @@ import type {
   DevApiScenario,
 } from '@/lib/runtime/dev-api-scenario'
 import {
+  createDemoTextEmbeddingJob,
   createDemoImageEmbedding,
   createDemoTextEmbedding,
+  getDemoTextEmbeddingJobDetail,
   getDemoRecordDetail,
+  listDemoTextEmbeddingJobs,
   listDemoRecords,
   searchDemo,
 } from '@/mocks'
@@ -62,6 +67,27 @@ const slowScenarioHandlers = [
   http.post(`${API_URL}/embed/text`, async ({ request }) => {
     const body = (await request.json()) as TextEmbeddingRequest
     return HttpResponse.json(await withDelay(() => createDemoTextEmbedding(body)))
+  }),
+  http.post(`${API_URL}/embed/text/jobs`, async ({ request }) => {
+    const body = (await request.json()) as TextEmbeddingJobCreateRequest
+    return HttpResponse.json(await withDelay(() => createDemoTextEmbeddingJob(body)))
+  }),
+  http.get(`${API_URL}/embed/text/jobs`, async ({ request }) => {
+    const url = new URL(request.url)
+    const limit = Number(url.searchParams.get('limit') ?? '50')
+    const params: TextEmbeddingJobListParams = {
+      limit: Number.isFinite(limit) ? limit : 50,
+    }
+    return HttpResponse.json(await withDelay(() => listDemoTextEmbeddingJobs(params)))
+  }),
+  http.get(`${API_URL}/embed/text/jobs/:id`, async ({ params }) => {
+    const id = String(params.id ?? '')
+    try {
+      const result = await withDelay(() => getDemoTextEmbeddingJobDetail(id))
+      return HttpResponse.json(result)
+    } catch {
+      return HttpResponse.json({ message: 'Not found' }, { status: 404 })
+    }
   }),
   http.post(`${API_URL}/embed/image`, async ({ request }) => {
     const formData = await request.formData()
@@ -134,4 +160,3 @@ export function getScenarioHandlers(scenario: DevApiScenario) {
 
   return []
 }
-

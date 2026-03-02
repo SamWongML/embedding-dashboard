@@ -11,15 +11,15 @@ async function setServiceModeFromAccount(page: Page, mode: 'simple' | 'technical
 test.describe('Text Embedding', () => {
   test('shows simple mode by default', async ({ page }) => {
     await page.goto('/text-embedding')
-    await expect(page.getByRole('button', { name: 'Show Advanced' })).toHaveCount(0)
+    await expect(page.getByText('Advanced Parameters')).toHaveCount(0)
   })
 
   test('applies technical mode from account settings across services', async ({ page }) => {
     await setServiceModeFromAccount(page, 'technical')
 
     await page.goto('/text-embedding')
-    await expect(page.getByText(/Chunk Size:/)).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Show Advanced' })).toBeVisible()
+    await expect(page.getByText('Chunk Size')).toBeVisible()
+    await expect(page.getByText('Advanced Parameters')).toBeVisible()
 
     await page.goto('/search')
     await expect(page.getByText('Weight Distribution')).toBeVisible()
@@ -35,14 +35,61 @@ test.describe('Text Embedding', () => {
     await setServiceModeFromAccount(page, 'simple')
     await page.goto('/text-embedding')
 
-    await page.getByPlaceholder('Enter text to create an embedding...').fill(
-      'This is a test text for embedding'
+    await page.getByPlaceholder('Paste or type your text content here...').fill(
+      'Queue demo text for embedding'
     )
-    await page.getByRole('button', { name: 'Create Embedding' }).click()
+    await page.getByRole('button', { name: 'Generate Embedding' }).click()
 
-    // Should show results
-    await expect(page.getByText('Model')).toBeVisible()
-    await expect(page.getByText('Dimensions')).toBeVisible()
+    await expect(page.getByText('Embedding Queue')).toBeVisible()
+    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
+    await expect(firstQueueItem).toBeVisible({ timeout: 15000 })
+    await expect(firstQueueItem).toContainText('Queue demo text for embedding')
+    await firstQueueItem.click()
+
+    await expect(page.getByText('Embedding Result')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Copy Full Vector' })).toBeVisible({
+      timeout: 30000,
+    })
+  })
+
+  test('queues URL embedding in simple mode', async ({ page }) => {
+    await setServiceModeFromAccount(page, 'simple')
+    await page.goto('/text-embedding')
+
+    await page.getByRole('tab', { name: 'URL Content' }).click()
+    await page
+      .getByPlaceholder('https://example.com/article')
+      .fill('https://example.com/docs/embedding')
+    await page.getByRole('button', { name: 'Generate Embedding' }).click()
+
+    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
+    await expect(firstQueueItem).toBeVisible({ timeout: 15000 })
+    await expect(firstQueueItem).toContainText('https://example.com/docs/embedding')
+  })
+
+  test('queues technical embedding with advanced options', async ({ page }) => {
+    await setServiceModeFromAccount(page, 'technical')
+    await page.goto('/text-embedding')
+    await expect(page.getByText('Advanced Parameters')).toBeVisible()
+
+    await page
+      .getByPlaceholder('Paste or type your text content here...')
+      .fill('Technical mode embedding request for queue detail validation')
+    await page
+      .getByPlaceholder('{"source": "manual", "tags": ["demo"]}')
+      .fill('{"source":"e2e","mode":"technical"}')
+    await page.getByRole('button', { name: 'Generate Embedding' }).click()
+
+    await expect(page.getByText('Embedding Queue')).toBeVisible()
+    const firstQueueItem = page.locator('[data-testid^="embedding-queue-item-"]').first()
+    await expect(firstQueueItem).toBeVisible({ timeout: 30000 })
+    await expect(firstQueueItem).toContainText(
+      'Technical mode embedding request for queue detail validation'
+    )
+    await firstQueueItem.click()
+    await expect(page.getByRole('button', { name: 'Copy Full Vector' })).toBeVisible({
+      timeout: 30000,
+    })
   })
 })
 

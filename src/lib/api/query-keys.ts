@@ -25,6 +25,8 @@ export const queryKeys = {
     all: ['text-embedding'] as const,
     models: () => [...queryKeys.textEmbedding.all, 'models'] as const,
     result: (id: string) => [...queryKeys.textEmbedding.all, 'result', id] as const,
+    queue: (params: object) => [...queryKeys.textEmbedding.all, 'queue', params] as const,
+    job: (id: string) => [...queryKeys.textEmbedding.all, 'job', id] as const,
   },
 
   // Image Embedding
