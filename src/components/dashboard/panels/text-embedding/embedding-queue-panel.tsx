@@ -68,13 +68,6 @@ const initialStatusCounts: StatusCounts = {
   failed: 0,
 }
 
-const statusOrderRank: Record<EmbeddingQueueStatus, number> = {
-  processing: 0,
-  queued: 1,
-  failed: 2,
-  completed: 3,
-}
-
 const statusDotClassName: Record<EmbeddingQueueStatus, string> = {
   queued: 'bg-muted-foreground/70',
   processing: 'bg-[oklch(0.60_0.10_250)]',
@@ -84,7 +77,17 @@ const statusDotClassName: Record<EmbeddingQueueStatus, string> = {
 
 export function sortEmbeddingQueueJobs(jobs: TextEmbeddingJobSummary[]) {
   return [...jobs].sort((left, right) => {
-    const rankDiff = statusOrderRank[left.status] - statusOrderRank[right.status]
+    const getPriorityRank = (status: EmbeddingQueueStatus) => {
+      if (status === 'processing') {
+        return 0
+      }
+      if (status === 'queued') {
+        return 1
+      }
+      return 2
+    }
+
+    const rankDiff = getPriorityRank(left.status) - getPriorityRank(right.status)
     if (rankDiff !== 0) {
       return rankDiff
     }

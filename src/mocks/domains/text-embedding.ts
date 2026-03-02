@@ -11,6 +11,8 @@ import type {
 import {
   buildDemoVector,
   cloneDemoValue,
+  DEMO_PERSISTENT_PROCESSING_JOB_ID,
+  DEMO_PERSISTENT_QUEUED_JOB_ID,
   getDemoScenarioState,
   replaceDemoScenarioState,
   nextDemoTimestamp,
@@ -160,6 +162,13 @@ function advanceTextEmbeddingJobs() {
     state.textEmbeddingJobPolls[job.id] = nextPoll
     changed = true
 
+    if (
+      job.status === 'processing' &&
+      job.id === DEMO_PERSISTENT_PROCESSING_JOB_ID
+    ) {
+      continue
+    }
+
     if (job.status !== 'processing') {
       continue
     }
@@ -214,6 +223,10 @@ function advanceTextEmbeddingJobs() {
 
   for (const job of state.textEmbeddingJobs) {
     if (job.status !== 'queued') {
+      continue
+    }
+
+    if (job.id === DEMO_PERSISTENT_QUEUED_JOB_ID) {
       continue
     }
 

@@ -150,11 +150,11 @@ describe('EmbeddingQueuePanel', () => {
     expect(within(queueItem).getAllByText('Processing')).toHaveLength(1)
   })
 
-  it('sorts rows with active jobs first, then by most recently updated', () => {
+  it('sorts processing first, queued second, then remaining rows by timeline', () => {
     const jobs: TextEmbeddingJobSummary[] = [
-      buildJob('job-completed', 'completed', { updatedAt: '2026-02-07T12:04:00.000Z' }),
-      buildJob('job-queued', 'queued', { updatedAt: '2026-02-07T12:03:00.000Z' }),
-      buildJob('job-failed', 'failed', { updatedAt: '2026-02-07T12:05:00.000Z' }),
+      buildJob('job-completed', 'completed', { updatedAt: '2026-02-07T12:05:00.000Z' }),
+      buildJob('job-queued', 'queued', { updatedAt: '2026-02-07T12:04:00.000Z' }),
+      buildJob('job-failed', 'failed', { updatedAt: '2026-02-07T12:03:00.000Z' }),
       buildJob('job-processing-new', 'processing', {
         updatedAt: '2026-02-07T12:06:00.000Z',
       }),
@@ -168,8 +168,8 @@ describe('EmbeddingQueuePanel', () => {
       'job-processing-new',
       'job-processing-old',
       'job-queued',
-      'job-failed',
       'job-completed',
+      'job-failed',
     ])
   })
 

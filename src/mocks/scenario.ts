@@ -52,6 +52,8 @@ const DAY_MS = 24 * HOUR_MS
 
 export const DEMO_DEFAULT_SEED = 20260207
 export const DEMO_DEFAULT_NOW = '2026-02-07T12:00:00.000Z'
+export const DEMO_PERSISTENT_QUEUED_JOB_ID = 'job-queued-persistent-001'
+export const DEMO_PERSISTENT_PROCESSING_JOB_ID = 'job-processing-persistent-001'
 
 export interface DemoContext {
   seed: number
@@ -1399,6 +1401,39 @@ function buildSeedTextEmbeddingQueue(
     },
   }
 
+  const persistentQueuedJob: TextEmbeddingJobDetail = {
+    id: DEMO_PERSISTENT_QUEUED_JOB_ID,
+    status: 'queued',
+    sourceType: 'text',
+    sourcePreview:
+      'Persistent queue seed: request intentionally stays queued to keep demo queue states visible.',
+    model: 'text-embedding-3-small',
+    dimensions: 1536,
+    progress: {
+      completedChunks: 0,
+      totalChunks: 4,
+      failedChunks: 0,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -12 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -11 * MINUTE_MS),
+    request: {
+      source: {
+        type: 'text',
+        text:
+          'Persistent queue seed: request intentionally stays queued to keep demo queue states visible.',
+      },
+      mode: 'simple',
+      options: {
+        model: 'text-embedding-3-small',
+      },
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-queued-persistent-001',
+      attemptCount: 1,
+    },
+  }
+
   const processingTextJob: TextEmbeddingJobDetail = {
     id: 'job-processing-text-001',
     status: 'processing',
@@ -1485,6 +1520,50 @@ function buildSeedTextEmbeddingQueue(
     backend: {
       provider: 'aws-ecs',
       taskId: 'task-processing-url-001',
+      attemptCount: 1,
+    },
+  }
+
+  const persistentProcessingJob: TextEmbeddingJobDetail = {
+    id: DEMO_PERSISTENT_PROCESSING_JOB_ID,
+    status: 'processing',
+    sourceType: 'text',
+    sourcePreview:
+      'Persistent processing seed: job remains in processing to keep active queue visualization stable.',
+    model: 'text-embedding-3-large',
+    dimensions: 3072,
+    progress: {
+      completedChunks: 3,
+      totalChunks: 12,
+      failedChunks: 0,
+    },
+    usage: {
+      inputTokens: 1400,
+      totalTokens: 350,
+    },
+    queuedAt: toIsoWithOffset(baseDate, -20 * MINUTE_MS),
+    startedAt: toIsoWithOffset(baseDate, -19 * MINUTE_MS),
+    updatedAt: toIsoWithOffset(baseDate, -70 * 1000),
+    request: {
+      source: {
+        type: 'text',
+        text:
+          'Persistent processing seed: job remains in processing to keep active queue visualization stable.',
+      },
+      mode: 'technical',
+      options: {
+        model: 'text-embedding-3-large',
+        chunkSize: 900,
+        chunkOverlap: 90,
+        batchSize: 6,
+        metadata: {
+          source: 'persistent-seed',
+        },
+      },
+    },
+    backend: {
+      provider: 'aws-ecs',
+      taskId: 'task-processing-persistent-001',
       attemptCount: 1,
     },
   }
@@ -1645,16 +1724,20 @@ function buildSeedTextEmbeddingQueue(
   return {
     jobs: [
       queuedJob,
+      persistentQueuedJob,
       processingTextJob,
       processingUrlJob,
+      persistentProcessingJob,
       completedTextJob,
       completedUrlJob,
       failedTextJob,
     ],
     polls: {
       [queuedJob.id]: 0,
+      [persistentQueuedJob.id]: 0,
       [processingTextJob.id]: 1,
       [processingUrlJob.id]: 1,
+      [persistentProcessingJob.id]: 1,
       [completedTextJob.id]: 0,
       [completedUrlJob.id]: 0,
       [failedTextJob.id]: 0,

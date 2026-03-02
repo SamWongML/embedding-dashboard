@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  DEMO_PERSISTENT_PROCESSING_JOB_ID,
+  DEMO_PERSISTENT_QUEUED_JOB_ID,
   listDemoTextEmbeddingJobs,
   resetDemoScenario,
 } from '@/mocks'
@@ -36,5 +38,25 @@ describe('demo text embedding queue seeds', () => {
 
     expect(queuedJob).toBeDefined()
     expect(['processing', 'completed']).toContain(queuedJob?.status)
+  })
+
+  it('keeps persistent queued and processing seed jobs in place across polls', () => {
+    const firstPoll = listDemoTextEmbeddingJobs({ limit: 50 })
+    const secondPoll = listDemoTextEmbeddingJobs({ limit: 50 })
+    const thirdPoll = listDemoTextEmbeddingJobs({ limit: 50 })
+
+    for (const poll of [firstPoll, secondPoll, thirdPoll]) {
+      const persistentQueuedJob = poll.jobs.find(
+        (job) => job.id === DEMO_PERSISTENT_QUEUED_JOB_ID
+      )
+      const persistentProcessingJob = poll.jobs.find(
+        (job) => job.id === DEMO_PERSISTENT_PROCESSING_JOB_ID
+      )
+
+      expect(persistentQueuedJob).toBeDefined()
+      expect(persistentQueuedJob?.status).toBe('queued')
+      expect(persistentProcessingJob).toBeDefined()
+      expect(persistentProcessingJob?.status).toBe('processing')
+    }
   })
 })
