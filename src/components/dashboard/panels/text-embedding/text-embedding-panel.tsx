@@ -80,13 +80,13 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
 
   return (
     <div className={cn('space-y-6', className)}>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(20rem,1fr)] xl:grid-cols-[minmax(0,1.38fr)_minmax(22rem,1fr)]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(20rem,1fr)] xl:grid-cols-[minmax(0,1.38fr)_minmax(22rem,1fr)]">
         {serviceMode === 'technical' ? (
-          <TechnicalMode onJobCreated={handleJobCreated} />
+          <TechnicalMode className="min-w-0" onJobCreated={handleJobCreated} />
         ) : (
-          <SimpleMode onJobCreated={handleJobCreated} />
+          <SimpleMode className="min-w-0" onJobCreated={handleJobCreated} />
         )}
-        <div className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:self-start">
+        <div className="min-w-0 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:self-start">
           <EmbeddingQueuePanel
             jobs={queueQuery.data?.jobs ?? []}
             isLoading={queueQuery.isLoading}
