@@ -85,23 +85,6 @@ function getProgressPercent(job: TextEmbeddingJobSummary) {
   return Math.min(100, Math.round((completedChunks / totalChunks) * 100))
 }
 
-function QueueLiveIndicator({ hasActiveJob }: { hasActiveJob: boolean }) {
-  return (
-    <div className="flex items-center gap-2 typography-size-xs text-muted-foreground">
-      <span
-        className={cn(
-          'h-2 w-2 rounded-full',
-          hasActiveJob
-            ? 'bg-[oklch(0.60_0.10_250)] motion-safe:animate-pulse motion-reduce:animate-none'
-            : 'bg-muted-foreground/50'
-        )}
-        aria-hidden
-      />
-      <span>{hasActiveJob ? 'Live queue' : 'Idle queue'}</span>
-    </div>
-  )
-}
-
 function QueueStatusMetrics({ statusCounts }: { statusCounts: StatusCounts }) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -219,12 +202,6 @@ function QueueItem({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {job.status === 'processing' ? (
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-[oklch(0.60_0.10_250)] motion-safe:animate-pulse motion-reduce:animate-none"
-              aria-hidden
-            />
-          ) : null}
           <EmbeddingStatusBadge status={job.status} />
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </div>
@@ -247,7 +224,6 @@ export function EmbeddingQueuePanel({
       return counts
     }, { ...initialStatusCounts })
   }, [jobs])
-  const hasActiveJobs = statusCounts.queued > 0 || statusCounts.processing > 0
 
   return (
     <Card
@@ -265,7 +241,6 @@ export function EmbeddingQueuePanel({
             {jobs.length} jobs total
           </span>
         </div>
-        <QueueLiveIndicator hasActiveJob={hasActiveJobs} />
         <QueueStatusMetrics statusCounts={statusCounts} />
       </CardHeader>
       <CardContent className="space-y-3 p-0">
