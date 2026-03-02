@@ -107,7 +107,7 @@ test.describe('Usage Analytics header layout', () => {
     await expect(page.getByText('Embedding Trends')).toBeVisible()
     await expect(page.getByText('Activity Heatmap')).toBeVisible()
     await expect(page.locator('[data-slot="activity-heatmap-cell"]').first()).toBeVisible()
-    await expect(page.getByText('Most Accessed Embeddings')).toBeVisible()
+    await expect(page.getByText('Most Accessed Collections')).toBeVisible()
   })
 
   test('supports 30d week navigation controls in activity heatmap header', async ({ page }) => {

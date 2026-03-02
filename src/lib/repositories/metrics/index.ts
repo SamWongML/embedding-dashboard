@@ -2,7 +2,7 @@ import type {
   EmbeddingTrend,
   MetricsOverview,
   SearchAnalytics,
-  TopHit,
+  TopCollection,
   TopUser,
 } from '@/lib/schemas/metrics'
 import type { DataMode } from '@/lib/runtime/data-mode'
@@ -11,21 +11,21 @@ import {
   fetchEmbeddingTrends,
   fetchMetricsOverview,
   fetchSearchAnalytics,
-  fetchTopHits,
+  fetchTopCollections,
   fetchTopUsers,
 } from '@/lib/repositories/metrics/api'
 import {
   getDemoEmbeddingTrends,
   getDemoMetricsOverview,
   getDemoSearchAnalytics,
-  getDemoTopHits,
+  getDemoTopCollections,
   getDemoTopUsers,
 } from '@/mocks'
 import { normalizeMetricsOverview } from '@/lib/repositories/metrics/normalize-overview'
 
 export interface MetricsRepository {
   getOverview: (period: string) => Promise<MetricsOverview>
-  getTopHits: (period: string) => Promise<TopHit[]>
+  getTopCollections: (period: string) => Promise<TopCollection[]>
   getTopUsers: (period: string) => Promise<TopUser[]>
   getEmbeddingTrends: (period: string) => Promise<EmbeddingTrend[]>
   getSearchAnalytics: (period: string) => Promise<SearchAnalytics[]>
@@ -36,7 +36,7 @@ const apiRepository: MetricsRepository = {
     const overview = await fetchMetricsOverview(period)
     return normalizeMetricsOverview(overview)
   },
-  getTopHits: (period) => fetchTopHits(period),
+  getTopCollections: (period) => fetchTopCollections(period),
   getTopUsers: (period) => fetchTopUsers(period),
   getEmbeddingTrends: (period) => fetchEmbeddingTrends(period),
   getSearchAnalytics: (period) => fetchSearchAnalytics(period),
@@ -47,7 +47,7 @@ const demoRepository: MetricsRepository = {
     const overview = await getDemoMetricsOverview(period)
     return normalizeMetricsOverview(overview)
   },
-  getTopHits: async () => getDemoTopHits(),
+  getTopCollections: async () => getDemoTopCollections(),
   getTopUsers: async () => getDemoTopUsers(),
   getEmbeddingTrends: async (period) => getDemoEmbeddingTrends(period),
   getSearchAnalytics: async (period) => getDemoSearchAnalytics(period),

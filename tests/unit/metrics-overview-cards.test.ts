@@ -10,7 +10,7 @@ import {
 function buildOverview(cards: MetricsOverview['cards']): MetricsOverview {
   return {
     cards,
-    topHits: [],
+    topCollections: [],
     topUsers: [
       {
         id: 'user-1',
@@ -107,4 +107,3 @@ describe('normalizeMetricsOverview', () => {
     expect(SEARCH_QUERY_UNIT_COST_USD).toBe(0.0009)
   })
 })
-

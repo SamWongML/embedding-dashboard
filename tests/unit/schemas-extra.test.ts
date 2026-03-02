@@ -25,8 +25,8 @@ describe('additional schemas', () => {
       cards: [
         { label: 'Requests', value: 100, change: 5, changeType: 'increase' },
       ],
-      topHits: [
-        { id: 'h1', name: 'Embed', count: 10, type: 'endpoint' },
+      topCollections: [
+        { id: 'h1', name: 'Embed', requestCount: 10, contentType: 'text' },
       ],
       topUsers: [
         { id: 'u1', name: 'Avery', email: 'a@example.com', requestCount: 12, lastActive: 'now' },

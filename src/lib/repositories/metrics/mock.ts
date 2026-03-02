@@ -2,6 +2,6 @@ export {
   getDemoEmbeddingTrends as getMockEmbeddingTrends,
   getDemoMetricsOverview as getMockMetricsOverview,
   getDemoSearchAnalytics as getMockSearchAnalytics,
-  getDemoTopHits as getMockTopHits,
+  getDemoTopCollections as getMockTopCollections,
   getDemoTopUsers as getMockTopUsers,
 } from '@/mocks'

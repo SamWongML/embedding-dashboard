@@ -16,11 +16,12 @@ export const metricCardSchema = z.object({
   sparkline: z.array(z.number()).optional(),
 })
 
-export const topHitSchema = z.object({
+export const topCollectionSchema = z.object({
   id: z.string(),
   name: z.string(),
-  count: z.number(),
-  type: z.string(),
+  collectionName: z.string().optional(),
+  requestCount: z.number(),
+  contentType: z.enum(['text', 'image', 'mixed']),
 })
 
 export const topUserSchema = z.object({
@@ -48,7 +49,7 @@ export const searchAnalyticsSchema = z.object({
 
 export const metricsOverviewSchema = z.object({
   cards: z.array(metricCardSchema),
-  topHits: z.array(topHitSchema),
+  topCollections: z.array(topCollectionSchema),
   topUsers: z.array(topUserSchema),
   trends: z.array(embeddingTrendSchema),
   hourlyTrends: z.array(embeddingTrendSchema).optional(),
@@ -56,7 +57,7 @@ export const metricsOverviewSchema = z.object({
 })
 
 export type MetricCard = z.infer<typeof metricCardSchema>
-export type TopHit = z.infer<typeof topHitSchema>
+export type TopCollection = z.infer<typeof topCollectionSchema>
 export type TopUser = z.infer<typeof topUserSchema>
 export type EmbeddingTrend = z.infer<typeof embeddingTrendSchema>
 export type SearchAnalytics = z.infer<typeof searchAnalyticsSchema>

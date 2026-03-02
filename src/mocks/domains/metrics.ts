@@ -2,7 +2,7 @@ import type {
   EmbeddingTrend,
   MetricsOverview,
   SearchAnalytics,
-  TopHit,
+  TopCollection,
   TopUser,
 } from '@/lib/schemas/metrics'
 import {
@@ -39,8 +39,8 @@ export function getDemoMetricsOverview(period: MetricsPeriod = '24h'): MetricsOv
   }
 }
 
-export function getDemoTopHits(): TopHit[] {
-  return cloneDemoValue(getDemoScenarioState().metricsOverview.topHits)
+export function getDemoTopCollections(): TopCollection[] {
+  return cloneDemoValue(getDemoScenarioState().metricsOverview.topCollections)
 }
 
 export function getDemoTopUsers(): TopUser[] {

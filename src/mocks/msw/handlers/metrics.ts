@@ -3,7 +3,7 @@ import {
   getDemoEmbeddingTrends,
   getDemoMetricsOverview,
   getDemoSearchAnalytics,
-  getDemoTopHits,
+  getDemoTopCollections,
   getDemoTopUsers,
 } from '@/mocks'
 import { API_URL } from '@/mocks/msw/handlers/constants'
@@ -17,8 +17,8 @@ export const metricsHandlers = [
     const period = queryPeriod(new URL(request.url))
     return HttpResponse.json(getDemoMetricsOverview(period))
   }),
-  http.get(`${API_URL}/metrics/top-hits`, () => {
-    return HttpResponse.json(getDemoTopHits())
+  http.get(`${API_URL}/metrics/top-collections`, () => {
+    return HttpResponse.json(getDemoTopCollections())
   }),
   http.get(`${API_URL}/metrics/top-users`, () => {
     return HttpResponse.json(getDemoTopUsers())

@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/selector-tabs'
 import { MetricCard } from './metric-card'
 import { TopUsersTable } from './top-users-table'
+import { TopCollectionsList } from './top-collections-list'
 import { TrendsChart } from '@/components/charts/trends-chart'
-import { TopHitsChart } from '@/components/charts/top-hits-chart'
 import { ActivityHeatmap } from '@/components/charts/activity-heatmap'
 import {
   buildActivityHeatmapRowRanges,
@@ -214,17 +214,17 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="typography-size-base typography-weight-medium">
-              Most Accessed Embeddings
+              Most Accessed Collections
             </CardTitle>
             <CardDescription className="typography-size-sm text-muted-foreground">
-              Top embeddings by request count
+              Top collections by request count
             </CardDescription>
           </CardHeader>
           <CardContent>
             {isInitialLoading ? (
               <div className="h-[200px] bg-muted rounded animate-pulse" />
             ) : (
-              <TopHitsChart data={data?.topHits || []} />
+              <TopCollectionsList collections={data?.topCollections || []} />
             )}
           </CardContent>
         </Card>

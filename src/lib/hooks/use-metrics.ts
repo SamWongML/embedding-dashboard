@@ -6,7 +6,7 @@ import type {
   EmbeddingTrend,
   MetricsOverview,
   SearchAnalytics,
-  TopHit,
+  TopCollection,
   TopUser,
 } from '@/lib/schemas/metrics'
 import { getMetricsRepository } from '@/lib/repositories/metrics'
@@ -22,10 +22,10 @@ export function useMetricsOverview(period: string = '24h') {
   })
 }
 
-export function useTopHits(period: string = '24h') {
-  return useQuery<TopHit[]>({
-    queryKey: queryKeys.metrics.topHits(period),
-    queryFn: () => metricsRepository.getTopHits(period),
+export function useTopCollections(period: string = '24h') {
+  return useQuery<TopCollection[]>({
+    queryKey: queryKeys.metrics.topCollections(period),
+    queryFn: () => metricsRepository.getTopCollections(period),
     refetchInterval: 30000,
   })
 }

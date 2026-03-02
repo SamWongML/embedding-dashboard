@@ -14,7 +14,7 @@ export const queryKeys = {
   metrics: {
     all: ['metrics'] as const,
     overview: (period: string) => [...queryKeys.metrics.all, 'overview', period] as const,
-    topHits: (period: string) => [...queryKeys.metrics.all, 'top-hits', period] as const,
+    topCollections: (period: string) => [...queryKeys.metrics.all, 'top-collections', period] as const,
     topUsers: (period: string) => [...queryKeys.metrics.all, 'top-users', period] as const,
     trends: (period: string) => [...queryKeys.metrics.all, 'trends', period] as const,
     searchAnalytics: (period: string) => [...queryKeys.metrics.all, 'search-analytics', period] as const,

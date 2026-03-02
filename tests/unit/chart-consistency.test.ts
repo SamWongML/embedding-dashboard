@@ -6,7 +6,6 @@ const projectRoot = process.cwd()
 const chartFiles = [
   'latency-distribution-chart.tsx',
   'service-usage-chart.tsx',
-  'top-hits-chart.tsx',
   'throughput-errors-chart.tsx',
   'latency-chart.tsx',
   'trends-chart.tsx',
@@ -38,7 +37,6 @@ describe('chart consistency', () => {
     const chartsWithContainerHeights = [
       'latency-distribution-chart.tsx',
       'service-usage-chart.tsx',
-      'top-hits-chart.tsx',
       'throughput-errors-chart.tsx',
       'latency-chart.tsx',
       'trends-chart.tsx',
@@ -85,7 +83,7 @@ describe('chart consistency', () => {
   })
 
   it('uses single-accent ranking bars without active overlays', () => {
-    const rankingCharts = ['top-hits-chart.tsx', 'service-usage-chart.tsx'] as const
+    const rankingCharts = ['service-usage-chart.tsx'] as const
 
     rankingCharts.forEach((fileName) => {
       const source = loadChartFile(fileName)

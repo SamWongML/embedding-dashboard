@@ -11,7 +11,7 @@ import type {
   MetricCard,
   MetricsOverview,
   SearchAnalytics,
-  TopHit,
+  TopCollection,
   TopUser,
 } from '@/lib/schemas/metrics'
 import type {
@@ -468,35 +468,94 @@ function buildSearchResults(
   })
 }
 
-function buildTopHits(records: EmbeddingRecord[]): TopHit[] {
-  const bySource = new Map<string, { name: string; type: string; count: number }>()
+function buildTopCollections(records: EmbeddingRecord[]): TopCollection[] {
+  function toTitleFromSlug(value: string) {
+    return value
+      .replace(/\.md$/i, '')
+      .split(/[\s/_-]+/)
+      .filter(Boolean)
+      .map((segment) => segment[0]?.toUpperCase() + segment.slice(1))
+      .join(' ')
+  }
+
+  function resolveEmbeddingTitle(record: EmbeddingRecord, index: number) {
+    const documentSlug = typeof record.metadata?.document === 'string'
+      ? record.metadata.document.trim()
+      : ''
+    const sourceSlug = record.source?.split('/').pop()?.replace(/\.md$/i, '') ?? ''
+    const candidate = documentSlug || sourceSlug || `untitled-${index + 1}`
+    return toTitleFromSlug(candidate) || 'Untitled Embedding'
+  }
+
+  const byTopic = new Map<
+    string,
+    {
+      id: string
+      collectionName: string
+      requestCount: number
+      contentTypes: Set<'text' | 'image'>
+      embeddingRequestCountByTitle: Map<string, number>
+    }
+  >()
 
   records.forEach((record, index) => {
-    const source = record.source ?? `unknown-${index}`
-    const previous = bySource.get(source)
-    if (previous) {
-      previous.count += 190 + index * 3
+    const topicValue = typeof record.metadata?.topic === 'string'
+      ? record.metadata.topic.trim()
+      : ''
+    const normalizedTopicId = topicValue
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+    const collectionId = normalizedTopicId || 'unassigned'
+    const collectionLabel = topicValue || 'Unassigned'
+
+    const existingCollection = byTopic.get(collectionId)
+    const requestDelta = 160 + index * 9
+    const embeddingTitle = resolveEmbeddingTitle(record, index)
+
+    if (existingCollection) {
+      existingCollection.requestCount += requestDelta
+      existingCollection.contentTypes.add(record.contentType)
+      const currentEmbeddingCount = existingCollection.embeddingRequestCountByTitle.get(embeddingTitle) ?? 0
+      existingCollection.embeddingRequestCountByTitle.set(
+        embeddingTitle,
+        currentEmbeddingCount + requestDelta
+      )
       return
     }
 
-    bySource.set(source, {
-      name: source.split('/').pop()?.replace('.md', '').replace(/-/g, ' ') ?? source,
-      type: record.contentType,
-      count: 1200 + index * 77,
+    byTopic.set(collectionId, {
+      id: collectionId,
+      collectionName: toTitleFromSlug(collectionLabel) || 'Unassigned',
+      requestCount: 980 + index * 67,
+      contentTypes: new Set([record.contentType]),
+      embeddingRequestCountByTitle: new Map([[embeddingTitle, requestDelta]]),
     })
   })
 
-  return Array.from(bySource.entries())
-    .map(([id, value]) => ({
-      id,
-      name: value.name
-        .split(' ')
-        .map((segment) => segment[0]?.toUpperCase() + segment.slice(1))
-        .join(' '),
-      count: value.count,
-      type: value.type,
-    }))
-    .sort((left, right) => right.count - left.count)
+  return Array.from(byTopic.values())
+    .map((collection) => {
+      const contentType: TopCollection['contentType'] = collection.contentTypes.size > 1
+        ? 'mixed'
+        : collection.contentTypes.has('image')
+          ? 'image'
+          : 'text'
+
+      const topEmbeddingTitle = Array.from(collection.embeddingRequestCountByTitle.entries())
+        .sort((left, right) => {
+          if (right[1] !== left[1]) return right[1] - left[1]
+          return left[0].localeCompare(right[0])
+        })[0]?.[0] ?? 'Untitled Embedding'
+
+      return {
+        id: collection.id,
+        name: topEmbeddingTitle,
+        collectionName: collection.collectionName,
+        requestCount: collection.requestCount,
+        contentType,
+      }
+    })
+    .sort((left, right) => right.requestCount - left.requestCount)
     .slice(0, 5)
 }
 
@@ -1672,12 +1731,12 @@ export function createDemoDataset(
   const trends = buildTrends(baseDate, seed)
   const hourlyTrends = buildHourlyTrends(baseDate, seed)
   const searchAnalytics = buildSearchAnalytics(baseDate, seed)
-  const topHits = buildTopHits(records)
+  const topCollections = buildTopCollections(records)
   const topUsers = buildTopUsers(users, baseDate)
   const metricCards = buildMetricCards(records, trends, searchAnalytics)
   const metricsOverview: MetricsOverview = {
     cards: metricCards,
-    topHits,
+    topCollections,
     topUsers,
     trends,
     hourlyTrends,

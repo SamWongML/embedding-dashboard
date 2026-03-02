@@ -40,6 +40,6 @@ describe('metrics repository factory', () => {
     const overview = await repository.getOverview('24h')
 
     expect(fetchMock).not.toHaveBeenCalled()
-    expect(overview.topHits.length).toBeGreaterThan(0)
+    expect(overview.topCollections.length).toBeGreaterThan(0)
   })
 })

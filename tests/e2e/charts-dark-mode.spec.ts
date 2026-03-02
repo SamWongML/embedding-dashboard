@@ -54,9 +54,21 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
         sparkline: [0.0018, 0.0018, 0.0017, 0.0017, 0.0016, 0.0016, 0.0016],
       },
     ],
-    topHits: [
-      { id: 'top-hit-1', name: 'Semantic Search', count: 18440, type: 'Text' },
-      { id: 'top-hit-2', name: 'Image Similarity', count: 6820, type: 'Image' },
+    topCollections: [
+      {
+        id: 'semantic-search',
+        name: 'Semantic Search',
+        collectionName: 'Search',
+        requestCount: 18440,
+        contentType: 'text' as const,
+      },
+      {
+        id: 'image-similarity',
+        name: 'Image Similarity',
+        collectionName: 'Visual Retrieval',
+        requestCount: 6820,
+        contentType: 'image' as const,
+      },
     ],
     topUsers: [
       {
@@ -301,13 +313,28 @@ test.describe('Dark mode chart interactions', () => {
     await expect(page.locator('.recharts-tooltip-cursor')).toHaveCount(0)
   })
 
-  test('top hits bar hover avoids bright tooltip cursor overlays', async ({ page }) => {
+  test('most accessed collections list keeps readable non-white rails in dark mode', async ({ page }) => {
+    await mockMetricsOverview(page)
     await gotoWithDarkMode(page, '/metrics')
     await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+    await expect(page.getByText('Most Accessed Collections')).toBeVisible()
 
-    await hoverChartSurfaceByHeading(page, 'Most Accessed Embeddings')
+    const firstRow = page.locator('[data-slot="top-collections-row"]').first()
+    const firstRail = page.locator('[data-slot="top-collections-rail"]').first()
+    const firstRailFill = page.locator('[data-slot="top-collections-rail-fill"]').first()
+    await expect(firstRow).toBeVisible()
+    await expect(firstRail).toBeVisible()
+    await expect(firstRailFill).toBeVisible()
+    await expect(firstRow).toContainText('Semantic Search')
+    await expect(firstRow).toContainText(/18\.4k|18.4k/)
 
-    await expect(page.locator('.recharts-tooltip-cursor')).toHaveCount(0)
+    const railColor = await firstRail.evaluate((node) => window.getComputedStyle(node).backgroundColor)
+    const railFillColor = await firstRailFill.evaluate((node) => window.getComputedStyle(node).backgroundColor)
+
+    expect(railColor).not.toBe('rgb(255, 255, 255)')
+    expect(railColor).not.toBe('rgba(255, 255, 255, 1)')
+    expect(railFillColor).not.toBe('rgb(255, 255, 255)')
+    expect(railFillColor).not.toBe('rgba(255, 255, 255, 1)')
   })
 
   test('operations hover avoids bright white active dots', async ({ page }) => {

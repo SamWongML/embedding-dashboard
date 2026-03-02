@@ -3,14 +3,14 @@ import type {
   EmbeddingTrend,
   MetricsOverview,
   SearchAnalytics,
-  TopHit,
+  TopCollection,
   TopUser,
 } from "@/lib/schemas/metrics"
 import {
   embeddingTrendSchema,
   metricsOverviewSchema,
   searchAnalyticsSchema,
-  topHitSchema,
+  topCollectionSchema,
   topUserSchema,
 } from "@/lib/schemas/metrics"
 
@@ -18,8 +18,11 @@ export async function fetchMetricsOverview(period: string): Promise<MetricsOverv
   return api.get<MetricsOverview>(`/metrics/overview?period=${period}`, metricsOverviewSchema)
 }
 
-export async function fetchTopHits(period: string): Promise<TopHit[]> {
-  return api.get<TopHit[]>(`/metrics/top-hits?period=${period}`, topHitSchema.array())
+export async function fetchTopCollections(period: string): Promise<TopCollection[]> {
+  return api.get<TopCollection[]>(
+    `/metrics/top-collections?period=${period}`,
+    topCollectionSchema.array()
+  )
 }
 
 export async function fetchTopUsers(period: string): Promise<TopUser[]> {
