@@ -1,10 +1,10 @@
-import { Metadata } from "next";
-import { MetricsPanel } from "@/components/dashboard/panels/metrics/metrics-panel";
+import type { Metadata } from 'next'
+import MetricsPageClient from './metrics-page-client'
 
 export const metadata: Metadata = {
-	title: "Usage Analytics",
-};
+  title: 'Usage Analytics',
+}
 
 export default function MetricsPage() {
-	return <MetricsPanel />;
+  return <MetricsPageClient />
 }

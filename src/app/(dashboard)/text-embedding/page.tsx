@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
-import { TextEmbeddingPanel } from '@/components/dashboard/panels/text-embedding/text-embedding-panel'
+import TextEmbeddingPageClient from './text-embedding-page-client'
 
 export const metadata: Metadata = {
   title: 'Text Embedding',
 }
 
 export default function TextEmbeddingPage() {
-  return <TextEmbeddingPanel />
+  return <TextEmbeddingPageClient />
 }
