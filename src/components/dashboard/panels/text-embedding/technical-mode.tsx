@@ -1,11 +1,25 @@
 'use client'
 
+<<<<<<< ours
+<<<<<<< ours
 import { useEffect, useMemo, useState } from 'react'
+=======
+import { useEffect, useState } from 'react'
+>>>>>>> theirs
+=======
+import { useEffect, useState } from 'react'
+>>>>>>> theirs
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
+<<<<<<< ours
+<<<<<<< ours
 import { Badge } from '@/components/ui/badge'
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
@@ -58,6 +72,42 @@ const technicalFormSchema = z
         message: 'Chunk overlap must be less than chunk size',
       })
     }
+<<<<<<< ours
+
+    if (values.sourceType === 'text') {
+      if (!values.text || values.text.trim().length === 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['text'],
+          message: 'Text is required',
+        })
+      }
+      return
+    }
+<<<<<<< ours
+
+    if (!values.url || values.url.trim().length === 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'URL is required',
+      })
+      return
+    }
+
+=======
+
+    if (!values.url || values.url.trim().length === 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['url'],
+        message: 'URL is required',
+      })
+      return
+    }
+
+>>>>>>> theirs
+=======
 
     if (values.sourceType === 'text') {
       if (!values.text || values.text.trim().length === 0) {
@@ -79,6 +129,7 @@ const technicalFormSchema = z
       return
     }
 
+>>>>>>> theirs
     try {
       const url = new URL(values.url)
       if (url.protocol !== 'https:') {
@@ -138,6 +189,8 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
     control: form.control,
     name: 'url',
   }) ?? ''
+<<<<<<< ours
+<<<<<<< ours
   const selectedModelId = useWatch({
     control: form.control,
     name: 'model',
@@ -147,6 +200,10 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
     [models, selectedModelId]
   )
 
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   useEffect(() => {
     if (!models || models.length === 0) {
       return
@@ -160,6 +217,8 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
     }
   }, [form, models])
 
+<<<<<<< ours
+<<<<<<< ours
   useEffect(() => {
     if (!models || !selectedModelId) {
       return
@@ -173,6 +232,10 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
     form.setValue('dimensions', selectedModel.dimensions)
   }, [form, models, selectedModelId])
 
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   const onSubmit = async (values: TechnicalFormValues) => {
     setActionWarning(null)
 
@@ -228,7 +291,15 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
             Advanced Input
           </CardTitle>
           <p className="typography-size-sm text-muted-foreground">
+<<<<<<< ours
+<<<<<<< ours
             Tune model, chunking, extraction, and metadata options.
+=======
+            Tune chunking, extraction, and metadata options.
+>>>>>>> theirs
+=======
+            Tune chunking, extraction, and metadata options.
+>>>>>>> theirs
           </p>
         </CardHeader>
         <CardContent>
@@ -256,6 +327,8 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
               <input type="hidden" {...form.register('url')} />
 
               <section className="space-y-4 rounded-xl border border-border/80 bg-muted/20 p-4 sm:p-5">
+<<<<<<< ours
+<<<<<<< ours
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h3 className="typography-size-sm typography-weight-medium">
                     Advanced Parameters
@@ -308,8 +381,63 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
                                   : Number(event.target.value)
                               )
                             }
+=======
+                <h3 className="typography-size-sm typography-weight-medium">
+                  Advanced Parameters
+                </h3>
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="chunkSize"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <FormLabel>Chunk Size</FormLabel>
+                          <span className="typography-size-xs text-muted-foreground">
+                            {field.value}
+                          </span>
+                        </div>
+                        <FormControl>
+=======
+                <h3 className="typography-size-sm typography-weight-medium">
+                  Advanced Parameters
+                </h3>
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="chunkSize"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <FormLabel>Chunk Size</FormLabel>
+                          <span className="typography-size-xs text-muted-foreground">
+                            {field.value}
+                          </span>
+                        </div>
+                        <FormControl>
+>>>>>>> theirs
+                          <Slider
+                            min={100}
+                            max={4000}
+                            step={100}
+                            value={[field.value]}
+                            onValueChange={(value) => {
+                              const nextValue = value[0]
+                              if (typeof nextValue === 'number') {
+                                field.onChange(nextValue)
+                              }
+                            }}
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
                           />
                         </FormControl>
+                        <FormDescription>
+                          Controls how much text each embedding chunk contains.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -317,6 +445,8 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
 
                   <FormField
                     control={form.control}
+<<<<<<< ours
+<<<<<<< ours
                     name="batchSize"
                     render={({ field }) => (
                       <FormItem>
@@ -368,6 +498,22 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
                             min={100}
                             max={4000}
                             step={100}
+=======
+                    name="chunkOverlap"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <FormLabel>Chunk Overlap</FormLabel>
+                          <span className="typography-size-xs text-muted-foreground">
+                            {field.value}
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            min={0}
+                            max={2000}
+                            step={20}
+>>>>>>> theirs
                             value={[field.value]}
                             onValueChange={(value) => {
                               const nextValue = value[0]
@@ -378,6 +524,7 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
                           />
                         </FormControl>
                         <FormDescription>
+<<<<<<< ours
                           Controls how much text each embedding chunk contains.
                         </FormDescription>
                         <FormMessage />
@@ -397,6 +544,18 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
                           </span>
                         </div>
                         <FormControl>
+=======
+                    name="chunkOverlap"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <FormLabel>Chunk Overlap</FormLabel>
+                          <span className="typography-size-xs text-muted-foreground">
+                            {field.value}
+                          </span>
+                        </div>
+                        <FormControl>
+>>>>>>> theirs
                           <Slider
                             min={0}
                             max={2000}
@@ -411,6 +570,11 @@ export function TechnicalMode({ className, onJobCreated }: TechnicalModeProps) {
                           />
                         </FormControl>
                         <FormDescription>
+<<<<<<< ours
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
                           Adds shared context between neighboring chunks.
                         </FormDescription>
                         <FormMessage />
