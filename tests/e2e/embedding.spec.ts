@@ -21,6 +21,32 @@ test.describe('Text Embedding', () => {
     await expect(page.getByText('Advanced Parameters')).toHaveCount(0)
   })
 
+  test('filters queue by status metric and syncs filter state to URL', async ({ page }) => {
+    await setServiceModeFromAccount(page, 'simple')
+    await page.goto('/text-embedding')
+
+    const processingFilterMetric = page.getByTestId('embedding-queue-metric-processing')
+    await expect(processingFilterMetric).toBeVisible()
+
+    await processingFilterMetric.click()
+    await expect(page).toHaveURL(/queueStatus=processing/)
+
+    const queueRows = page.locator('[data-testid^="embedding-queue-item-"]')
+    const rowCount = await queueRows.count()
+    expect(rowCount).toBeGreaterThan(0)
+
+    for (let index = 0; index < rowCount; index += 1) {
+      await expect(
+        queueRows.nth(index).locator('[data-testid^="embedding-queue-status-"]')
+      ).toContainText('Processing')
+    }
+
+    await processingFilterMetric.click()
+    await expect(page).not.toHaveURL(/queueStatus=processing/)
+    const restoredRowCount = await queueRows.count()
+    expect(restoredRowCount).toBeGreaterThan(1)
+  })
+
   test('applies technical mode from account settings across services', async ({ page }) => {
     await setServiceModeFromAccount(page, 'technical')
 

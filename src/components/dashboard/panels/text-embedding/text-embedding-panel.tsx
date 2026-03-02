@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { SimpleMode } from './simple-mode'
 import { TechnicalMode } from './technical-mode'
 import { EmbeddingQueuePanel } from './embedding-queue-panel'
@@ -9,13 +10,23 @@ import { useServiceMode } from '@/components/providers/service-mode-provider'
 import { toActionErrorMessage } from '@/lib/api'
 import { useTextEmbeddingQueue } from '@/lib/hooks/use-text-embedding'
 import { useDelayedSheetSelection } from '@/lib/hooks/use-delayed-sheet-selection'
+import type { EmbeddingQueueStatus } from '@/lib/schemas/text-embedding'
+import {
+  parseQueueStatusFilter,
+  toQueueStatusQueryValue,
+} from '@/lib/schemas/queue-status-filter'
 import { cn } from '@/lib/utils'
 
 interface TextEmbeddingPanelProps {
   className?: string
 }
 
+const QUEUE_STATUS_PARAM_KEY = 'queueStatus'
+
 export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { serviceMode } = useServiceMode()
   const queueQuery = useTextEmbeddingQueue({ limit: 50 })
   const {
@@ -36,10 +47,36 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
       'Unable to refresh embedding queue.'
     )
   }, [queueQuery.error, queueQuery.isError])
+  const activeStatusFilter = useMemo(
+    () => parseQueueStatusFilter(searchParams.get(QUEUE_STATUS_PARAM_KEY)),
+    [searchParams]
+  )
 
   const handleJobCreated = () => {
     void queueQuery.refetch()
   }
+  const handleQueueStatusFilterChange = useCallback(
+    (nextStatus: EmbeddingQueueStatus | null) => {
+      const nextSearchParams = new URLSearchParams(searchParams.toString())
+      const queryValue = toQueueStatusQueryValue(nextStatus)
+      const currentValue = searchParams.get(QUEUE_STATUS_PARAM_KEY)
+
+      if (queryValue === currentValue || (!queryValue && !currentValue)) {
+        return
+      }
+
+      if (queryValue) {
+        nextSearchParams.set(QUEUE_STATUS_PARAM_KEY, queryValue)
+      } else {
+        nextSearchParams.delete(QUEUE_STATUS_PARAM_KEY)
+      }
+
+      const nextQueryString = nextSearchParams.toString()
+      const nextUrl = nextQueryString ? `${pathname}?${nextQueryString}` : pathname
+      router.replace(nextUrl, { scroll: false })
+    },
+    [pathname, router, searchParams]
+  )
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -58,6 +95,8 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
               void queueQuery.refetch()
             }}
             onSelectJob={selectJobId}
+            activeStatusFilter={activeStatusFilter}
+            onStatusFilterChange={handleQueueStatusFilterChange}
             selectedJobId={selectedJobId}
           />
         </div>
