@@ -104,7 +104,7 @@ test.describe('Usage Analytics header layout', () => {
       'aria-selected',
       'true'
     )
-    await expect(page.getByText('Operations')).toBeVisible()
+    await expect(page.getByText('Embedding Trends')).toBeVisible()
     await expect(page.getByText('Activity Heatmap')).toBeVisible()
     await expect(page.locator('[data-slot="activity-heatmap-cell"]').first()).toBeVisible()
     await expect(page.getByText('Most Accessed Embeddings')).toBeVisible()
@@ -138,13 +138,13 @@ test.describe('Usage Analytics header layout', () => {
     expect(resetWindowFirstCellLabel).toBe(newestWindowFirstCellLabel)
   })
 
-  test('positions activity heatmap to the right of operations on desktop', async ({
+  test('positions activity heatmap to the right of embedding trends on desktop', async ({
     page,
   }) => {
     await page.goto('/metrics')
     await expect(page.locator('[data-slot="activity-heatmap-cell"]').first()).toBeVisible()
 
-    const trendsHeading = page.getByText('Operations', { exact: true }).first()
+    const trendsHeading = page.getByText('Embedding Trends', { exact: true }).first()
     const heatmapHeading = page.getByText('Activity Heatmap', { exact: true }).first()
 
     await expect(trendsHeading).toBeVisible()
@@ -198,7 +198,7 @@ test.describe('Usage Analytics header layout', () => {
     await page.goto("/metrics")
     const usageRowHeight = await page.evaluate<number | null>(() => {
       const trendsCard = Array.from(document.querySelectorAll("[data-slot=\"card-title\"]"))
-        .find((node) => node.textContent?.trim() === "Operations")
+        .find((node) => node.textContent?.trim() === "Embedding Trends")
         ?.closest("[data-slot=\"card\"]")
 
       return trendsCard?.parentElement?.getBoundingClientRect().height ?? null
@@ -367,10 +367,10 @@ test.describe('Usage Analytics mobile heading layout', () => {
     expect(Math.abs(tabsBox.y - headingBox.y)).toBeLessThanOrEqual(4)
   })
 
-  test('stacks activity heatmap below operations on mobile', async ({ page }) => {
+  test('stacks activity heatmap below embedding trends on mobile', async ({ page }) => {
     await page.goto('/metrics')
 
-    const trendsHeading = page.getByText('Operations', { exact: true }).first()
+    const trendsHeading = page.getByText('Embedding Trends', { exact: true }).first()
     const heatmapHeading = page.getByText('Activity Heatmap', { exact: true }).first()
     await expect(trendsHeading).toBeVisible()
     await expect(heatmapHeading).toBeVisible()

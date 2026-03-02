@@ -1,13 +1,5 @@
 'use client'
 
-<<<<<<< ours
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
-import { Link2, Text } from 'lucide-react'
-=======
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -16,7 +8,6 @@ import {
   SelectorTabsTrigger,
 } from '@/components/ui/selector-tabs'
 import { Textarea } from '@/components/ui/textarea'
->>>>>>> theirs
 
 type EmbeddingInputSourceType = 'text' | 'url'
 
@@ -52,54 +43,6 @@ export function EmbeddingSourceFields({
 
   return (
     <div className="space-y-4">
-<<<<<<< ours
-      <div
-        className="inline-flex w-full items-center rounded-lg border border-border bg-muted/35 p-1 sm:w-auto"
-        role="tablist"
-        aria-label="Embedding source type"
-      >
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          disabled={disabled}
-          onClick={() => onSourceTypeChange('text')}
-          role="tab"
-          aria-selected={sourceType === 'text'}
-          aria-pressed={sourceType === 'text'}
-          aria-controls="text-embedding-source-text-panel"
-          className={cn(
-            'h-9 flex-1 gap-2 rounded-md px-3 sm:flex-none',
-            sourceType === 'text'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground'
-          )}
-        >
-          <Text className="h-3.5 w-3.5" />
-          Direct Text
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          disabled={disabled}
-          onClick={() => onSourceTypeChange('url')}
-          role="tab"
-          aria-selected={sourceType === 'url'}
-          aria-pressed={sourceType === 'url'}
-          aria-controls="text-embedding-source-url-panel"
-          className={cn(
-            'h-9 flex-1 gap-2 rounded-md px-3 sm:flex-none',
-            sourceType === 'url'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground'
-          )}
-        >
-          <Link2 className="h-3.5 w-3.5" />
-          URL Content
-        </Button>
-      </div>
-=======
       <SelectorTabs
         value={sourceType}
         onValueChange={(value) => {
@@ -126,7 +69,6 @@ export function EmbeddingSourceFields({
           </SelectorTabsTrigger>
         </SelectorTabsList>
       </SelectorTabs>
->>>>>>> theirs
 
       {sourceType === 'text' ? (
         <div

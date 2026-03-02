@@ -44,7 +44,6 @@ import type {
   User as AccountUser,
   WorkspaceSummary,
 } from '@/lib/types/account'
-import { deriveAvgCostPerQueryCard } from '@/lib/repositories/metrics/normalize-overview'
 
 const MINUTE_MS = 60_000
 const HALF_HOUR_MS = 30 * MINUTE_MS
@@ -594,8 +593,8 @@ function buildMetricCards(
   const searchesToday = searchAnalytics
     .slice(-24)
     .reduce((total, item) => total + item.count, 0)
+  const averageLatency = 43
   const activeUsers = 347
-  const avgCostPerQuery = deriveAvgCostPerQueryCard(trends)
 
   return [
     {
@@ -613,13 +612,19 @@ function buildMetricCards(
       sparkline: searchAnalytics.slice(-7).map((item) => item.count),
     },
     {
+      label: 'Avg Latency',
+      value: averageLatency,
+      change: 0.3,
+      changeType: 'neutral',
+      sparkline: [47, 45, 42, 44, 43, 42, 43],
+    },
+    {
       label: 'Active Users',
       value: activeUsers,
       change: 7.6,
       changeType: 'increase',
       sparkline: [301, 309, 317, 328, 334, 341, activeUsers],
     },
-    avgCostPerQuery,
   ]
 }
 

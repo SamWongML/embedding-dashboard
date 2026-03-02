@@ -121,7 +121,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
               <MetricCard
                 key={metric.label}
                 metric={metric}
-                animationMode="on-mount"
+                animationMode="on-change"
               />
             ))}
           </MonitoringMetricCardsGrid>
@@ -133,7 +133,7 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         <Card className="h-full">
           <CardHeader className="pb-2">
             <CardTitle className="typography-size-base typography-weight-medium">
-              Operations
+              Embedding Trends
             </CardTitle>
             <CardDescription className="typography-size-sm text-muted-foreground">
               Text, image, and search request volume over time
