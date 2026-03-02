@@ -213,9 +213,9 @@ function QueueItem({
     <Button
       variant="ghost"
       className={cn(
-        'h-auto w-full justify-start rounded-none border-l-2 border-transparent px-4 py-3 text-left transition-[background-color,border-color] duration-(--duration-moderate) hover:bg-muted/40 focus-visible:bg-muted/45 fade-in motion-reduce:animate-none',
+        'h-auto w-full justify-start rounded-none border-l-2 border-transparent px-4 py-3 text-left whitespace-normal transition-[background-color,border-color] duration-(--duration-moderate) hover:bg-muted/40 focus-visible:bg-muted/45 fade-in motion-reduce:animate-none',
         isSelected &&
-          'border-l-[oklch(0.60_0.10_250)] bg-muted/45 hover:bg-muted/45 focus-visible:bg-muted/45'
+          'border-l-primary bg-muted/45 hover:bg-muted/45 focus-visible:bg-muted/45'
       )}
       style={itemStyle}
       onClick={() => onSelectJob(job.id)}
@@ -224,11 +224,14 @@ function QueueItem({
     >
       <div className="flex w-full items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 typography-size-sm typography-weight-medium leading-5 text-foreground">
+          <p
+            className="line-clamp-2 [overflow-wrap:anywhere] typography-size-sm typography-weight-medium leading-5 text-foreground"
+            data-testid={`embedding-queue-source-preview-${job.id}`}
+          >
             {job.sourcePreview}
           </p>
           <div
-            className="mt-1.5 flex flex-wrap items-center gap-1.5 typography-size-xs text-muted-foreground"
+            className="mt-1.5 flex flex-wrap items-center gap-1.5 [overflow-wrap:anywhere] typography-size-xs text-muted-foreground"
             data-testid={`embedding-queue-status-${job.id}`}
           >
             <span className="relative inline-flex h-2 w-2 shrink-0 items-center justify-center">
@@ -273,7 +276,10 @@ function QueueItem({
               />
             </div>
           ) : null}
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 typography-size-xs text-muted-foreground">
+          <div
+            className="mt-1.5 flex flex-wrap items-center gap-1.5 [overflow-wrap:anywhere] typography-size-xs text-muted-foreground"
+            data-testid={`embedding-queue-meta-${job.id}`}
+          >
             <span
               className="typography-family-mono typography-weight-medium uppercase tracking-[0.08em]"
               data-testid={`embedding-queue-source-type-${job.id}`}
@@ -288,7 +294,11 @@ function QueueItem({
             <span className="typography-family-mono">#{job.id}</span>
           </div>
         </div>
-        <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+        <ChevronRight
+          className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+          data-testid={`embedding-queue-chevron-${job.id}`}
+          aria-hidden
+        />
       </div>
     </Button>
   )

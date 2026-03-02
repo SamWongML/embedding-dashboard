@@ -47,6 +47,46 @@ test.describe('Text Embedding', () => {
     expect(restoredRowCount).toBeGreaterThan(1)
   })
 
+  test('keeps queue rows and chevrons within the queue card bounds on desktop', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await setServiceModeFromAccount(page, 'simple')
+    await page.goto('/text-embedding')
+    await expect(page.getByText('Embedding Queue')).toBeVisible()
+    const queueRows = page.locator('[data-testid^="embedding-queue-item-"]')
+    const firstRow = queueRows.first()
+    const queueCard = page
+      .getByTestId('embedding-queue-list')
+      .locator('xpath=ancestor::*[@data-slot="card"][1]')
+    const firstRowChevron = firstRow.locator('[data-testid^="embedding-queue-chevron-"]')
+
+    await expect(firstRow).toBeVisible()
+    await expect(queueCard).toBeVisible()
+    await expect(firstRowChevron).toBeVisible()
+
+    const [rowBox, cardBox, chevronBox] = await Promise.all([
+      firstRow.boundingBox(),
+      queueCard.boundingBox(),
+      firstRowChevron.boundingBox(),
+    ])
+
+    expect(rowBox).not.toBeNull()
+    expect(cardBox).not.toBeNull()
+    expect(chevronBox).not.toBeNull()
+
+    if (!rowBox || !cardBox || !chevronBox) {
+      throw new Error('Queue geometry could not be measured.')
+    }
+
+    const rowOverflow = rowBox.x + rowBox.width - (cardBox.x + cardBox.width)
+    const chevronOverflow =
+      chevronBox.x + chevronBox.width - (cardBox.x + cardBox.width)
+
+    expect(rowOverflow).toBeLessThanOrEqual(1)
+    expect(chevronOverflow).toBeLessThanOrEqual(1)
+  })
+
   test('applies technical mode from account settings across services', async ({ page }) => {
     await setServiceModeFromAccount(page, 'technical')
 

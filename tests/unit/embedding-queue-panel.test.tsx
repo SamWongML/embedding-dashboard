@@ -163,6 +163,52 @@ describe('EmbeddingQueuePanel', () => {
     expect(within(queueItem).getAllByText('Processing')).toHaveLength(1)
   })
 
+  it('applies wrap-safe classes so long content does not clip right-side affordances', () => {
+    renderQueuePanel({
+      jobs: [buildJob('job-wrap-safe', 'processing')],
+    })
+
+    const queueItem = screen.getByTestId('embedding-queue-item-job-wrap-safe')
+    const sourcePreview = within(queueItem).getByTestId(
+      'embedding-queue-source-preview-job-wrap-safe'
+    )
+    const statusRow = within(queueItem).getByTestId('embedding-queue-status-job-wrap-safe')
+    const metaRow = within(queueItem).getByTestId('embedding-queue-meta-job-wrap-safe')
+    const chevron = within(queueItem).getByTestId('embedding-queue-chevron-job-wrap-safe')
+
+    expect(queueItem.className).toContain('whitespace-normal')
+    expect(sourcePreview.className).toContain('[overflow-wrap:anywhere]')
+    expect(statusRow.className).toContain('[overflow-wrap:anywhere]')
+    expect(metaRow.className).toContain('[overflow-wrap:anywhere]')
+    expect(chevron).toBeInTheDocument()
+  })
+
+  it('keeps status and metadata visible for very long URL-style tokens', () => {
+    const longToken = `https://example.com/${'segment-'.repeat(28)}tail`
+    const longModel = `model-${'x'.repeat(96)}`
+    const job = buildJob('job-long-token', 'processing', {
+      sourceType: 'url',
+      sourcePreview: longToken,
+      model: longModel,
+      progress: { completedChunks: 3, totalChunks: 7, failedChunks: 0 },
+    })
+
+    renderQueuePanel({ jobs: [job] })
+
+    const queueItem = screen.getByTestId('embedding-queue-item-job-long-token')
+    const sourcePreview = within(queueItem).getByTestId(
+      'embedding-queue-source-preview-job-long-token'
+    )
+    const statusRow = within(queueItem).getByTestId('embedding-queue-status-job-long-token')
+    const metaRow = within(queueItem).getByTestId('embedding-queue-meta-job-long-token')
+
+    expect(sourcePreview).toHaveTextContent(longToken)
+    expect(statusRow).toHaveTextContent('Processing')
+    expect(metaRow).toHaveTextContent('URL')
+    expect(metaRow).toHaveTextContent(longModel)
+    expect(within(queueItem).getByTestId('embedding-queue-chevron-job-long-token')).toBeInTheDocument()
+  })
+
   it('sorts processing first, queued second, then remaining rows by timeline', () => {
     const jobs: TextEmbeddingJobSummary[] = [
       buildJob('job-completed', 'completed', { updatedAt: '2026-02-07T12:05:00.000Z' }),
