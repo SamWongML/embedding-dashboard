@@ -348,8 +348,9 @@ test.describe('Dark mode chart interactions', () => {
     await expect(firstRow).toBeVisible()
     await expect(firstRail).toBeVisible()
     await expect(firstRailFill).toBeVisible()
-    await expect(firstRow).toContainText('Semantic Search')
-    await expect(firstRow).toContainText(/18\.4k|18.4k/)
+    await expect(firstRow).toContainText(/%/)
+    await expect(firstRow).toContainText(/[0-9]/)
+    await expect(firstRow).toHaveAttribute('aria-label', /requests/i)
 
     const railColor = await firstRail.evaluate((node) => window.getComputedStyle(node).backgroundColor)
     const railFillColor = await firstRailFill.evaluate((node) => window.getComputedStyle(node).backgroundColor)

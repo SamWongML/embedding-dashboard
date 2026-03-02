@@ -291,6 +291,10 @@
   --chart-legend-height-roomy: 2.25rem; /* 36px */
   --chart-legend-icon-size-compact: 0.375rem; /* 6px */
   --chart-legend-icon-size-default: 0.4375rem; /* 7px */
+  --chart-legend-row-gap: var(--space-2); /* 8px */
+  --chart-legend-row-min-height: 1.75rem; /* 28px */
+  --chart-legend-max-height-sm: 15rem; /* 240px */
+  --chart-legend-max-height-lg: 16rem; /* 256px */
 
   --chart-tooltip-padding-x: var(--space-2\.5);
   --chart-tooltip-padding-y: var(--space-2);

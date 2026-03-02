@@ -86,7 +86,8 @@
   --chart-1: oklch(55% 0.14 277);        /* Indigo */
   --chart-2: oklch(60% 0.12 175);        /* Teal */
   --chart-3: oklch(66% 0.13 80);         /* Amber */
-  --chart-4: oklch(58% 0.12 150);        /* Green */
+  --chart-4: oklch(51.75% 0.1453 147.65); /* Geist Green 900 */
+  --chart-pink: oklch(53.5% 0.2058 2.84); /* Geist Pink 900 */
   --chart-5: oklch(63% 0.12 15);         /* Coral */
 
   /* Indigo accent variants (for single-series charts, graph nodes) */
@@ -184,7 +185,8 @@
   --chart-1: oklch(68% 0.14 277);        /* Indigo */
   --chart-2: oklch(68% 0.12 175);        /* Teal */
   --chart-3: oklch(75% 0.13 80);         /* Amber */
-  --chart-4: oklch(68% 0.12 155);        /* Green */
+  --chart-4: oklch(73.1% 0.2158 148.29); /* Geist Green Dark 900 */
+  --chart-pink: oklch(69.36% 0.2223 3.91); /* Geist Pink Dark 900 */
   --chart-5: oklch(70% 0.13 20);         /* Coral */
 
   /* Indigo accent variants */

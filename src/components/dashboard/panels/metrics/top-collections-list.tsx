@@ -29,7 +29,7 @@ export function TopCollectionsList({ collections, className }: TopCollectionsLis
   }
 
   return (
-    <div className={cn('space-y-3', className)} role="list" aria-label="Most accessed collections">
+    <div className={cn('space-y-2.5', className)} role="list" aria-label="Most accessed collections">
       {collections.map((collection, index) => {
         const share = totalRequests > 0 ? (collection.requestCount / totalRequests) * 100 : 0
         const barWidth = maxRequestCount === 0
@@ -50,34 +50,31 @@ export function TopCollectionsList({ collections, className }: TopCollectionsLis
             data-slot="top-collections-row"
             tabIndex={0}
             aria-label={`${collection.name}: ${collection.requestCount.toLocaleString()} requests, ${share.toFixed(1)} percent of top collections`}
-            className="rounded-lg px-2 py-2 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
+            className="rounded-lg px-2 py-1.5 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex items-start gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex items-center gap-2">
                 <span className="w-4 typography-size-xs typography-weight-medium text-muted-foreground">
                   {index + 1}
                 </span>
-                <div className="min-w-0">
-                  <p className="truncate typography-size-sm typography-weight-medium text-foreground">
-                    {collection.name}
-                  </p>
-                  <p className="truncate typography-size-xs text-muted-foreground">
+                <p className="min-w-0 truncate typography-size-sm typography-weight-medium text-foreground">
+                  <span>{collection.name}</span>
+                  <span aria-hidden className="px-1 text-muted-foreground">·</span>
+                  <span className="typography-size-xs text-muted-foreground">
                     {collectionName}
-                  </p>
-                </div>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="typography-size-sm typography-weight-medium text-foreground">
-                  {formattedRequestCount}
+                  </span>
                 </p>
-                <p className="typography-size-xs text-muted-foreground">
+              </div>
+              <p className="shrink-0 whitespace-nowrap typography-size-sm typography-weight-medium tabular-nums text-foreground">
+                {formattedRequestCount}{' '}
+                <span className="typography-size-xs text-muted-foreground">
                   {share.toFixed(0)}%
-                </p>
-              </div>
+                </span>
+              </p>
             </div>
             <div
               data-slot="top-collections-rail"
-              className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--chart-track)]"
+              className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--chart-track)]"
             >
               <div
                 data-slot="top-collections-rail-fill"

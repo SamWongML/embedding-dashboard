@@ -16,7 +16,11 @@ import {
   type ChartTone,
 } from '@/components/charts/chart-theme'
 import { useTheme } from '@/components/providers/theme-provider'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  formatUsdCompact,
+  formatUsdExact,
+} from '@/lib/format/currency-format'
 import type {
   CostBreakdownCategory,
   CostBreakdownItem,
@@ -49,7 +53,7 @@ const costBreakdownMetaByCategory: Record<CostBreakdownCategory, CostBreakdownMe
   },
   graph_operations: {
     label: 'Graph Operations',
-    tone: 'accentSoft',
+    tone: 'pink',
   },
   data_transfer: {
     label: 'Data Transfer',
@@ -57,17 +61,9 @@ const costBreakdownMetaByCategory: Record<CostBreakdownCategory, CostBreakdownMe
   },
 }
 
-function formatUsd(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: value >= 100 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
 export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) {
   const [activeCategory, setActiveCategory] = useState<CostBreakdownCategory | null>(null)
+  const [isPieHoverActive, setIsPieHoverActive] = useState(false)
   const { resolvedTheme } = useTheme()
 
   const itemByCategory = useMemo(
@@ -96,24 +92,27 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
   const hasCostData = totalCost > 0
 
   return (
-    <Card className={cn(className)}>
+    <Card className={cn('w-full', className)}>
       <CardHeader className="pb-2">
         <CardTitle className="typography-size-base typography-weight-medium">
           Cost Breakdown
         </CardTitle>
+        <CardDescription className="typography-size-sm text-muted-foreground">
+          Cost split by service category
+        </CardDescription>
       </CardHeader>
-      <CardContent className="min-h-[250px]">
+      <CardContent className="min-h-(--chart-height-standard)">
         {!hasCostData ? (
-          <div className="flex h-full min-h-[200px] items-center justify-center typography-size-sm text-muted-foreground">
+          <div className="flex h-full min-h-(--chart-height-compact) items-center justify-center typography-size-sm text-muted-foreground">
             No cost data is available for this period.
           </div>
         ) : (
-          <div className="grid h-full w-full gap-4 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)] sm:items-center">
+          <div className="grid h-full w-full grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)]">
             <div
               data-slot="cost-breakdown-chart"
-              className="mx-auto h-[220px] w-full max-w-[220px]"
+              className="relative mx-auto aspect-square w-full max-w-[15rem] lg:max-w-[16rem]"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" aspect={1}>
                 <PieChart accessibilityLayer>
                   <Pie
                     data={chartData}
@@ -130,9 +129,11 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                     animationDuration={chartAnimationDurationMs}
                     animationEasing={chartAnimationEasing}
                     onMouseLeave={() => {
+                      setIsPieHoverActive(false)
                       setActiveCategory(null)
                     }}
                     onMouseEnter={(_, index) => {
+                      setIsPieHoverActive(true)
                       const next = chartData[index]
                       setActiveCategory(next?.category ?? null)
                     }}
@@ -151,6 +152,8 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                   </Pie>
                   <Tooltip
                     cursor={false}
+                    allowEscapeViewBox={{ x: true, y: true }}
+                    wrapperStyle={{ zIndex: 'var(--z-tooltip)', pointerEvents: 'none' }}
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null
 
@@ -172,7 +175,7 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                             rows={[
                               {
                                 label: 'Cost',
-                                value: formatUsd(datum.amountUsd),
+                                value: formatUsdCompact(datum.amountUsd),
                                 color: datum.color,
                               },
                               {
@@ -188,9 +191,28 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                   />
                 </PieChart>
               </ResponsiveContainer>
+              <div
+                data-slot="cost-breakdown-total"
+                aria-hidden
+                className={cn(
+                  'pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-150 ease-out',
+                  isPieHoverActive ? 'opacity-0' : 'opacity-100'
+                )}
+              >
+                <span className="typography-size-sm typography-weight-medium tabular-nums text-foreground">
+                  {formatUsdCompact(totalCost)}
+                </span>
+                <span className="typography-size-xs text-muted-foreground">
+                  Total
+                </span>
+              </div>
             </div>
 
-            <ul className="space-y-1.5" aria-label="Cost breakdown categories">
+            <ul
+              data-slot="cost-breakdown-legend-list"
+              className="min-w-0 space-y-[var(--chart-legend-row-gap)] sm:max-h-(--chart-legend-max-height-sm) sm:overflow-y-auto sm:pr-1 lg:max-h-(--chart-legend-max-height-lg)"
+              aria-label="Cost breakdown categories"
+            >
               {chartData.map((item) => {
                 const share = totalCost > 0 ? (item.amountUsd / totalCost) * 100 : 0
                 const isActive = activeCategory === item.category
@@ -201,7 +223,7 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                       type="button"
                       data-slot="cost-breakdown-legend-row"
                       className={cn(
-                        'flex w-full items-center justify-between gap-3 rounded-md px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70',
+                        'flex min-h-[var(--chart-legend-row-min-height)] w-full items-center justify-between gap-3 rounded-md px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70',
                         isActive ? 'bg-muted/50' : 'hover:bg-muted/40'
                       )}
                       onFocus={() => {
@@ -216,7 +238,7 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                       onMouseLeave={() => {
                         setActiveCategory(null)
                       }}
-                      aria-label={`${item.label}: ${formatUsd(item.amountUsd)}, ${share.toFixed(1)} percent`}
+                      aria-label={`${item.label}: ${formatUsdExact(item.amountUsd)}, ${share.toFixed(1)} percent`}
                     >
                       <span className="flex min-w-0 items-center gap-2">
                         <span
@@ -230,7 +252,7 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
                       </span>
                       <span className="shrink-0 text-right">
                         <span className="typography-size-sm typography-weight-medium tabular-nums text-foreground">
-                          {formatUsd(item.amountUsd)}
+                          {formatUsdCompact(item.amountUsd)}
                         </span>
                       </span>
                     </button>
@@ -244,4 +266,3 @@ export function CostBreakdownCard({ items, className }: CostBreakdownCardProps) 
     </Card>
   )
 }
-

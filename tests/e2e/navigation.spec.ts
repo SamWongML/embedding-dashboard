@@ -123,8 +123,15 @@ test.describe('Usage Analytics header layout', () => {
     await expect(legendRows).toHaveCount(5)
 
     const chartSurface = page.locator('[data-slot="cost-breakdown-chart"] svg.recharts-surface').first()
+    const centerTotal = page.locator('[data-slot="cost-breakdown-total"]').first()
     await chartSurface.scrollIntoViewIfNeeded()
     await expect(chartSurface).toBeVisible()
+    await expect(centerTotal).toBeVisible()
+
+    const initialCenterOpacity = await centerTotal.evaluate((node) =>
+      Number.parseFloat(window.getComputedStyle(node).opacity)
+    )
+    expect(initialCenterOpacity).toBeGreaterThanOrEqual(0.9)
 
     const chartBox = await chartSurface.boundingBox()
     expect(chartBox).not.toBeNull()
@@ -134,6 +141,116 @@ test.describe('Usage Analytics header layout', () => {
 
     await page.mouse.move(chartBox.x + chartBox.width * 0.5, chartBox.y + chartBox.height * 0.18)
     await expect(page.locator('div[role="status"]').filter({ hasText: 'Share' }).first()).toBeVisible()
+    await expect.poll(async () =>
+      centerTotal.evaluate((node) => Number.parseFloat(window.getComputedStyle(node).opacity))
+    ).toBeLessThanOrEqual(0.05)
+  })
+
+  test('keeps bottom-row cards equal height on desktop and shows cost subtitle', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/metrics')
+
+    const collectionsHeading = page.getByText('Most Accessed Collections', { exact: true }).first()
+    const costBreakdownHeading = page.getByText('Cost Breakdown', { exact: true }).first()
+    const costBreakdownSubtitle = page.getByText('Cost split by service category', { exact: true }).first()
+
+    await expect(collectionsHeading).toBeVisible()
+    await expect(costBreakdownHeading).toBeVisible()
+    await expect(costBreakdownSubtitle).toBeVisible()
+
+    const collectionsCard = page
+      .locator('[data-slot="card"]')
+      .filter({ has: page.getByText('Most Accessed Collections', { exact: true }) })
+      .first()
+    const costBreakdownCard = page
+      .locator('[data-slot="card"]')
+      .filter({ has: page.getByText('Cost Breakdown', { exact: true }) })
+      .first()
+
+    await expect(collectionsCard).toBeVisible()
+    await expect(costBreakdownCard).toBeVisible()
+
+    const collectionsCardBox = await collectionsCard.boundingBox()
+    const costBreakdownCardBox = await costBreakdownCard.boundingBox()
+    expect(collectionsCardBox).not.toBeNull()
+    expect(costBreakdownCardBox).not.toBeNull()
+    if (!collectionsCardBox || !costBreakdownCardBox) {
+      return
+    }
+
+    const cardHeightDelta = Math.abs(collectionsCardBox.height - costBreakdownCardBox.height)
+    expect(cardHeightDelta).toBeLessThanOrEqual(2)
+  })
+
+  test('keeps cost breakdown legend row gaps compact and consistent on desktop', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/metrics')
+
+    const legendRows = page.locator('[data-slot="cost-breakdown-legend-row"]')
+    await expect(legendRows).toHaveCount(5)
+
+    const rowGaps = await legendRows.evaluateAll((nodes) => {
+      const gaps: number[] = []
+      for (let index = 1; index < nodes.length; index += 1) {
+        const previousRect = nodes[index - 1]?.getBoundingClientRect()
+        const currentRect = nodes[index]?.getBoundingClientRect()
+        if (!previousRect || !currentRect) continue
+        gaps.push(currentRect.top - previousRect.bottom)
+      }
+      return gaps
+    })
+
+    expect(rowGaps.length).toBeGreaterThan(0)
+    const maxGap = Math.max(...rowGaps)
+    const minGap = Math.min(...rowGaps)
+    expect(maxGap).toBeLessThanOrEqual(12)
+    expect(maxGap - minGap).toBeLessThanOrEqual(4)
+  })
+
+  test('keeps cost breakdown legend rows clustered to the top without distributed spacing', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/metrics')
+
+    const legendList = page.locator('[data-slot="cost-breakdown-legend-list"]').first()
+    await expect(legendList).toBeVisible()
+
+    const legendRows = legendList.locator('[data-slot="cost-breakdown-legend-row"]')
+    await expect(legendRows).toHaveCount(5)
+
+    const legendPlacement = await legendList.evaluate((list) => {
+      const rows = Array.from(
+        list.querySelectorAll<HTMLElement>('[data-slot="cost-breakdown-legend-row"]')
+      )
+      if (!rows.length) {
+        return null
+      }
+
+      const listRect = list.getBoundingClientRect()
+      const firstRowRect = rows[0]?.getBoundingClientRect()
+      const lastRowRect = rows.at(-1)?.getBoundingClientRect()
+      if (!firstRowRect || !lastRowRect) {
+        return null
+      }
+
+      return {
+        topOffsetPx: firstRowRect.top - listRect.top,
+        bottomWhitespacePx: listRect.bottom - lastRowRect.bottom,
+      }
+    })
+
+    expect(legendPlacement).not.toBeNull()
+    if (!legendPlacement) {
+      return
+    }
+
+    expect(legendPlacement.topOffsetPx).toBeLessThanOrEqual(8)
+    expect(legendPlacement.bottomWhitespacePx).toBeGreaterThanOrEqual(0)
   })
 
   test('supports 30d week navigation controls in activity heatmap header', async ({ page }) => {
@@ -428,7 +545,15 @@ test.describe('Usage Analytics mobile heading layout', () => {
       return
     }
 
+    const viewportOverflow = await page.evaluate(() => ({
+      viewportWidth: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }))
+
     expect(cardBox.x).toBeGreaterThanOrEqual(0)
-    expect(cardBox.x + cardBox.width).toBeLessThanOrEqual(390 + 1)
+    expect(cardBox.width).toBeLessThanOrEqual(viewportOverflow.viewportWidth + 1)
+    expect(viewportOverflow.scrollWidth).toBeLessThanOrEqual(
+      viewportOverflow.viewportWidth + 1
+    )
   })
 })

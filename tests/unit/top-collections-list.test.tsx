@@ -25,12 +25,17 @@ describe('TopCollectionsList', () => {
       />
     )
 
+    const rows = screen.getAllByRole('listitem')
     expect(screen.getByRole('list', { name: 'Most accessed collections' })).toBeInTheDocument()
-    expect(screen.getAllByRole('listitem')).toHaveLength(2)
-    expect(screen.getByText('Support Routing Manual')).toBeVisible()
-    expect(screen.getByText('Semantic Search Guide')).toBeVisible()
-    expect(screen.getByText('Support')).toBeVisible()
-    expect(screen.getByText('Search')).toBeVisible()
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toHaveTextContent('1')
+    expect(rows[0]).toHaveTextContent('Support Routing Manual')
+    expect(rows[0]).toHaveTextContent('Support')
+    expect(rows[0]).toHaveTextContent('18.4k')
+    expect(rows[1]).toHaveTextContent('2')
+    expect(rows[1]).toHaveTextContent('Semantic Search Guide')
+    expect(rows[1]).toHaveTextContent('Search')
+    expect(rows[1]).toHaveTextContent('6.8k')
     expect(screen.getByText('73%')).toBeVisible()
     expect(screen.getByText('27%')).toBeVisible()
 

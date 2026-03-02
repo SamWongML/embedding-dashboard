@@ -210,8 +210,8 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       </div>
 
       {/* Bottom Row */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+        <Card className="h-full">
           <CardHeader className="pb-2">
             <CardTitle className="typography-size-base typography-weight-medium">
               Most Accessed Collections
@@ -230,18 +230,21 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         </Card>
 
         {isInitialLoading ? (
-          <Card>
-            <CardHeader className="pb-3">
+          <Card className="h-full min-w-0 w-full">
+            <CardHeader className="pb-2">
               <CardTitle className="typography-size-base typography-weight-medium">
                 Cost Breakdown
               </CardTitle>
+              <CardDescription className="typography-size-sm text-muted-foreground">
+                Cost split by service category
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[250px] bg-muted rounded animate-pulse" />
+              <div className="h-(--chart-height-standard) bg-muted rounded animate-pulse" />
             </CardContent>
           </Card>
         ) : (
-          <CostBreakdownCard items={data?.costBreakdown || []} />
+          <CostBreakdownCard items={data?.costBreakdown || []} className="h-full min-w-0 w-full" />
         )}
       </div>
     </div>

@@ -7,7 +7,8 @@ export type ChartTone =
   | 'accentDim'     // Dark blue
   | 'teal'          // chart-2
   | 'amber'         // chart-3
-  | 'green'         // chart-4
+  | 'green'         // chart-4 (Geist Green)
+  | 'pink'          // chart-pink (Geist Pink)
   | 'coral'         // chart-5 (Orange-Red)
   | 'muted'
   | 'success'
@@ -21,6 +22,7 @@ export const chartToneToColorVar: Record<ChartTone, string> = {
   teal: 'var(--chart-2)',
   amber: 'var(--chart-3)',
   green: 'var(--chart-4)',
+  pink: 'var(--chart-pink)',
   coral: 'var(--chart-5)',
   muted: 'var(--chart-axis)',
   success: 'var(--success)',
@@ -40,7 +42,8 @@ export const chartColors = {
     accentDim: 'oklch(48% 0.10 277)',
     teal: 'oklch(52.08% .1251 182.93)', // Teal 900
     amber: 'oklch(52.79% .1496 54.65)', // Amber 900
-    green: 'oklch(58% 0.12 150)',
+    green: 'oklch(51.75% 0.1453 147.65)', // Geist Green 900
+    pink: 'oklch(53.5% 0.2058 2.84)', // Geist Pink 900
     coral: 'oklch(63% 0.12 15)',
     muted: 'oklch(52% 0.005 260)',
     success: 'oklch(55% 0.18 155)',
@@ -53,7 +56,8 @@ export const chartColors = {
     accentDim: 'oklch(58% 0.10 277)',
     teal: 'oklch(74.56% .1765 182.8)',  // Teal 900
     amber: 'oklch(77.21% .1991 64.28)', // Amber 900
-    green: 'oklch(68% 0.12 155)',
+    green: 'oklch(73.1% 0.2158 148.29)', // Geist Green Dark 900
+    pink: 'oklch(69.36% 0.2223 3.91)', // Geist Pink Dark 900
     coral: 'oklch(70% 0.13 20)',
     muted: 'oklch(60% 0.008 270)',
     success: 'oklch(65% 0.18 155)',
