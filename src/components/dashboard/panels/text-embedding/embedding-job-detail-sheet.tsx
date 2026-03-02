@@ -14,6 +14,7 @@ import {
 import { useTextEmbeddingJobDetail } from '@/lib/hooks/use-text-embedding'
 import { toActionErrorMessage } from '@/lib/api'
 import { Check, Copy } from 'lucide-react'
+import type { TextEmbeddingJobSummary } from '@/lib/schemas/text-embedding'
 import { EmbeddingStatusBadge } from './embedding-status-badge'
 import {
   createVectorMagnitudeBins,
@@ -23,6 +24,7 @@ import {
 
 interface EmbeddingJobDetailSheetProps {
   jobId: string | null
+  jobSummary?: TextEmbeddingJobSummary | null
   open: boolean
   onOpenChange: (open: boolean) => void
   onAnimationEnd: AnimationEventHandler<HTMLElement>
@@ -50,31 +52,53 @@ function getMetricValue(value?: number) {
 
 export function EmbeddingJobDetailSheet({
   jobId,
+  jobSummary,
   open,
   onOpenChange,
   onAnimationEnd,
 }: EmbeddingJobDetailSheetProps) {
-  const [copied, setCopied] = useState(false)
+  const [copiedJobId, setCopiedJobId] = useState<string | null>(null)
   const detailQuery = useTextEmbeddingJobDetail(jobId)
-  const job = detailQuery.data
-  const actionWarning = detailQuery.isError
+  const detailJob = detailQuery.data?.id === jobId ? detailQuery.data : null
+  const previewJob = jobSummary?.id === jobId ? jobSummary : null
+  const displayJob = detailJob ?? previewJob
+  const isHydrating =
+    Boolean(jobId) &&
+    !detailJob &&
+    !previewJob &&
+    (detailQuery.isPending || detailQuery.isLoading || detailQuery.isFetching)
+  const actionWarning =
+    Boolean(jobId) &&
+    !detailJob &&
+    !isHydrating &&
+    detailQuery.isError
     ? toActionErrorMessage(detailQuery.error, 'Unable to load job details.')
     : null
 
-  const firstVector = job?.result?.results[0]?.vector ?? []
+  const firstVector = useMemo(
+    () => detailJob?.result?.results[0]?.vector ?? [],
+    [detailJob?.result?.results]
+  )
   const vectorPreview = useMemo(() => formatVectorPreview(firstVector), [firstVector])
   const magnitudeBins = useMemo(
     () => createVectorMagnitudeBins(firstVector),
     [firstVector]
   )
   const totalTokens =
-    job?.result?.totalTokens ?? job?.usage?.totalTokens ?? job?.usage?.inputTokens
+    detailJob?.result?.totalTokens ??
+    displayJob?.usage?.totalTokens ??
+    displayJob?.usage?.inputTokens
+
+  const isCopied = Boolean(detailJob && copiedJobId === detailJob.id)
 
   const handleCopy = async () => {
-    if (firstVector.length === 0) return
+    if (!detailJob || firstVector.length === 0) return
     await navigator.clipboard.writeText(JSON.stringify(firstVector))
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    const copiedId = detailJob.id
+    setCopiedJobId(copiedId)
+    setTimeout(() => {
+      setCopiedJobId((current) => (current === copiedId ? null : current))
+    }, 2000)
   }
 
   return (
@@ -87,17 +111,17 @@ export function EmbeddingJobDetailSheet({
           <DialogHeader className="gap-2 border-b border-border px-6 py-5 text-left">
             <div className="flex items-center justify-between gap-3 pr-12">
               <DialogTitle>Embedding Result</DialogTitle>
-              {job ? <EmbeddingStatusBadge status={job.status} /> : null}
+              {displayJob ? <EmbeddingStatusBadge status={displayJob.status} /> : null}
             </div>
             <DialogDescription className="typography-size-sm text-muted-foreground">
-              {job
-                ? `${job.id} - ${job.model} (${job.dimensions}d)`
+              {displayJob
+                ? `${displayJob.id} - ${displayJob.model} (${displayJob.dimensions}d)`
                 : 'Live details for asynchronous embedding execution.'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-6 py-5">
-            {detailQuery.isLoading ? (
+            {isHydrating ? (
               <div className="space-y-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div key={index} className="h-4 w-full animate-pulse rounded bg-muted" />
@@ -115,18 +139,18 @@ export function EmbeddingJobDetailSheet({
               />
             ) : null}
 
-            {job && !detailQuery.isLoading && !actionWarning ? (
+            {displayJob && !isHydrating && !actionWarning ? (
               <div className="space-y-5">
                 <section className="space-y-2 rounded-xl border border-border/80 bg-muted/20 p-4">
                   <p className="typography-size-xs typography-weight-medium uppercase tracking-[0.08em] text-muted-foreground">
                     Input
                   </p>
                   <p className="typography-size-sm leading-6 text-foreground">
-                    {job.sourcePreview}
+                    {displayJob.sourcePreview}
                   </p>
-                  {job.sourceUrl ? (
+                  {displayJob.sourceUrl ? (
                     <p className="break-all typography-size-xs text-muted-foreground">
-                      {job.sourceUrl}
+                      {displayJob.sourceUrl}
                     </p>
                   ) : null}
                 </section>
@@ -145,7 +169,8 @@ export function EmbeddingJobDetailSheet({
                       Chunks
                     </p>
                     <p className="mt-1 typography-size-base typography-weight-semibold">
-                      {job.progress.completedChunks} / {job.progress.totalChunks}
+                      {displayJob.progress.completedChunks} /{' '}
+                      {displayJob.progress.totalChunks}
                     </p>
                   </div>
                   <div className="rounded-lg border border-border/80 bg-card px-3 py-3">
@@ -153,7 +178,7 @@ export function EmbeddingJobDetailSheet({
                       Dimensions
                     </p>
                     <p className="mt-1 typography-size-base typography-weight-semibold">
-                      {job.dimensions}
+                      {displayJob.dimensions}
                     </p>
                   </div>
                   <div className="rounded-lg border border-border/80 bg-card px-3 py-3">
@@ -161,24 +186,26 @@ export function EmbeddingJobDetailSheet({
                       Duration
                     </p>
                     <p className="mt-1 typography-size-base typography-weight-semibold">
-                      {formatProcessingDuration(job.result?.processingTime)}
+                      {formatProcessingDuration(detailJob?.result?.processingTime)}
                     </p>
                   </div>
                 </section>
 
-                {job.error ? (
+                {displayJob.error ? (
                   <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
                     <p className="typography-size-sm typography-weight-medium text-destructive">
-                      {job.error.code}
+                      {displayJob.error.code}
                     </p>
-                    <p className="mt-1 typography-size-sm">{job.error.message}</p>
+                    <p className="mt-1 typography-size-sm">
+                      {displayJob.error.message}
+                    </p>
                     <p className="mt-2 typography-size-xs text-muted-foreground">
-                      Retryable: {job.error.retryable ? 'Yes' : 'No'}
+                      Retryable: {displayJob.error.retryable ? 'Yes' : 'No'}
                     </p>
                   </section>
                 ) : null}
 
-                {job.result ? (
+                {detailJob?.result ? (
                   <section className="space-y-3 rounded-xl border border-border/80 bg-card p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className="typography-size-sm typography-weight-medium">
@@ -190,7 +217,7 @@ export function EmbeddingJobDetailSheet({
                         onClick={handleCopy}
                         disabled={firstVector.length === 0}
                       >
-                        {copied ? (
+                        {isCopied ? (
                           <>
                             <Check className="mr-1.5 h-4 w-4 text-success" />
                             Copied
@@ -258,10 +285,13 @@ export function EmbeddingJobDetailSheet({
                   <h3 className="typography-size-sm typography-weight-medium">Timeline</h3>
                   <div className="mt-3 space-y-0">
                     {[
-                      { label: 'Queued at', value: formatDateTime(job.queuedAt) },
-                      { label: 'Started at', value: formatDateTime(job.startedAt) },
-                      { label: 'Completed at', value: formatDateTime(job.completedAt) },
-                      { label: 'Updated at', value: formatDateTime(job.updatedAt) },
+                      { label: 'Queued at', value: formatDateTime(displayJob.queuedAt) },
+                      { label: 'Started at', value: formatDateTime(displayJob.startedAt) },
+                      {
+                        label: 'Completed at',
+                        value: formatDateTime(displayJob.completedAt),
+                      },
+                      { label: 'Updated at', value: formatDateTime(displayJob.updatedAt) },
                     ].map((row, index, rows) => (
                       <div
                         key={row.label}

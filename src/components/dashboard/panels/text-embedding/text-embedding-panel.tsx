@@ -10,7 +10,10 @@ import { useServiceMode } from '@/components/providers/service-mode-provider'
 import { toActionErrorMessage } from '@/lib/api'
 import { useTextEmbeddingQueue } from '@/lib/hooks/use-text-embedding'
 import { useDelayedSheetSelection } from '@/lib/hooks/use-delayed-sheet-selection'
-import type { EmbeddingQueueStatus } from '@/lib/schemas/text-embedding'
+import type {
+  EmbeddingQueueStatus,
+  TextEmbeddingJobSummary,
+} from '@/lib/schemas/text-embedding'
 import {
   parseQueueStatusFilter,
   toQueueStatusQueryValue,
@@ -51,6 +54,13 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
     () => parseQueueStatusFilter(searchParams.get(QUEUE_STATUS_PARAM_KEY)),
     [searchParams]
   )
+  const selectedJobSummary = useMemo<TextEmbeddingJobSummary | null>(() => {
+    if (!selectedJobId) {
+      return null
+    }
+
+    return queueQuery.data?.jobs.find((job) => job.id === selectedJobId) ?? null
+  }, [queueQuery.data?.jobs, selectedJobId])
 
   const handleJobCreated = () => {
     void queueQuery.refetch()
@@ -104,6 +114,7 @@ export function TextEmbeddingPanel({ className }: TextEmbeddingPanelProps) {
 
       <EmbeddingJobDetailSheet
         jobId={selectedJobId}
+        jobSummary={selectedJobSummary}
         open={isJobDetailsOpen}
         onOpenChange={onJobDetailsOpenChange}
         onAnimationEnd={onJobDetailsAnimationEnd}
