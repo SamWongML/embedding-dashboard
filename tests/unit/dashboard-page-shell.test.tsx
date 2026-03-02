@@ -52,6 +52,13 @@ describe('DashboardPageShell', () => {
     expect(contentRegion).not.toBeNull()
     expect(contentRegion).toHaveClass('min-h-0')
     expect(contentRegion).toHaveClass('min-w-0')
+    expect(contentRegion).toHaveClass('shrink-0')
+    expect(contentRegion).not.toHaveClass('flex-1')
+    expect(contentRegion).toHaveAttribute('data-slot', 'page-content-shell')
+    expect(contentRegion).toHaveClass('px-(--space-page-inline)')
+    expect(contentRegion).toHaveClass('pt-(--space-page-top)')
+    expect(contentRegion).toHaveClass('pb-(--space-page-shell-padding-bottom)')
+    expect(contentRegion).not.toHaveClass('p-6')
 
     const trigger = screen.getByRole('button', { name: 'Toggle Sidebar' })
     expect(trigger).toHaveClass('md:hidden')

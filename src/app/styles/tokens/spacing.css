@@ -33,4 +33,20 @@
   --space-page: var(--space-xl);
   --space-container: var(--space-lg);
   --space-gutter: var(--space-md);
+
+  /* Page Shell Spacing Contract */
+  --space-page-inline: var(--space-4); /* 16px */
+  --space-page-top: var(--space-5); /* 20px */
+  --space-page-foot: var(--space-6); /* 24px */
+  --space-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --space-page-foot-safe: calc(var(--space-page-foot) + var(--space-safe-bottom));
+  --space-page-shell-padding-bottom: var(--space-page-foot-safe);
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --space-page-inline: var(--space-6); /* 24px */
+    --space-page-top: var(--space-6); /* 24px */
+    --space-page-foot: var(--space-8); /* 32px */
+  }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { PageContentShell } from '@/components/layout/page-content-shell'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -45,7 +46,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+    <PageContentShell
+      topInset="none"
+      className="flex min-h-screen items-center justify-center bg-background"
+    >
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
@@ -79,6 +83,6 @@ export default function LoginPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContentShell>
   )
 }

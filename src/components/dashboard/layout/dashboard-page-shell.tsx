@@ -5,6 +5,7 @@ import {
   DashboardPageHeaderProvider,
   useDashboardPageHeaderState,
 } from "@/components/dashboard/layout/dashboard-page-header-context"
+import { PageContentShell } from "@/components/layout/page-content-shell"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
@@ -61,7 +62,7 @@ function DashboardPageShellContent({
             {actions}
           </div>
         </header>
-        <div className="min-h-0 min-w-0 flex-1 p-6">
+        <PageContentShell className="min-h-0 min-w-0 shrink-0">
           <div
             data-slot="page-heading-row"
             className="mb-(--space-page) flex flex-nowrap items-center justify-between gap-(--page-heading-row-gap)"
@@ -83,7 +84,7 @@ function DashboardPageShellContent({
             </div>
           </div>
           <div className="min-h-0 min-w-0">{children}</div>
-        </div>
+        </PageContentShell>
       </div>
     </div>
   )
