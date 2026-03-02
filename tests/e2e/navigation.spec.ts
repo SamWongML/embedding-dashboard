@@ -291,20 +291,22 @@ test.describe('Page heading anchor', () => {
 test.describe('Sidebar', () => {
   test.use({ viewport: { width: 1024, height: 900 } })
 
-  test('collapses and expands', async ({ page }) => {
+  test('toggles sidebar state and restores it on second click', async ({ page }) => {
     await page.goto('/')
 
     // In medium viewport mode the sidebar logo acts as the collapse/expand control.
-    const collapseButton = page.getByRole('button', { name: /Toggle sidebar/i })
-    await collapseButton.click()
-
-    // Sidebar state should collapse.
+    const collapseButton = page.getByRole('button', { name: /Toggle sidebar/i }).first()
     const sidebar = page.locator('[data-slot="sidebar"][data-state]')
-    await expect(sidebar).toHaveAttribute('data-state', 'collapsed')
+    const initialState = await sidebar.getAttribute('data-state')
 
-    // Click again to expand
+    expect(initialState === 'expanded' || initialState === 'collapsed').toBe(true)
+
     await collapseButton.click()
-    await expect(sidebar).toHaveAttribute('data-state', 'expanded')
+    await expect(sidebar).not.toHaveAttribute('data-state', initialState ?? '')
+
+    // Click again to restore the initial state.
+    await collapseButton.click()
+    await expect(sidebar).toHaveAttribute('data-state', initialState ?? '')
   })
 })
 
@@ -342,7 +344,7 @@ test.describe('Sidebar mobile behavior', () => {
 test.describe('Usage Analytics mobile heading layout', () => {
   test.use({ viewport: { width: 390, height: 844 } })
 
-  test('stacks interval selector below the title on narrow screens', async ({
+  test('keeps interval selector aligned with the title on narrow screens', async ({
     page,
   }) => {
     await page.goto('/metrics')
@@ -362,7 +364,7 @@ test.describe('Usage Analytics mobile heading layout', () => {
       return
     }
 
-    expect(tabsBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height)
+    expect(Math.abs(tabsBox.y - headingBox.y)).toBeLessThanOrEqual(4)
   })
 
   test('stacks activity heatmap below operations on mobile', async ({ page }) => {

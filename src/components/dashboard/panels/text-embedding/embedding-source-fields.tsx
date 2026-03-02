@@ -1,11 +1,22 @@
 'use client'
 
+<<<<<<< ours
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { Link2, Text } from 'lucide-react'
+=======
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  SelectorTabs,
+  SelectorTabsList,
+  SelectorTabsTrigger,
+} from '@/components/ui/selector-tabs'
+import { Textarea } from '@/components/ui/textarea'
+>>>>>>> theirs
 
 type EmbeddingInputSourceType = 'text' | 'url'
 
@@ -41,6 +52,7 @@ export function EmbeddingSourceFields({
 
   return (
     <div className="space-y-4">
+<<<<<<< ours
       <div
         className="inline-flex w-full items-center rounded-lg border border-border bg-muted/35 p-1 sm:w-auto"
         role="tablist"
@@ -87,6 +99,34 @@ export function EmbeddingSourceFields({
           URL Content
         </Button>
       </div>
+=======
+      <SelectorTabs
+        value={sourceType}
+        onValueChange={(value) => {
+          if (value === 'text' || value === 'url') {
+            onSourceTypeChange(value)
+          }
+        }}
+        aria-label="Embedding source type"
+      >
+        <SelectorTabsList aria-label="Embedding source type">
+          <SelectorTabsTrigger
+            value="text"
+            disabled={disabled}
+            aria-controls="text-embedding-source-text-panel"
+          >
+            Direct Text
+          </SelectorTabsTrigger>
+          <SelectorTabsTrigger
+            value="url"
+            disabled={disabled}
+            aria-controls="text-embedding-source-url-panel"
+          >
+            URL Content
+          </SelectorTabsTrigger>
+        </SelectorTabsList>
+      </SelectorTabs>
+>>>>>>> theirs
 
       {sourceType === 'text' ? (
         <div

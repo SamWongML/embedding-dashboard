@@ -4,7 +4,11 @@ import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { IconButton } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  SelectorTabs,
+  SelectorTabsList,
+  SelectorTabsTrigger,
+} from '@/components/ui/selector-tabs'
 import { MetricCard } from './metric-card'
 import { TopUsersTable } from './top-users-table'
 import { TrendsChart } from '@/components/charts/trends-chart'
@@ -34,21 +38,20 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
   const [weekPage, setWeekPage] = useState(0)
   const pageHeaderActions = useMemo(
     () => (
-      <Tabs
+      <SelectorTabs
         value={period}
         onValueChange={(value) => {
           setPeriod(value as Period)
           setWeekPage(0)
         }}
         aria-label="Usage analytics time interval"
-        className="w-full sm:w-auto"
       >
-        <TabsList aria-label="Usage analytics time interval" className="w-full sm:w-auto">
-          <TabsTrigger value="24h">24h</TabsTrigger>
-          <TabsTrigger value="7d">7d</TabsTrigger>
-          <TabsTrigger value="30d">30d</TabsTrigger>
-        </TabsList>
-      </Tabs>
+        <SelectorTabsList aria-label="Usage analytics time interval">
+          <SelectorTabsTrigger value="24h">24h</SelectorTabsTrigger>
+          <SelectorTabsTrigger value="7d">7d</SelectorTabsTrigger>
+          <SelectorTabsTrigger value="30d">30d</SelectorTabsTrigger>
+        </SelectorTabsList>
+      </SelectorTabs>
     ),
     [period]
   )

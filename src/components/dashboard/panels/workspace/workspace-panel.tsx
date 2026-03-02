@@ -53,7 +53,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  SelectorTabs,
+  SelectorTabsContent,
+  SelectorTabsList,
+  SelectorTabsTrigger,
+} from '@/components/ui/selector-tabs'
 import { toNoOpActionMessage } from '@/lib/api'
 import { useWorkspaceAdmin } from '@/lib/hooks/use-workspace-admin'
 import type {
@@ -256,12 +261,12 @@ export function WorkspacePanel() {
         />
       </div>
 
-      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+      <SelectorTabs value={tab} onValueChange={setTab} className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
-            <TabsTrigger value="access">Access Control</TabsTrigger>
-          </TabsList>
+          <SelectorTabsList>
+            <SelectorTabsTrigger value="workspaces">Workspaces</SelectorTabsTrigger>
+            <SelectorTabsTrigger value="access">Access Control</SelectorTabsTrigger>
+          </SelectorTabsList>
 
           {tab === 'workspaces' ? (
             <Button
@@ -284,7 +289,7 @@ export function WorkspacePanel() {
           )}
         </div>
 
-        <TabsContent value="workspaces" className="space-y-4">
+        <SelectorTabsContent value="workspaces" className="space-y-4">
           <div className="relative w-full md:max-w-sm">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-(--icon-sm) -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -528,9 +533,9 @@ export function WorkspacePanel() {
               </Card>
             )}
           </div>
-        </TabsContent>
+        </SelectorTabsContent>
 
-        <TabsContent value="access" className="space-y-4">
+        <SelectorTabsContent value="access" className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Select value={groupFilter} onValueChange={setGroupFilter}>
               <SelectTrigger className="w-full sm:w-64">
@@ -628,8 +633,8 @@ export function WorkspacePanel() {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </SelectorTabsContent>
+      </SelectorTabs>
 
       <Dialog open={workspaceDialogOpen} onOpenChange={setWorkspaceDialogOpen}>
         <DialogContent>

@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  SelectorTabs,
+  SelectorTabsContent,
+  SelectorTabsList,
+  SelectorTabsTrigger,
+} from '@/components/ui/selector-tabs'
 import {
   useUsersList,
   useUserGroups,
@@ -92,14 +97,14 @@ export function UsersPanel({ className }: UsersPanelProps) {
 
   return (
     <div className={cn('space-y-6', className)}>
-      <Tabs defaultValue="users">
-        <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-          <TabsTrigger value="permissions">Permissions</TabsTrigger>
-        </TabsList>
+      <SelectorTabs defaultValue="users">
+        <SelectorTabsList>
+          <SelectorTabsTrigger value="users">Users</SelectorTabsTrigger>
+          <SelectorTabsTrigger value="groups">Groups</SelectorTabsTrigger>
+          <SelectorTabsTrigger value="permissions">Permissions</SelectorTabsTrigger>
+        </SelectorTabsList>
 
-        <TabsContent value="users" className="mt-6">
+        <SelectorTabsContent value="users" className="mt-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="typography-size-base typography-weight-medium">
@@ -121,19 +126,19 @@ export function UsersPanel({ className }: UsersPanelProps) {
               />
             </CardContent>
           </Card>
-        </TabsContent>
+        </SelectorTabsContent>
 
-        <TabsContent value="groups" className="mt-6">
+        <SelectorTabsContent value="groups" className="mt-6">
           <GroupsPanel groups={groups} isLoading={groupsLoading} />
-        </TabsContent>
+        </SelectorTabsContent>
 
-        <TabsContent value="permissions" className="mt-6">
+        <SelectorTabsContent value="permissions" className="mt-6">
           <PermissionsMatrix
             permissions={permissions}
             isLoading={permissionsLoading}
           />
-        </TabsContent>
-      </Tabs>
+        </SelectorTabsContent>
+      </SelectorTabs>
     </div>
   )
 }
