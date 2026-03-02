@@ -5,6 +5,7 @@ import type {
   TopCollection,
   TopUser,
 } from '@/lib/schemas/metrics'
+import { normalizeCostBreakdownItems } from '@/lib/repositories/metrics/cost-breakdown'
 import {
   cloneDemoValue,
   getDemoScenarioState,
@@ -32,10 +33,17 @@ function analyticsByPeriod(period: MetricsPeriod): SearchAnalytics[] {
 
 export function getDemoMetricsOverview(period: MetricsPeriod = '24h'): MetricsOverview {
   const scenario = getDemoScenarioState()
+  const trends = trendsByPeriod(period)
+  const searchAnalytics = analyticsByPeriod(period)
+
   return {
     ...cloneDemoValue(scenario.metricsOverview),
-    trends: trendsByPeriod(period),
-    searchAnalytics: analyticsByPeriod(period),
+    trends,
+    searchAnalytics,
+    costBreakdown: normalizeCostBreakdownItems(undefined, {
+      trends,
+      searchAnalytics,
+    }),
   }
 }
 

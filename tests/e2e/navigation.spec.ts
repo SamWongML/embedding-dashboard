@@ -110,6 +110,32 @@ test.describe('Usage Analytics header layout', () => {
     await expect(page.getByText('Most Accessed Collections')).toBeVisible()
   })
 
+  test('replaces top users with cost breakdown donut and interactive tooltip', async ({
+    page,
+  }) => {
+    await page.goto('/metrics')
+
+    const costBreakdownHeading = page.getByText('Cost Breakdown', { exact: true }).first()
+    await expect(costBreakdownHeading).toBeVisible()
+    await expect(page.getByText('Top Users', { exact: true })).toHaveCount(0)
+
+    const legendRows = page.locator('[data-slot="cost-breakdown-legend-row"]')
+    await expect(legendRows).toHaveCount(5)
+
+    const chartSurface = page.locator('[data-slot="cost-breakdown-chart"] svg.recharts-surface').first()
+    await chartSurface.scrollIntoViewIfNeeded()
+    await expect(chartSurface).toBeVisible()
+
+    const chartBox = await chartSurface.boundingBox()
+    expect(chartBox).not.toBeNull()
+    if (!chartBox) {
+      return
+    }
+
+    await page.mouse.move(chartBox.x + chartBox.width * 0.5, chartBox.y + chartBox.height * 0.18)
+    await expect(page.locator('div[role="status"]').filter({ hasText: 'Share' }).first()).toBeVisible()
+  })
+
   test('supports 30d week navigation controls in activity heatmap header', async ({ page }) => {
     await page.goto('/metrics')
     await page.getByRole('tab', { name: '30d' }).click()
@@ -384,5 +410,25 @@ test.describe('Usage Analytics mobile heading layout', () => {
     }
 
     expect(heatmapBox.y).toBeGreaterThanOrEqual(trendsBox.y + trendsBox.height)
+  })
+
+  test('keeps cost breakdown card within mobile viewport without overflow', async ({ page }) => {
+    await page.goto('/metrics')
+
+    const costBreakdownHeading = page.getByText('Cost Breakdown', { exact: true }).first()
+    await expect(costBreakdownHeading).toBeVisible()
+
+    const costBreakdownCard = costBreakdownHeading.locator('xpath=ancestor::*[@data-slot="card"][1]')
+    await expect(costBreakdownCard).toBeVisible()
+    await expect(costBreakdownCard.locator('[data-slot="cost-breakdown-legend-row"]')).toHaveCount(5)
+
+    const cardBox = await costBreakdownCard.boundingBox()
+    expect(cardBox).not.toBeNull()
+    if (!cardBox) {
+      return
+    }
+
+    expect(cardBox.x).toBeGreaterThanOrEqual(0)
+    expect(cardBox.x + cardBox.width).toBeLessThanOrEqual(390 + 1)
   })
 })

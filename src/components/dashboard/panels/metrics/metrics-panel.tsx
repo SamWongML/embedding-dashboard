@@ -10,7 +10,7 @@ import {
   SelectorTabsTrigger,
 } from '@/components/ui/selector-tabs'
 import { MetricCard } from './metric-card'
-import { TopUsersTable } from './top-users-table'
+import { CostBreakdownCard } from './cost-breakdown-card'
 import { TopCollectionsList } from './top-collections-list'
 import { TrendsChart } from '@/components/charts/trends-chart'
 import { ActivityHeatmap } from '@/components/charts/activity-heatmap'
@@ -232,14 +232,16 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
         {isInitialLoading ? (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="typography-size-base typography-weight-medium">Top Users</CardTitle>
+              <CardTitle className="typography-size-base typography-weight-medium">
+                Cost Breakdown
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[250px] bg-muted rounded animate-pulse" />
             </CardContent>
           </Card>
         ) : (
-          <TopUsersTable users={data?.topUsers || []} />
+          <CostBreakdownCard items={data?.costBreakdown || []} />
         )}
       </div>
     </div>

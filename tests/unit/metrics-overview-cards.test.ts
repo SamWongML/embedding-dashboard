@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { MetricsOverview } from '@/lib/schemas/metrics'
+import { COST_BREAKDOWN_CATEGORY_ORDER } from '@/lib/repositories/metrics/cost-breakdown'
 import {
   normalizeMetricsOverview,
   TEXT_QUERY_UNIT_COST_USD,
@@ -7,7 +8,10 @@ import {
   SEARCH_QUERY_UNIT_COST_USD,
 } from '@/lib/repositories/metrics/normalize-overview'
 
-function buildOverview(cards: MetricsOverview['cards']): MetricsOverview {
+function buildOverview(
+  cards: MetricsOverview['cards'],
+  options: { costBreakdown?: MetricsOverview['costBreakdown'] } = {}
+): MetricsOverview {
   return {
     cards,
     topCollections: [],
@@ -31,6 +35,7 @@ function buildOverview(cards: MetricsOverview['cards']): MetricsOverview {
       { date: '2026-02-08', textEmbeddings: 950, imageEmbeddings: 445, searches: 2160 },
     ],
     searchAnalytics: [],
+    costBreakdown: options.costBreakdown,
   }
 }
 
@@ -64,6 +69,11 @@ describe('normalizeMetricsOverview', () => {
     })
     expect(avgCost?.value).toBeGreaterThan(0)
     expect(avgCost?.sparkline?.length).toBeGreaterThan(0)
+
+    expect(normalized.costBreakdown?.map((item) => item.category)).toEqual(
+      COST_BREAKDOWN_CATEGORY_ORDER
+    )
+    expect(normalized.costBreakdown?.every((item) => item.amountUsd >= 0)).toBe(true)
   })
 
   it('preserves backend-provided avg cost card values and keeps active users as third', () => {
@@ -99,6 +109,46 @@ describe('normalizeMetricsOverview', () => {
       change: -3.2,
       changeType: 'increase',
     })
+  })
+
+  it('preserves backend cost breakdown values while normalizing category order', () => {
+    const normalized = normalizeMetricsOverview(
+      buildOverview(
+        [
+          { label: 'Total Embeddings', value: 1240000, change: 11.7, changeType: 'increase' },
+          { label: 'Searches Today', value: 52100, change: -1.9, changeType: 'decrease' },
+          { label: 'Active Users', value: 347, change: 7.6, changeType: 'increase' },
+          {
+            label: 'Avg Cost / Query',
+            value: 0.0016,
+            valuePrefix: '$',
+            valueFormat: { minimumFractionDigits: 4, maximumFractionDigits: 4 },
+            change: -2.4,
+            changeType: 'increase',
+          },
+        ],
+        {
+          costBreakdown: [
+            { category: 'data_transfer', amountUsd: 90 },
+            { category: 'embedding_api', amountUsd: 1240 },
+            { category: 'graph_operations', amountUsd: 180 },
+            { category: 'search_queries', amountUsd: 560 },
+            { category: 'vector_storage', amountUsd: 340 },
+          ],
+        }
+      )
+    )
+
+    expect(normalized.costBreakdown?.map((item) => item.category)).toEqual(
+      COST_BREAKDOWN_CATEGORY_ORDER
+    )
+    expect(normalized.costBreakdown).toEqual([
+      { category: 'embedding_api', amountUsd: 1240 },
+      { category: 'vector_storage', amountUsd: 340 },
+      { category: 'search_queries', amountUsd: 560 },
+      { category: 'graph_operations', amountUsd: 180 },
+      { category: 'data_transfer', amountUsd: 90 },
+    ])
   })
 
   it('uses the agreed deterministic cost constants', () => {

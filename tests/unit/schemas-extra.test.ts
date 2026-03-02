@@ -37,6 +37,13 @@ describe('additional schemas', () => {
       searchAnalytics: [
         { hour: 1, day: 'Mon', count: 5 },
       ],
+      costBreakdown: [
+        { category: 'embedding_api', amountUsd: 12.4 },
+        { category: 'vector_storage', amountUsd: 3.4 },
+        { category: 'search_queries', amountUsd: 5.6 },
+        { category: 'graph_operations', amountUsd: 1.8 },
+        { category: 'data_transfer', amountUsd: 0.9 },
+      ],
     }
     expect(() => metricsOverviewSchema.parse(payload)).not.toThrow()
   })

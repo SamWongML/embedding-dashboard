@@ -27,6 +27,7 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const analyticsCount = period === '24h' ? 24 : period === '7d' ? 168 : 720
   const trendCount = period === '24h' ? 24 : period === '7d' ? 7 : 30
+  const periodMultiplier = period === '24h' ? 1 : period === '7d' ? 4.8 : 12
   const now = new Date()
   const endTimestamp = Date.UTC(
     now.getUTCFullYear(),
@@ -77,6 +78,28 @@ function buildMockMetricsOverview(period: '24h' | '7d' | '30d' = '24h') {
         email: 'avery@embedding.dev',
         requestCount: 21000,
         lastActive: '2026-02-07T11:42:00.000Z',
+      },
+    ],
+    costBreakdown: [
+      {
+        category: 'embedding_api' as const,
+        amountUsd: Number((103.4 * periodMultiplier).toFixed(2)),
+      },
+      {
+        category: 'vector_storage' as const,
+        amountUsd: Number((28.3 * periodMultiplier).toFixed(2)),
+      },
+      {
+        category: 'search_queries' as const,
+        amountUsd: Number((46.7 * periodMultiplier).toFixed(2)),
+      },
+      {
+        category: 'graph_operations' as const,
+        amountUsd: Number((15.2 * periodMultiplier).toFixed(2)),
+      },
+      {
+        category: 'data_transfer' as const,
+        amountUsd: Number((7.8 * periodMultiplier).toFixed(2)),
       },
     ],
     trends: Array.from({ length: trendCount }, (_, index) => ({
@@ -335,6 +358,37 @@ test.describe('Dark mode chart interactions', () => {
     expect(railColor).not.toBe('rgba(255, 255, 255, 1)')
     expect(railFillColor).not.toBe('rgb(255, 255, 255)')
     expect(railFillColor).not.toBe('rgba(255, 255, 255, 1)')
+  })
+
+  test('cost breakdown donut and legend remain readable and interactive in dark mode', async ({
+    page,
+  }) => {
+    await mockMetricsOverview(page)
+    await gotoWithDarkMode(page, '/metrics')
+    await expect(page.getByRole('heading', { name: 'Usage Analytics' })).toBeVisible()
+
+    const costBreakdownHeading = page.getByText('Cost Breakdown', { exact: true }).first()
+    await expect(costBreakdownHeading).toBeVisible()
+
+    const legendRows = page.locator('[data-slot="cost-breakdown-legend-row"]')
+    await expect(legendRows).toHaveCount(5)
+
+    const firstLegendMarker = legendRows.first().locator('span').first()
+    const markerColor = await firstLegendMarker.evaluate((node) => window.getComputedStyle(node).backgroundColor)
+    expect(markerColor).not.toBe('rgb(255, 255, 255)')
+    expect(markerColor).not.toBe('rgba(255, 255, 255, 1)')
+
+    const chartSurface = page.locator('[data-slot="cost-breakdown-chart"] svg.recharts-surface').first()
+    await chartSurface.scrollIntoViewIfNeeded()
+    await expect(chartSurface).toBeVisible()
+    const chartBox = await chartSurface.boundingBox()
+    expect(chartBox).not.toBeNull()
+    if (!chartBox) {
+      return
+    }
+
+    await page.mouse.move(chartBox.x + chartBox.width * 0.5, chartBox.y + chartBox.height * 0.18)
+    await expect(page.locator('div[role="status"]').filter({ hasText: 'Share' }).first()).toBeVisible()
   })
 
   test('operations hover avoids bright white active dots', async ({ page }) => {

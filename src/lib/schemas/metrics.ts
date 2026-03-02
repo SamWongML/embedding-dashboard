@@ -32,6 +32,19 @@ export const topUserSchema = z.object({
   lastActive: z.string(),
 })
 
+export const costBreakdownCategorySchema = z.enum([
+  'embedding_api',
+  'vector_storage',
+  'search_queries',
+  'graph_operations',
+  'data_transfer',
+])
+
+export const costBreakdownItemSchema = z.object({
+  category: costBreakdownCategorySchema,
+  amountUsd: z.number().nonnegative(),
+})
+
 export const embeddingTrendSchema = z.object({
   date: z.string(),
   textEmbeddings: z.number(),
@@ -54,11 +67,14 @@ export const metricsOverviewSchema = z.object({
   trends: z.array(embeddingTrendSchema),
   hourlyTrends: z.array(embeddingTrendSchema).optional(),
   searchAnalytics: z.array(searchAnalyticsSchema),
+  costBreakdown: z.array(costBreakdownItemSchema).optional(),
 })
 
 export type MetricCard = z.infer<typeof metricCardSchema>
 export type TopCollection = z.infer<typeof topCollectionSchema>
 export type TopUser = z.infer<typeof topUserSchema>
+export type CostBreakdownCategory = z.infer<typeof costBreakdownCategorySchema>
+export type CostBreakdownItem = z.infer<typeof costBreakdownItemSchema>
 export type EmbeddingTrend = z.infer<typeof embeddingTrendSchema>
 export type SearchAnalytics = z.infer<typeof searchAnalyticsSchema>
 export type MetricsOverview = z.infer<typeof metricsOverviewSchema>

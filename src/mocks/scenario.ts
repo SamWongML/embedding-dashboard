@@ -44,6 +44,7 @@ import type {
   User as AccountUser,
   WorkspaceSummary,
 } from '@/lib/types/account'
+import { normalizeCostBreakdownItems } from '@/lib/repositories/metrics/cost-breakdown'
 
 const MINUTE_MS = 60_000
 const HALF_HOUR_MS = 30 * MINUTE_MS
@@ -1817,6 +1818,10 @@ export function createDemoDataset(
   const topCollections = buildTopCollections(records)
   const topUsers = buildTopUsers(users, baseDate)
   const metricCards = buildMetricCards(records, trends, searchAnalytics)
+  const costBreakdown = normalizeCostBreakdownItems(undefined, {
+    trends,
+    searchAnalytics,
+  })
   const metricsOverview: MetricsOverview = {
     cards: metricCards,
     topCollections,
@@ -1824,6 +1829,7 @@ export function createDemoDataset(
     trends,
     hourlyTrends,
     searchAnalytics,
+    costBreakdown,
   }
   const latencyResponse = buildLatencyResponse(baseDate, seed)
   const healthCheck: HealthCheck = {

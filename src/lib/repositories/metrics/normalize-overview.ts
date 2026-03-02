@@ -3,10 +3,18 @@ import type {
   MetricCard,
   MetricsOverview,
 } from '@/lib/schemas/metrics'
+import {
+  IMAGE_QUERY_UNIT_COST_USD,
+  normalizeCostBreakdownItems,
+  SEARCH_QUERY_UNIT_COST_USD,
+  TEXT_QUERY_UNIT_COST_USD,
+} from '@/lib/repositories/metrics/cost-breakdown'
 
-export const TEXT_QUERY_UNIT_COST_USD = 0.0018
-export const IMAGE_QUERY_UNIT_COST_USD = 0.0052
-export const SEARCH_QUERY_UNIT_COST_USD = 0.0009
+export {
+  TEXT_QUERY_UNIT_COST_USD,
+  IMAGE_QUERY_UNIT_COST_USD,
+  SEARCH_QUERY_UNIT_COST_USD,
+} from '@/lib/repositories/metrics/cost-breakdown'
 
 const METRIC_CARD_ORDER = [
   'Total Embeddings',
@@ -149,10 +157,14 @@ export function normalizeMetricsOverview(overview: MetricsOverview): MetricsOver
   const cards = METRIC_CARD_ORDER.map((label) =>
     resolveOrderedMetricCard(label, overview, cardsByLabel)
   )
+  const costBreakdown = normalizeCostBreakdownItems(overview.costBreakdown, {
+    trends: overview.trends,
+    searchAnalytics: overview.searchAnalytics,
+  })
 
   return {
     ...overview,
     cards,
+    costBreakdown,
   }
 }
-
