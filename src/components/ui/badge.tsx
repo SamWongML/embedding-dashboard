@@ -20,7 +20,7 @@ const badgeVariants = cva(
         link: "text-primary underline-offset-4 [a&]:hover:underline",
         // Geist subtle semantic color variants
         "blue-subtle":
-          "bg-[oklch(0.95_0.02_277)] text-[oklch(0.45_0.12_277)] dark:bg-[oklch(0.25_0.04_277)] dark:text-[oklch(0.75_0.10_277)]",
+          "bg-[oklch(0.95_0.02_250)] text-[oklch(0.45_0.12_250)] dark:bg-[oklch(0.25_0.04_250)] dark:text-[oklch(0.75_0.10_250)]",
         "gray-subtle":
           "bg-[oklch(0.95_0_0)] text-[oklch(0.45_0_0)] dark:bg-[oklch(0.25_0_0)] dark:text-[oklch(0.70_0_0)]",
         "green-subtle":
