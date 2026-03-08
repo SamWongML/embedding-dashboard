@@ -40,7 +40,7 @@ export function MetricSurfaceCard({
   meta,
   icon,
   rightContent,
-  animationMode = 'on-mount',
+  animationMode = 'always',
   animationDelayMs = 0,
   className,
   titleClassName,

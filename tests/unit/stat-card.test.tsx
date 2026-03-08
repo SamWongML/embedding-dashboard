@@ -8,16 +8,19 @@ vi.mock('@/components/dashboard/panels/shared/animated-metric-value', () => {
       value,
       suffix,
       format,
+      animationMode,
       className,
     }: {
       value: number | string
       suffix?: string
       format?: unknown
+      animationMode?: string
       className?: string
     }) => (
       <span
         data-testid="animated-metric-value"
         data-format={format ? JSON.stringify(format) : ''}
+        data-animation-mode={animationMode ?? ''}
         className={className}
       >
         {String(value)}
@@ -109,6 +112,28 @@ describe('StatCard', () => {
     expect(screen.getByTestId('animated-metric-value')).toHaveAttribute(
       'data-format',
       JSON.stringify({ minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    )
+    expect(screen.getByTestId('animated-metric-value')).toHaveAttribute(
+      'data-animation-mode',
+      'always'
+    )
+  })
+
+  it('forwards an explicit animation override through the shared card stack', () => {
+    render(
+      <StatCard
+        title="Throughput"
+        value={2.4}
+        valueSuffix="/s"
+        change={0}
+        changeType="neutral"
+        animationMode="never"
+      />
+    )
+
+    expect(screen.getByTestId('animated-metric-value')).toHaveAttribute(
+      'data-animation-mode',
+      'never'
     )
   })
 })

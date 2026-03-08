@@ -29,6 +29,13 @@ interface ServerStatusPanelProps {
   className?: string
 }
 
+const SERVER_STATUS_CARD_LOADING_TITLES = [
+  'Avg Latency',
+  'Throughput',
+  'Error Rate',
+  'Active Traces',
+] as const
+
 export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
   const healthQuery = useServerHealth()
   const latencyQuery = useServerLatency()
@@ -111,7 +118,7 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
       {/* Status Overview */}
       <div aria-busy={isTopCardsInitialLoading}>
         {isTopCardsInitialLoading ? (
-          <MonitoringMetricCardsSkeleton count={4} />
+          <MonitoringMetricCardsSkeleton titles={SERVER_STATUS_CARD_LOADING_TITLES} />
         ) : (
           <MonitoringMetricCardsGrid>
             {topCards.map((card) => (
@@ -124,7 +131,6 @@ export function ServerStatusPanel({ className }: ServerStatusPanelProps) {
                 change={card.change}
                 changeType={card.changeType}
                 sparkline={card.sparkline}
-                animationMode="on-mount"
               />
             ))}
           </MonitoringMetricCardsGrid>

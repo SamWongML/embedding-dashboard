@@ -39,7 +39,7 @@ export function StatCard({
   change,
   changeType,
   sparkline,
-  animationMode = 'on-mount',
+  animationMode,
   className,
 }: StatCardProps) {
   const TrendIcon = changeType === 'increase' ? ArrowUp :

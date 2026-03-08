@@ -235,21 +235,18 @@ export function WorkspacePanel() {
           value={data.overview.activeWorkspaces}
           subtitle={`${data.overview.totalWorkspaces} total`}
           icon={Building2}
-          animationMode="on-mount"
         />
         <OverviewMetricCard
           title="Knowledge Bases"
           value={data.overview.totalKnowledgeBases}
           subtitle="Across all workspaces"
           icon={Database}
-          animationMode="on-mount"
         />
         <OverviewMetricCard
           title="Access Rules"
           value={data.overview.totalAccessRules}
           subtitle={`${data.groups.length} groups`}
           icon={Shield}
-          animationMode="on-mount"
         />
         <OverviewMetricCard
           title="Total Vectors"
@@ -257,7 +254,6 @@ export function WorkspacePanel() {
           valueSuffix="K"
           subtitle="Indexed vectors"
           icon={Layers}
-          animationMode="on-mount"
         />
       </div>
 

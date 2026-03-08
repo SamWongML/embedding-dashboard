@@ -50,12 +50,24 @@ describe('metric panel unification', () => {
   })
 
   it('wires the agreed animation policy by panel', () => {
+    const metricSurfaceCardSource = load(
+      'src/components/dashboard/panels/shared/metric-surface-card.tsx'
+    )
     const metricsPanelSource = load('src/components/dashboard/panels/metrics/metrics-panel.tsx')
     const serverPanelSource = load('src/components/dashboard/panels/server-status/server-status-panel.tsx')
+    const metricCardSource = load('src/components/dashboard/panels/metrics/metric-card.tsx')
+    const statCardSource = load('src/components/dashboard/panels/server-status/stat-card.tsx')
+    const overviewCardSource = load('src/components/dashboard/panels/workspace/overview-metric-card.tsx')
     const workspacePanelSource = load('src/components/dashboard/panels/workspace/workspace-panel.tsx')
 
-    expect(metricsPanelSource).toContain('animationMode="on-mount"')
-    expect(serverPanelSource).toContain('animationMode="on-mount"')
-    expect(workspacePanelSource).toContain('animationMode="on-mount"')
+    expect(metricSurfaceCardSource).toContain("animationMode = 'always'")
+
+    ;[metricCardSource, statCardSource, overviewCardSource].forEach((source) => {
+      expect(source).not.toContain("animationMode = 'on-mount'")
+    })
+
+    ;[metricsPanelSource, serverPanelSource, workspacePanelSource].forEach((source) => {
+      expect(source).not.toContain('animationMode=')
+    })
   })
 })

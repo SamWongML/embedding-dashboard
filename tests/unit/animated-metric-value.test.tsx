@@ -89,6 +89,27 @@ describe('AnimatedMetricValue', () => {
     expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '87')
   })
 
+  it('animates on first render and subsequent value changes in always mode', () => {
+    vi.useFakeTimers()
+    const { rerender } = render(
+      <AnimatedMetricValue value={42} animationMode="always" delayMs={100} />
+    )
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '0')
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-animated', 'true')
+
+    act(() => {
+      vi.advanceTimersByTime(100)
+    })
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '42')
+
+    rerender(<AnimatedMetricValue value={84} animationMode="always" delayMs={100} />)
+
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-value', '84')
+    expect(screen.getByTestId('number-flow')).toHaveAttribute('data-animated', 'true')
+  })
+
   it('renders first value immediately in on-change mode and animates subsequent updates', () => {
     const { rerender } = render(<AnimatedMetricValue value={42} animationMode="on-change" />)
 

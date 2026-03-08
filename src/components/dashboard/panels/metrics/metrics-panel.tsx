@@ -33,6 +33,13 @@ interface MetricsPanelProps {
 
 type Period = '24h' | '7d' | '30d'
 
+const METRIC_CARD_LOADING_TITLES = [
+  'Total Embeddings',
+  'Searches Today',
+  'Active Users',
+  'Avg Cost / Query',
+] as const
+
 export function MetricsPanel({ className }: MetricsPanelProps) {
   const [period, setPeriod] = useState<Period>('24h')
   const [weekPage, setWeekPage] = useState(0)
@@ -114,14 +121,13 @@ export function MetricsPanel({ className }: MetricsPanelProps) {
       {/* Metric Cards */}
       <div aria-busy={isMetricCardsInitialLoading}>
         {isMetricCardsInitialLoading ? (
-          <MonitoringMetricCardsSkeleton count={4} />
+          <MonitoringMetricCardsSkeleton titles={METRIC_CARD_LOADING_TITLES} />
         ) : (
           <MonitoringMetricCardsGrid>
             {data?.cards.map((metric) => (
               <MetricCard
                 key={metric.label}
                 metric={metric}
-                animationMode="on-change"
               />
             ))}
           </MonitoringMetricCardsGrid>

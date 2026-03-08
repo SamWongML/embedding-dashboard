@@ -8,17 +8,20 @@ vi.mock('@/components/dashboard/panels/shared/animated-metric-value', () => {
       value,
       prefix,
       suffix,
+      animationMode,
       className,
     }: {
       value: number | string
       prefix?: string
       suffix?: string
+      animationMode?: string
       className?: string
     }) => (
       <span
         data-testid="animated-metric-value"
         data-prefix={prefix ?? ''}
         data-suffix={suffix ?? ''}
+        data-animation-mode={animationMode ?? ''}
         className={className}
       >
         {prefix ?? ''}
@@ -65,6 +68,10 @@ describe('MetricSurfaceCard', () => {
 
     expect(screen.getByText('Errors')).toBeInTheDocument()
     expect(screen.getByTestId('animated-metric-value')).toBeInTheDocument()
+    expect(screen.getByTestId('animated-metric-value')).toHaveAttribute(
+      'data-animation-mode',
+      'always'
+    )
     expect(screen.queryByTestId('sparkline-slot')).not.toBeInTheDocument()
   })
 
@@ -72,5 +79,14 @@ describe('MetricSurfaceCard', () => {
     render(<MetricSurfaceCard title="Avg Cost / Query" value={0.0016} valuePrefix="$" />)
 
     expect(screen.getByTestId('animated-metric-value')).toHaveAttribute('data-prefix', '$')
+  })
+
+  it('forwards an explicit animation override to the shared metric value renderer', () => {
+    render(<MetricSurfaceCard title="Errors" value={0} animationMode="never" />)
+
+    expect(screen.getByTestId('animated-metric-value')).toHaveAttribute(
+      'data-animation-mode',
+      'never'
+    )
   })
 })

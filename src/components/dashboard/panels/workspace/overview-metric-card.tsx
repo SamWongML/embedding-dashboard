@@ -22,7 +22,7 @@ export function OverviewMetricCard({
   subtitle,
   icon: Icon,
   valueSuffix,
-  animationMode = 'on-mount',
+  animationMode,
   className,
 }: OverviewMetricCardProps) {
   return (
@@ -38,4 +38,3 @@ export function OverviewMetricCard({
     />
   )
 }
-

@@ -73,7 +73,7 @@ function resolveMetricDisplay(metric: MetricCardType): {
 export function MetricCard({
   metric,
   className,
-  animationMode = 'on-mount',
+  animationMode,
 }: MetricCardProps) {
   const formattedValue = resolveMetricDisplay(metric)
 
